@@ -121,6 +121,28 @@ Inherits Canvas
 	#tag EndEvent
 
 	#tag Event
+		Sub DropObject(obj As DragItem, action As Integer)
+		  If action = DragItem.DragActionCopy Then
+		    Dim f As FolderItem = Obj.FolderItem
+		    Dim p As Picture = Picture.Open(f)
+		    If p <> Nil Then
+		      Me.Background = p
+		      Return
+		    End If
+		  End If
+		  Dim droppedFile() As FolderItem
+		  droppedFile.Append(obj.FolderItem)
+		  While obj.NextItem = True
+		    droppedFile.Append(obj.FolderItem)
+		  Wend
+		  For Each file As FolderItem In droppedFile
+		    file.Launch
+		  Next
+		  
+		End Sub
+	#tag EndEvent
+
+	#tag Event
 		Function MouseDown(X As Integer, Y As Integer) As Boolean
 		  //First, save the old currentObject
 		  Dim refreshn As Integer = currentObject
@@ -152,7 +174,7 @@ Inherits Canvas
 	#tag Event
 		Sub MouseDrag(X As Integer, Y As Integer)
 		  Static doit As Integer
-		  If doit = 5 Or Platform.IsOlderThan(Platform.WinVista) Then  //Performance kludge. Only update every OTHER time we're called
+		  If doit = 5 Or Not Throttle Then  //Performance kludge. Only update every fifth time we're called
 		    doit = 0
 		    If currentObject > -1 Then
 		      //Calculate the new position of the object, update the object, then refresh the control.
@@ -172,18 +194,19 @@ Inherits Canvas
 
 	#tag Event
 		Sub MouseMove(X As Integer, Y As Integer)
-		  Static doit As Boolean
-		  If doit Then  //Performance kludge. Only update every OTHER time we're called
+		  Static doit As Integer
+		  If doit = 5 Or Not Throttle Then  //Performance kludge. Only update every fifth time we're called
 		    drawHelp(X, Y)
+		    doit = 0
 		  End If
-		  doit = Not doit
+		  doit = doit + 1
 		End Sub
 	#tag EndEvent
 
 	#tag Event
 		Sub Open()
 		  //Create the dynamic tiles
-		  
+		  Me.AcceptFileDrop(FileTypes1.Any)
 		  Dim cpuWin As New dragObject
 		  cpuWin.DynType = 0
 		  
@@ -199,6 +222,11 @@ Inherits Canvas
 		    addObject(debugWin)
 		  End If
 		  
+		  UpdateMutex = New Mutex("BS.Lock")
+		  
+		  'Dim mag As New dragObject  //Very slow
+		  'mag.DynType = 3
+		  'addObject(mag)
 		End Sub
 	#tag EndEvent
 
@@ -223,6 +251,7 @@ Inherits Canvas
 		  If DebugMode Then 
 		    DrawVersion()  //draw the version text
 		    DrawFPS()      //Update the FPS text
+		    FPS = FPS + 1
 		  End If
 		  
 		  //Draw each dragObject one by one, starting with the bottom-most (Z-Ordering is reverse of the objects array's order)
@@ -239,151 +268,150 @@ Inherits Canvas
 		  
 		  Declare Function BitBlt Lib "GDI32" (DCdest As Integer, xDest As Integer, yDest As Integer, nWidth As Integer, nHeight As Integer, _
 		  DCdource As Integer, xSource As Integer, ySource As Integer, rasterOp As Integer) As Boolean
-		  Const CAPTUREBLT = &h40000000
-		  Const SRCCOPY = &hCC0020
+		  
 		  Call BitBlt(g.Handle(1), 0, 0, g.Width, g.Height, buffer.Graphics.Handle(1), left, top, SRCCOPY Or CAPTUREBLT)
-		  FPS = FPS + 1
-		  
-		  
-		  
 		End Sub
 	#tag EndEvent
 
 
 	#tag Method, Flags = &h0
 		Sub addObject(no As dragObject)
-		  //Adds a new dragObject to the objects array, then forces a refresh so that it gets drawn.
+		  //Adds a new dragObject to the objects array
 		  If no.x > Me.Width Or no.y > Me.Height Then
 		    no.x = no.x - 200
 		    no.y = no.y - 200
 		  End If
 		  objects.Append(no)
-		  'Refresh(False)
 		  
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Sub Arrange(Order As Integer = 0)
-		  If Order = -1 Then Return
-		  Dim x As Integer = 10
-		  Dim y As Integer = 17
-		  
-		  If Order = 1 Then
-		    Dim s() As String
-		    Dim u() As Integer
-		    For i As Integer = 0 To UBound(objects)
-		      If objects(i).Dynamic Then
-		        Select Case objects(i).DynType
-		        Case 0
-		          s.Append("ZZZZZZA")
-		        Case 1
-		          s.Append("ZZZZZZB")
-		        Case 2
-		          s.Append("ZZZZZZC")
-		        End Select
-		      Else
-		        s.Append(objects(i).Process.Name + Str(objects(i).Process.ProcessID))
-		      End If
-		      u.Append(i)
-		    Next
-		    s.SortWith(u)
-		    For i As Integer = 0 To UBound(u)
-		      Objects(u(i)).x = x
-		      Objects(u(i)).y = y
-		      If Objects.Ubound = i Then Continue
-		      If Objects(u(i)).Image.height + 17 + Objects(u(i + 1)).Image.height + 17 + y <= Me.Height Then
-		        y = y + Objects(u(i)).Image.height + 17
-		      Else
-		        y = 17
-		        x = x + 210
-		      End If
-		      
-		    Next
-		  ElseIf Order = 2 Then
-		    Dim s() As Integer
-		    Dim u() As Integer
-		    For i As Integer = 0 To UBound(objects)
-		      If objects(i).Dynamic Then
-		        Select Case objects(i).DynType
-		        Case 0
-		          s.Append(9999997)
-		        Case 1
-		          s.Append(9999998)
-		        Case 2
-		          s.Append(9999999)
-		        End Select
-		      Else
-		        s.Append(objects(i).Process.ProcessID)
-		      End If
-		      u.Append(i)
-		    Next
-		    s.SortWith(u)
-		    For i As Integer = 0 To UBound(u)
-		      Objects(u(i)).x = x
-		      Objects(u(i)).y = y
-		      If Objects.Ubound = i Then Continue
-		      If Objects(u(i)).Image.height + 17 + Objects(u(i + 1)).Image.height + 17 + y <= Me.Height Then
-		        y = y + Objects(u(i)).Image.height + 17
-		      Else
-		        y = 17
-		        x = x + 210
-		      End If
-		      
-		    Next
+		  If UpdateMutex.TryEnter Then
+		    lastSort = Order
+		    If Order = -1 Then Return
+		    
+		    Dim x As Integer = 10
+		    Dim y As Integer = 10
+		    //Needs cleanup
+		    Select Case Order
+		    Case 1
+		      Dim s() As String
+		      Dim u() As Integer
+		      For i As Integer = 0 To UBound(objects)
+		        If objects(i).Dynamic Then
+		          Select Case objects(i).DynType
+		          Case 0
+		            s.Append("ZZZZZZA")
+		          Case 1
+		            s.Append("ZZZZZZB")
+		          Case 2
+		            s.Append("ZZZZZZC")
+		          Case 3
+		            s.Append("ZZZZZZD")
+		          End Select
+		        Else
+		          s.Append(objects(i).Process.Name + Str(objects(i).Process.ProcessID))
+		        End If
+		        u.Append(i)
+		      Next
+		      s.SortWith(u)
+		      Dim widest As Integer
+		      For i As Integer = 0 To UBound(u)
+		        Objects(u(i)).x = x
+		        Objects(u(i)).y = y
+		        If Objects.Ubound = i Then Continue
+		        If Objects(u(i)).Image.height + 10 + Objects(u(i + 1)).Image.height + 10 + y <= Me.Height Then
+		          y = y + Objects(u(i)).Image.height +10
+		          If Objects(u(i)).Image.Width > widest Then 
+		            widest = Objects(u(i)).Image.Width
+		          End If
+		        Else
+		          y =10
+		          x = x + widest + 10
+		          widest = 0
+		        End If
+		        
+		      Next
+		    Case 2
+		      Dim s() As Integer
+		      Dim u() As Integer
+		      For i As Integer = 0 To UBound(objects)
+		        If objects(i).Dynamic Then
+		          Select Case objects(i).DynType
+		          Case 0
+		            s.Append(9999997)
+		          Case 1
+		            s.Append(9999998)
+		          Case 2
+		            s.Append(9999999)
+		          End Select
+		        Else
+		          s.Append(objects(i).Process.ProcessID)
+		        End If
+		        u.Append(i)
+		      Next
+		      s.SortWith(u)
+		      Dim widest As Integer
+		      For i As Integer = 0 To UBound(u)
+		        Objects(u(i)).x = x
+		        Objects(u(i)).y = y
+		        If Objects.Ubound = i Then Continue
+		        If Objects(u(i)).Image.height + 10 + Objects(u(i + 1)).Image.height + 10 + y <= Me.Height Then
+		          y = y + Objects(u(i)).Image.height +10
+		          If Objects(u(i)).Image.Width > widest Then
+		            widest = Objects(u(i)).Image.Width
+		          End If
+		        Else
+		          y =10
+		          x = x + widest + 10
+		          widest = 0
+		        End If
+		        
+		      Next
+		    Case 3
+		      Dim rand As New Random
+		      For i As Integer = 0 To UBound(Objects)
+		        x = Rand.InRange(0, Window1.dragContainer1.Width)
+		        y = Rand.InRange(0, Window1.dragContainer1.Height)
+		        
+		        Objects(i).x = x
+		        Objects(i).y = y
+		        
+		        If Objects(i).x > Me.Width Or Objects(i).y > Me.Height Then
+		          Objects(i).x = Objects(i).x - 200
+		          Objects(i).y = Objects(i).y - 200
+		        End If
+		      Next
+		      lastSort = -1
+		    End Select
+		    
+		    //First, check whether an object was clicked on
+		    If currentObject > -1 Then
+		      //Then bring it to the foreground
+		      bringToFront(currentObject)
+		    End If
+		    Refresh(False)
+		    UpdateMutex.Leave
 		  End If
-		  lastSort = Order
-		  //First, check whether an object was clicked on
-		  If currentObject > -1 Then
-		    //Then bring it to the foreground
-		    bringToFront(currentObject)
-		  End If
-		  Refresh(False)
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
 		Private Sub bringToFront(index As Integer)
-		  //Brings the object at Index to the "front" (i.e. moves it to the UBound of the objects array.
+		  //Brings the object at Index to the "front" (i.e. moves it to the UBound of the objects array.)
 		  //Objects get drawn from the zeroth element in the objects array, so the "top" object gets drawn last.
-		  #pragma BreakOnExceptions Off
+		  
 		  If index = -1 Then Return
 		  Dim obj As dragObject = objects(index)
 		  objects.Remove(index)
 		  objects.Append(obj)
 		  currentObject = objects.Ubound
 		  
-		Exception
-		  Return
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Sub deleteObject(Index As Integer)
-		  objects.Remove(Index)
-		  Refresh(False)
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Sub Disarray()
-		  lastSort = -1
-		  Dim x, y As Integer
-		  Dim rand As New Random
-		  For i As Integer = 0 To UBound(Objects)
-		    x = Rand.InRange(0, Window1.dragContainer1.Width)
-		    y = Rand.InRange(0, Window1.dragContainer1.Height)
-		    
-		    Objects(i).x = x
-		    Objects(i).y = y
-		    
-		    If Objects(i).x > Me.Width Or Objects(i).y > Me.Height Then
-		      Objects(i).x = Objects(i).x - 200
-		      Objects(i).y = Objects(i).y - 200
-		    End If
-		  Next
-		  
-		  Update()
+		Exception err As OutOfBoundsException
+		  debug("Whoops! Can't delete what doesn't exist!")
+		  If index = currentObject Then currentObject = -1
 		End Sub
 	#tag EndMethod
 
@@ -639,6 +667,22 @@ Inherits Canvas
 		  'End If
 		  'Next
 		  'Else
+		  If HideSystemProcs Then
+		    For i As Integer = UBound(objects) DownTo 0
+		      If Objects(i).Process = Nil Then Continue
+		      If Objects(i).Process.Hidden Then
+		        sysProcs.Append(Objects(i))
+		        Objects.Remove(i)
+		      End If
+		    Next
+		  Else
+		    While sysProcs.Ubound > -1
+		      addObject(sysProcs.Pop)
+		    Wend
+		  End If
+		  
+		  
+		  
 		  Update()
 		  'End If
 		  Arrange(lastSort)
@@ -655,8 +699,10 @@ Inherits Canvas
 		  Dim deadProcs() As ProcessInformation = getDeadProcs()
 		  For x As Integer = UBound(deadProcs) DownTo 0
 		    For i As Integer = UBound(Objects) DownTo 0
+		      If Objects(i).Dynamic Then Continue For i
 		      If objects(i).Process.ProcessID = deadProcs(x).ProcessID Then
 		        //And remove them from the objects array
+		        debug("Process " + Str(Objects(i).Process.ProcessID) + " died")
 		        Objects.Remove(i)
 		        Exit For i
 		      End If
@@ -676,7 +722,10 @@ Inherits Canvas
 		  
 		  //If we added or removed any objects, we should re-sort
 		  If UBound(newProcs) > -1 Or UBound(activeProcessesOld) > -1 Then
-		    Arrange(lastSort)
+		    If UpdateMutex.TryEnter Then
+		      Arrange(lastSort)
+		      UpdateMutex.Leave
+		    End If
 		  End If
 		  
 		  //Finally, draw the helptext, if any.
@@ -702,6 +751,10 @@ Inherits Canvas
 			Represents the index of the currently active object in the objects array
 		#tag EndNote
 		Private currentObject As Integer = -1
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		Effects As Integer = 0
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -739,6 +792,14 @@ Inherits Canvas
 			The heart of this whole operation: an array of dragObjects. Each dragObject corresponds to a "window" drawn on the Parent dragContainer
 		#tag EndNote
 		Private objects() As dragObject
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private sysProcs() As dragObject
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private UpdateMutex As Mutex
 	#tag EndProperty
 
 
@@ -791,6 +852,12 @@ Inherits Canvas
 			InitialValue="False"
 			Type="Boolean"
 			InheritedFrom="Canvas"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Effects"
+			Group="Behavior"
+			InitialValue="0"
+			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Enabled"

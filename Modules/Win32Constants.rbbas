@@ -1,5 +1,8 @@
 #tag Module
 Protected Module Win32Constants
+	#tag Constant, Name = BLACKNESS, Type = Double, Dynamic = False, Default = \"&h00000042", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = BusATA, Type = Double, Dynamic = False, Default = \"&h3", Scope = Public
 	#tag EndConstant
 
@@ -52,6 +55,12 @@ Protected Module Win32Constants
 	#tag EndConstant
 
 	#tag Constant, Name = BusVirtual, Type = Double, Dynamic = False, Default = \"&hE", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = CAPTUREBLT, Type = Double, Dynamic = False, Default = \"&h40000000\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = DSTINVERT, Type = Double, Dynamic = False, Default = \"&h00550009", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = IDABORT, Type = Double, Dynamic = False, Default = \"3", Scope = Public
@@ -168,6 +177,27 @@ Protected Module Win32Constants
 	#tag Constant, Name = MB_YESNOCANCEL, Type = Double, Dynamic = False, Default = \"&h00000003", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = MERGECOPY, Type = Double, Dynamic = False, Default = \"&h00C000CA", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = MERGEPAINT, Type = Double, Dynamic = False, Default = \"&h00BB0226", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = NOTSRCCOPY, Type = Double, Dynamic = False, Default = \"&h00330008", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = NOTSRCERASE, Type = Double, Dynamic = False, Default = \"&h001100A6", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = PATCOPY, Type = Double, Dynamic = False, Default = \"&h00F00021", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = PATINVERT, Type = Double, Dynamic = False, Default = \"&h005A0049", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = PATPAINT, Type = Double, Dynamic = False, Default = \"&h00FB0A09", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = PROCESS_QUERY_INFORMATION, Type = Double, Dynamic = False, Default = \"&h400", Scope = Public
 	#tag EndConstant
 
@@ -274,6 +304,27 @@ Protected Module Win32Constants
 	#tag EndConstant
 
 	#tag Constant, Name = SE_UNSOLICITED_INPUT_NAME, Type = String, Dynamic = False, Default = \"SeUnsolicitedInputPrivilege", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SRCAND, Type = Double, Dynamic = False, Default = \"&h008800C6", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SRCCOPY, Type = Double, Dynamic = False, Default = \"&h00CC0020", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SRCCOPY1, Type = Double, Dynamic = False, Default = \"&h00CC0020", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SRCERASE, Type = Double, Dynamic = False, Default = \"&h00440328", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SRCINVERT, Type = Double, Dynamic = False, Default = \"&h00660046", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SRCPAINT, Type = Double, Dynamic = False, Default = \"&h00EE0086", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = WHITENESS, Type = Double, Dynamic = False, Default = \"&h00FF0062", Scope = Public
 	#tag EndConstant
 
 

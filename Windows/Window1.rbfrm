@@ -33,6 +33,7 @@ Begin Window Window1
       DoubleBuffer    =   False
       Enabled         =   True
       EraseBackground =   True
+      FPS             =   0
       Height          =   589
       HelpTag         =   ""
       Index           =   -2147483648
@@ -116,21 +117,9 @@ End
 	#tag Event
 		Sub Open()
 		  Me.Maximize
-		  'Dim f As FolderItem = SpecialFolder.Pictures
-		  'For i As Integer = 1 To 10
-		  'Dim p As Picture
-		  'Dim d As FolderItem = f.Item(i)
-		  'If Not d.Directory Then
-		  'If NthField(d.Name, ".", CountFields(d.Name, ".")) = "png" Or NthField(d.Name, ".", CountFields(d.Name, ".")) = "bmp" Or NthField(d.Name, ".", CountFields(d.Name, ".")) = "jpg" Then
-		  'p = p.Open(d)
-		  'Dim no As New dragObject(p)
-		  'dragContainer1.addObject(no)
-		  'End If
-		  'End If
-		  'Next
-		  '
-		  'Exception
-		  'Return
+		  Dim mi As New ThrottleMenu("Throttle Drawing")
+		  mi.Checked = True
+		  Me.MenuBar.Item(0).Append(mi)
 		End Sub
 	#tag EndEvent
 
@@ -153,7 +142,7 @@ End
 
 	#tag MenuHandler
 		Function dissarrayMenu() As Boolean Handles dissarrayMenu.Action
-			dragContainer1.Disarray()
+			dragContainer1.Arrange(3)
 			Return True
 			
 		End Function
@@ -161,6 +150,7 @@ End
 
 	#tag MenuHandler
 		Function hideSystemMenu() As Boolean Handles hideSystemMenu.Action
+			
 			HideSystemProcs = Not HideSystemProcs
 			'dragContainer1.Empty
 			'FirstRun = True
@@ -258,7 +248,7 @@ End
 		  dragContainer1.DynUpdate()
 		  dragContainer1.Update()
 		  count = count + 1
-		  Status.Text = Str(UBound(activeProcesses) + 1) + " running processes."
+		  Status.Text = Str(ProcessCount) + " running processes."
 		  FirstRun = False
 		  lastFPS = dragContainer1.FPS
 		  dragContainer1.FPS = 0

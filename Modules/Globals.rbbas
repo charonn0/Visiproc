@@ -134,9 +134,6 @@ Protected Module Globals
 	#tag Method, Flags = &h0
 		Sub PollDebug()
 		  Dim drvs() As Picture
-		  'While DebugLog.Ubound > 30
-		  'DebugLog.Remove(0)
-		  'Wend
 		  Dim requiredHeight, requiredWidth As Integer
 		  Dim startat As Integer
 		  If UBound(DebugLog) <= 10 Then
@@ -152,13 +149,10 @@ Protected Module Globals
 		      p.Graphics.ForeColor = &c0000FF00//&cFF0000
 		      p.Graphics.TextFont = "System"
 		      p.Graphics.TextSize = 10
-		      Dim nm As String = DebugLog(i)
+		      Dim nm As String = Str(i) + ": " + DebugLog(i)
 		      Dim strWidth, strHeight As Integer
 		      strWidth = p.Graphics.StringWidth(nm)
 		      strHeight = p.Graphics.StringHeight(nm, p.Width)
-		      'p.Graphics.DrawString(nm, p.Width - strWidth - 10, ((p.Height/2) + (strHeight/4)))
-		      'strWidth = p.Graphics.StringWidth(nm)
-		      'strHeight = p.Graphics.StringHeight(nm, p.Width)
 		      p.Graphics.DrawString(nm, 10, ((p.Height/2) + (strHeight/4)))
 		      p.Graphics.ForeColor = &cFFFFFF
 		      p.Graphics.DrawRect(1, 1, p.Width - 1, p.Height - 1)
@@ -178,10 +172,11 @@ Protected Module Globals
 		  Next
 		  debugBuffer.Graphics.ForeColor = &cFFFFFF
 		  debugBuffer.Graphics.DrawRect(0, 0, debugBuffer.Width - 1, debugBuffer.Height - 1)
-		  'Dim percent As Integer = free * 100 / total
-		  'debugBuffer = New Picture(250, 150, 24)
-		  'drawBack(debugBuffer)
-		  'debugBuffer.Graphics.ForeColor = &c00FF00
+		  
+		  If DebugLog.Ubound >= 1500 Then
+		    ReDim DebugLog(-1)
+		    DebugLog.Append("Recycle Debug Log")
+		  End If
 		End Sub
 	#tag EndMethod
 
@@ -337,8 +332,39 @@ Protected Module Globals
 		LastMem As Double
 	#tag EndComputedProperty
 
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  If mmagImage = Nil Then
+			    magImage = New Picture(250, 150, 24)
+			    Dim runner As New Magnifyer
+			    runner.Run
+			  End If
+			  Return mmagImage
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  mmagImage = value
+			End Set
+		#tag EndSetter
+		magImage As Picture
+	#tag EndComputedProperty
+
+	#tag Property, Flags = &h21
+		Private mmagImage As Picture
+	#tag EndProperty
+
 	#tag Property, Flags = &h21
 		Private mVersionTile As Picture
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		ProcessCount As Integer
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		Throttle As Boolean = True
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -474,16 +500,32 @@ Protected Module Globals
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
+			Name="magImage"
+			Group="Behavior"
+			Type="Picture"
+		#tag EndViewProperty
+		#tag ViewProperty
 			Name="Name"
 			Visible=true
 			Group="ID"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
+			Name="ProcessCount"
+			Group="Behavior"
+			Type="Integer"
+		#tag EndViewProperty
+		#tag ViewProperty
 			Name="Super"
 			Visible=true
 			Group="ID"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Throttle"
+			Group="Behavior"
+			InitialValue="True"
+			Type="Boolean"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Top"

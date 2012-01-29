@@ -156,23 +156,26 @@ Protected Class ProcessInformation
 
 	#tag Method, Flags = &h0
 		Function Terminate(exitCode As Integer = 0) As Boolean
-		  Declare Function TerminateProcess Lib "Kernel32" (handle As Integer, exitCode As Integer) As Integer
+		  Declare Function TerminateProcess Lib "Kernel32" (handle As Integer, exitCode As Integer) As Boolean
 		  Declare Function OpenProcess Lib "Kernel32" (access As Integer, inheritHandle As Boolean, processId As Integer) As Integer
 		  Declare Sub CloseHandle Lib "Kernel32" (handle As Integer)
 		  
 		  Dim processHandle As Integer = OpenProcess(PROCESS_TERMINATE, False, ProcessID)
 		  If processHandle <> 0 then
-		    If TerminateProcess(processHandle, exitCode) = 0 Then
+		    If TerminateProcess(processHandle, exitCode) Then
 		      debug("Terminated " + Name)
 		      Return True
 		    Else
 		      processHandle = GetLastError()
 		      debug("Could Not Terminate " + Name)
+		      debug("Last error: " + Platform.ErrorMessageFromCode(processHandle))
 		      Return False
 		    End If
 		    CloseHandle(processHandle)
 		  Else
+		    processHandle = GetLastError()
 		    debug("Could Not Terminate " + Name)
+		    debug("Last error: " + Platform.ErrorMessageFromCode(processHandle))
 		    Return False
 		  End If
 		End Function
@@ -206,8 +209,10 @@ Protected Class ProcessInformation
 			  Dim ret As Byte
 			  ret = lpProc.Byte(0)
 			  If success then
+			    Debug("Get CPU Affinity For ProcID: " + Str(ProcessID))
 			    Return ret
 			  Else
+			    Debug("Couldn't Get CPU Affinity For ProcID: " + Str(ProcessID))
 			    Return &b00000000
 			  End If
 			End Get
@@ -234,6 +239,7 @@ Protected Class ProcessInformation
 			    End If
 			  End If
 			  CloseHandle(processHandle)
+			  Debug("Set CPU Affinity For ProcID: " + Str(ProcessID))
 			End Set
 		#tag EndSetter
 		Affinity As Byte
@@ -263,12 +269,18 @@ Protected Class ProcessInformation
 			    else
 			      mCommandLine =  ""
 			    end if
+			  Else
+			    'Debug("Use Cached Command Line For ProcID: " + Str(ProcessID))
 			  End If
 			   Return mCommandLine
 			End Get
 		#tag EndGetter
 		CommandLine As String
 	#tag EndComputedProperty
+
+	#tag Property, Flags = &h0
+		Hidden As Boolean
+	#tag EndProperty
 
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
@@ -332,6 +344,7 @@ Protected Class ProcessInformation
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  Debug("Get Parent Image For ProcID: " + Str(ProcessID))
 			  Return imageFromProcID(ParentProcessID)
 			End Get
 		#tag EndGetter
@@ -369,8 +382,9 @@ Protected Class ProcessInformation
 			  If processHandle <> 0 Then
 			    ret = GetPriorityClass(processHandle)
 			    CloseHandle(processHandle)
+			    Debug("Get Scheduler Priority For ProcID: " + Str(ProcessID))
 			  Else
-			    Debug(True, "Try to get the handle For process ID " + Str(ProcessID))
+			    Debug(True, "Tried To Get Scheduler Priority For process ID " + Str(ProcessID))
 			    CloseHandle(processHandle)
 			  End If
 			  
@@ -461,6 +475,11 @@ Protected Class ProcessInformation
 			Group="Behavior"
 			Type="String"
 			EditorType="MultiLineEditor"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Hidden"
+			Group="Behavior"
+			Type="Boolean"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Index"

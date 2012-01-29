@@ -16,7 +16,7 @@ Begin Window DriveWindow
    MaxWidth        =   32000
    MenuBar         =   ""
    MenuBarVisible  =   True
-   MinHeight       =   64
+   MinHeight       =   163
    MinimizeButton  =   True
    MinWidth        =   64
    Placement       =   3
@@ -120,7 +120,11 @@ End
 		    Listbox1.RowTag(Listbox1.LastIndex) = 100 - (free * 100 / total)
 		  Next
 		  
-		  Self.Height = Listbox1.RowHeight * (Listbox1.LastIndex * 2)
+		  //debug("Rowheight: " + Str())
+		  If Listbox1.RowHeight * (Listbox1.LastIndex * 2) > 70 Then
+		    Self.Height = Listbox1.RowHeight * (Listbox1.LastIndex * 2)
+		  End If
+		  
 		End Sub
 	#tag EndEvent
 
@@ -138,40 +142,12 @@ End
 		  g.FillRect 0,0,g.width,g.height
 		  
 		  
-		  Dim perc As Integer = Me.RowTag(row)
-		  g.ForeColor = &c808080
-		  Select Case column
-		  Case 0
-		    perc = perc * 100 \ 10
-		    Dim p As New Picture(g.Width, g.Height, 24)
-		    If row Mod 2=0 then
-		      p.Graphics.foreColor= &cC0C0C0
-		    else
-		      p.Graphics.foreColor= &c9E9E9E
-		    end if
-		    p.Graphics.FillRect(0, 0, p.Width, p.Height)
-		    DrawBar(p, perc, row)
-		    g.DrawPicture(p, 0, 0)
-		    //g.FillRect(0, 0, perc, g.Height)
-		  Case 1
-		    If perc > 10 Then
-		      perc = perc - 10
-		      perc = perc * 100 \ 25
-		      Dim p As New Picture(g.Width, g.Height, 24)
-		      If row Mod 2=0 then
-		        p.Graphics.foreColor= &cC0C0C0
-		      else
-		        p.Graphics.foreColor= &c9E9E9E
-		      end if
-		      p.Graphics.FillRect(0, 0, p.Width, p.Height)
-		      DrawBar(p, perc, row)
-		      g.DrawPicture(p, 0, 0)
-		      //g.FillRect(0, 0, perc, g.Height)
-		      
-		    End If
-		  Case 2 
-		    If perc > 35 Then
-		      perc = perc - 35
+		  Try
+		    #pragma BreakOnExceptions Off
+		    Dim perc As Integer = Me.RowTag(row)
+		    g.ForeColor = &c808080
+		    Select Case column
+		    Case 0
 		      perc = perc * 100 \ 10
 		      Dim p As New Picture(g.Width, g.Height, 24)
 		      If row Mod 2=0 then
@@ -183,39 +159,72 @@ End
 		      DrawBar(p, perc, row)
 		      g.DrawPicture(p, 0, 0)
 		      //g.FillRect(0, 0, perc, g.Height)
-		    End If
-		  Case 3
-		    If perc > 45 Then
-		      perc = perc - 45
-		      perc = perc * 100 \ 27
-		      Dim p As New Picture(g.Width, g.Height, 24)
-		      If row Mod 2=0 then
-		        p.Graphics.foreColor= &cC0C0C0
-		      else
-		        p.Graphics.foreColor= &c9E9E9E
-		      end if
-		      p.Graphics.FillRect(0, 0, p.Width, p.Height)
-		      DrawBar(p, perc, row)
-		      g.DrawPicture(p, 0, 0)
-		      //g.FillRect(0, 0, perc, g.Height)
-		    End If
-		  Case 4
-		    If perc > 72 Then
-		      perc = perc - 72
-		      perc = perc * 100 \28
-		      Dim p As New Picture(g.Width, g.Height, 24)
-		      If row Mod 2=0 then
-		        p.Graphics.foreColor= &cC0C0C0
-		      else
-		        p.Graphics.foreColor= &c9E9E9E
-		      end if
-		      p.Graphics.FillRect(0, 0, p.Width, p.Height)
-		      DrawBar(p, perc, row)
-		      g.DrawPicture(p, 0, 0)
-		      //g.FillRect(0, 0, perc, g.Height)
-		    End If
-		    
-		  End Select
+		    Case 1
+		      If perc > 10 Then
+		        perc = perc - 10
+		        perc = perc * 100 \ 25
+		        Dim p As New Picture(g.Width, g.Height, 24)
+		        If row Mod 2=0 then
+		          p.Graphics.foreColor= &cC0C0C0
+		        else
+		          p.Graphics.foreColor= &c9E9E9E
+		        end if
+		        p.Graphics.FillRect(0, 0, p.Width, p.Height)
+		        DrawBar(p, perc, row)
+		        g.DrawPicture(p, 0, 0)
+		        //g.FillRect(0, 0, perc, g.Height)
+		        
+		      End If
+		    Case 2 
+		      If perc > 35 Then
+		        perc = perc - 35
+		        perc = perc * 100 \ 10
+		        Dim p As New Picture(g.Width, g.Height, 24)
+		        If row Mod 2=0 then
+		          p.Graphics.foreColor= &cC0C0C0
+		        else
+		          p.Graphics.foreColor= &c9E9E9E
+		        end if
+		        p.Graphics.FillRect(0, 0, p.Width, p.Height)
+		        DrawBar(p, perc, row)
+		        g.DrawPicture(p, 0, 0)
+		        //g.FillRect(0, 0, perc, g.Height)
+		      End If
+		    Case 3
+		      If perc > 45 Then
+		        perc = perc - 45
+		        perc = perc * 100 \ 27
+		        Dim p As New Picture(g.Width, g.Height, 24)
+		        If row Mod 2=0 then
+		          p.Graphics.foreColor= &cC0C0C0
+		        else
+		          p.Graphics.foreColor= &c9E9E9E
+		        end if
+		        p.Graphics.FillRect(0, 0, p.Width, p.Height)
+		        DrawBar(p, perc, row)
+		        g.DrawPicture(p, 0, 0)
+		        //g.FillRect(0, 0, perc, g.Height)
+		      End If
+		    Case 4
+		      If perc > 72 Then
+		        perc = perc - 72
+		        perc = perc * 100 \28
+		        Dim p As New Picture(g.Width, g.Height, 24)
+		        If row Mod 2=0 then
+		          p.Graphics.foreColor= &cC0C0C0
+		        else
+		          p.Graphics.foreColor= &c9E9E9E
+		        end if
+		        p.Graphics.FillRect(0, 0, p.Width, p.Height)
+		        DrawBar(p, perc, row)
+		        g.DrawPicture(p, 0, 0)
+		        //g.FillRect(0, 0, perc, g.Height)
+		      End If
+		      
+		    End Select
+		  Catch OutOfBoundsException
+		    Return True
+		  End Try
 		End Function
 	#tag EndEvent
 	#tag Event

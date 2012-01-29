@@ -50,6 +50,8 @@ Protected Class dragObject
 		  strWidth = buffer.Graphics.StringWidth(nm)
 		  strHeight = buffer.Graphics.StringHeight(nm, buffer.Width)
 		  buffer = New Picture(strWidth + 64, 32, 32)
+		  strWidth = buffer.Graphics.StringWidth(nm)
+		  strHeight = buffer.Graphics.StringHeight(nm, buffer.Width)
 		  Try
 		    If newproc And HilightOn And Not Dynamic Then
 		      buffer.Graphics.ForeColor = &c00FF00
@@ -88,7 +90,7 @@ Protected Class dragObject
 		  End Try
 		  buffer.Graphics.FillRect(0, 0, buffer.Width, buffer.Height)
 		  buffer.Graphics.ForeColor = &c000000
-		  buffer.Graphics.DrawString(nm, buffer.Width - strWidth - 10, ((buffer.Height/2) + (strHeight/4)))
+		  buffer.Graphics.DrawString(nm, buffer.Width - strWidth - 10, ((buffer.Height/2) + (strHeight/3)))
 		End Sub
 	#tag EndMethod
 
@@ -152,13 +154,16 @@ Protected Class dragObject
 			  If Not Dynamic Then
 			    return mimage
 			  Else
-			    If DynType = 0 Then
+			    Select Case DynType
+			    Case 0
 			      Return CPUBuffer
-			    ElseIf DynType = 1 Then
+			    Case 1
 			      Return diskBuffer
-			    ElseIf DynType = 2 Then
+			    Case 2
 			      Return debugBuffer
-			    End If
+			    Case 3
+			      Return magImage
+			    End Select
 			  End If
 			End Get
 		#tag EndGetter

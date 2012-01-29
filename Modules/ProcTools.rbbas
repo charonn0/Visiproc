@@ -79,17 +79,12 @@ Protected Module ProcTools
 		  Dim good As Boolean
 		  do
 		    entry = New ProcessInformation(mb)
-		    If entry.isCritical Then
-		      If Not HideSystemProcs Then
-		        ret.Append(entry)
-		      End If
-		    Else
-		      ret.Append(entry)
-		    End If
+		    If entry.isCritical Then entry.Hidden = True
+		    ret.Append(entry)
 		    good = Process32NextW(snapHandle, mb)
 		  loop until Not good
 		  CloseHandle(snapHandle)
-		  
+		  ProcessCount = UBound(ret) + 1
 		  Return ret
 		End Function
 	#tag EndMethod
