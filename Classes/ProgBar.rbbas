@@ -574,8 +574,8 @@ Inherits Canvas
 			  mvalue = value
 			  If mvalue > maximum Then mvalue = maximum
 			  Dim filledWidth As Integer = (((value * 100) / maximum) * (Me.Width / 100))
-			  
-			  If drawingBuffer = Nil Then 
+			  If drawingBuffer = Nil Then
+			    If Me.Width = 0 Or Me.Height = 0 Then Return
 			    drawingBuffer = New Picture(Me.Width, Me.Height, 24)
 			  End If
 			  drawBarwell()

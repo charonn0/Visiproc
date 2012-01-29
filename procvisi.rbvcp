@@ -6,6 +6,7 @@ Class=App;App.rbbas;&h123197FF;&h0;false
 BuildSteps=Build Automation;Build Automation.rbbas;&h190DEFFF;&h0;false
 FileTypeSet=FileTypes1;FileTypes1.rbbas;&h3F7F7FFF;&h0;false
 Folder=Datatypes;Datatypes;&h4690D7FF;&h0;false
+Class=ModuleInformation;Datatypes/ModuleInformation.rbbas;&h730BEFFF;&h4690D7FF;false
 Class=dragObject;Datatypes/dragObject.rbbas;&hE770FFF;&h4690D7FF;false
 Class=ThreadInformation;Datatypes/ThreadInformation.rbbas;&h1B327FF;&h4690D7FF;false
 Class=VersionInformation;Datatypes/VersionInformation.rbbas;&h79D71FFF;&h4690D7FF;false

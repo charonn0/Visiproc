@@ -97,9 +97,8 @@ Protected Class ProcWindow
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub Constructor(h As Integer, t As String)
+		Sub Constructor(h As Integer)
 		  Handle = h
-		  Title = t
 		End Sub
 	#tag EndMethod
 
@@ -241,9 +240,19 @@ Protected Class ProcWindow
 		Handle As UInt32
 	#tag EndProperty
 
-	#tag Property, Flags = &h0
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  Return Platform.GetWindowText(Handle)
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  Call Platform.SetWindowText(Handle, value)
+			End Set
+		#tag EndSetter
 		Title As String
-	#tag EndProperty
+	#tag EndComputedProperty
 
 
 	#tag Structure, Name = LOGFONT, Flags = &h0

@@ -30,6 +30,55 @@ Protected Class ProcessInformation
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub LoadModules()
+		  // Because we know things like this process' ID number, we can load
+		  // all the thread information for the process as well
+		  
+		  #if TargetWin32
+		    Soft Declare Function CreateToolhelp32Snapshot Lib "Kernel32" (flags as Integer, id as Integer ) as Integer
+		    Declare Sub CloseHandle Lib "Kernel32" ( handle as Integer )
+		    Soft Declare Function Module32First Lib "Kernel32" ( handle as Integer, ByRef entry as MODULEENTRY32) as Boolean
+		    Soft Declare Function Module32Next Lib "Kernel32" ( handle as Integer, ByRef entry as MODULEENTRY32) as Boolean
+		    
+		    Const TH32CS_SNAPMODULE = &h00000008
+		    
+		    dim snapHandle as Integer
+		    snapHandle = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, ProcessID)
+		    
+		    Dim data As MODULEENTRY32
+		    data.sSize = data.Size
+		    data.ProcessID = ProcessID
+		    Dim entry as ModuleInformation
+		    Dim err As Integer = 24
+		    While err = 24
+		      If Module32First(snapHandle, data) Then
+		        Exit While
+		      Else
+		        err = GetLastError
+		      End If
+		    Wend
+		    
+		    dim good as Boolean
+		    
+		    do
+		      entry = new ModuleInformation(data)
+		      
+		      // For whatever reason, the system will tell us about every thread running
+		      // in the entire OS even though we specify the process ID.  This is documented
+		      // behavior even though it makes no sense to me.  So we check the thread entry's
+		      // process ID to see if it's the same as ours.  If it is, then we keep the thread around.
+		      //if entry.OwnerProcessID = ProcessID then
+		      Modules.Append( entry )
+		      //end if
+		      
+		      good = Module32Next( snapHandle, data )
+		    loop until not good
+		    CloseHandle( snapHandle )
+		  #endif
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub LoadThreads()
 		  // Because we know things like this process' ID number, we can load
 		  // all the thread information for the process as well
@@ -258,6 +307,10 @@ Protected Class ProcessInformation
 
 	#tag Property, Flags = &h21
 		Private mlargeIcon As Picture
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		Modules() As ModuleInformation
 	#tag EndProperty
 
 	#tag Property, Flags = &h21

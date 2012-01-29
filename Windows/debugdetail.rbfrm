@@ -1,13 +1,13 @@
 #tag Window
 Begin Window debugdetail
-   BackColor       =   9216
+   BackColor       =   255
    Backdrop        =   ""
    CloseButton     =   True
    Composite       =   False
    Frame           =   3
    FullScreen      =   False
    HasBackColor    =   False
-   Height          =   196
+   Height          =   294
    ImplicitInstance=   True
    LiveResize      =   True
    MacProcID       =   0
@@ -42,7 +42,7 @@ Begin Window debugdetail
       GridLinesVertical=   0
       HasHeading      =   True
       HeadingIndex    =   -1
-      Height          =   196
+      Height          =   294
       HelpTag         =   ""
       Hierarchical    =   ""
       Index           =   -2147483648
@@ -76,33 +76,19 @@ Begin Window debugdetail
    Begin Timer Timer1
       Height          =   32
       Index           =   -2147483648
-      Left            =   467
+      Left            =   468
       LockedInPosition=   False
       Mode            =   2
       Period          =   1000
       Scope           =   0
-      TabIndex        =   1
       TabPanelIndex   =   0
-      TabStop         =   True
-      Top             =   8
+      Top             =   0
       Width           =   32
    End
 End
 #tag EndWindow
 
 #tag WindowCode
-	#tag Method, Flags = &h0
-		Sub ShowMe()
-		  'Listbox1.DeleteAllRows
-		  'For i As Integer = 0 To UBound(DebugLog)
-		  'Dim x As Integer = UBound(DebugLog) - i
-		  'Listbox1.AddRow(Str(debugcount - x), DebugLog(i))
-		  'Next
-		  'Self.Height = (Listbox1.RowHeight + 2) * (Listbox1.LastIndex)// + 20
-		End Sub
-	#tag EndMethod
-
-
 #tag EndWindowCode
 
 #tag Events Listbox1
@@ -127,12 +113,12 @@ End
 		Sub Action()
 		  Static lastnum As Integer
 		  If debugcount > lastnum Then
-		    Listbox1.DeleteAllRows
-		    For i As Integer = 0 To UBound(DebugLog)
+		    For i As Integer = lastNum To UBound(DebugLog)
 		      Dim x As Integer = UBound(DebugLog) - i
 		      Listbox1.AddRow(Str(debugcount - x), DebugLog(i))
 		    Next
-		    Self.Height = (Listbox1.RowHeight + 2) * (Listbox1.LastIndex)// + 20
+		    'Self.Height = (Listbox1.RowHeight + 2) * (Listbox1.LastIndex)// + 20
+		    Listbox1.ScrollPosition = Listbox1.LastIndex
 		  End If
 		  lastnum = debugcount
 		End Sub

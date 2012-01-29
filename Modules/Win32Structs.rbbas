@@ -86,6 +86,19 @@ Protected Module Win32Structs
 		reserved As UInt64
 	#tag EndStructure
 
+	#tag Structure, Name = MODULEENTRY32, Flags = &h0
+		sSize As Integer
+		  ModuleID As Integer
+		  ProcessID As Integer
+		  LoadCount As Integer
+		  GLoadCount As Integer
+		  BaseAddress As Byte
+		  BaseSize As Integer
+		  Handle As Integer
+		  Name As WString*256
+		Path As WString*260
+	#tag EndStructure
+
 	#tag Structure, Name = OFSTRUCT, Flags = &h0
 		cbytes As Byte
 		  fFixedSize As Byte
@@ -207,6 +220,16 @@ Protected Module Win32Structs
 		  suiteMask As Int16
 		  productType As Byte
 		reserved As Byte
+	#tag EndStructure
+
+	#tag Structure, Name = THREADENTRY32, Flags = &h0
+		sSize As Integer
+		  Usage As Integer
+		  ThreadID As Integer
+		  OwningProcessID As Integer
+		  BasePriority As Int32
+		  DeltaPriority As Int32
+		Flags As Integer
 	#tag EndStructure
 
 	#tag Structure, Name = TIME_ZONE_INFORMATION, Flags = &h0

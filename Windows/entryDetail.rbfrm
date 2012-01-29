@@ -1152,8 +1152,6 @@ End
 
 	#tag Method, Flags = &h0
 		Sub showMe(process As ProcessInformation)
-		  Call GetWindowListForProcess(process)
-		  Self.Show
 		  Proc = process
 		  Me.Title = Proc.Name + " (" + Str(Proc.ProcessID) + ") "
 		  If Proc.Suspended Then
@@ -1162,15 +1160,28 @@ End
 		  Else
 		    PushButton2.Caption = "Suspend"
 		  End If
-		  
-		  If process.Windows.Ubound > -1 Then
-		    Self.Width = 736
-		    For Each win As ProcWindow In process.Windows
-		      Listbox1.AddRow(win.Title)
-		      Listbox1.RowTag(Listbox1.LastIndex) = win
-		    Next
+		  If proc.Name = "svchost.exe" Or proc.Name = "Services.exe" Then
+		    If proc.Modules.Ubound = -1 Then proc.LoadModules
+		    If proc.Modules.Ubound > -1 Then 
+		      Self.Width = 736
+		      Listbox1.InitialValue = "Modules"
+		      For Each T As ModuleInformation In proc.Modules
+		        Listbox1.AddRow(T.Path)
+		      Next
+		    Else
+		      Self.Width = 394
+		    End If
 		  Else
-		    Self.Width = 394
+		    Call GetWindowListForProcess(process)
+		    If process.Windows.Ubound > -1 Then
+		      Self.Width = 736
+		      For Each win As ProcWindow In process.Windows
+		        Listbox1.AddRow(win.Title)
+		        Listbox1.RowTag(Listbox1.LastIndex) = win
+		      Next
+		    Else
+		      Self.Width = 394
+		    End If
 		  End If
 		  productNaMe.Text = process.Name
 		  PID.Text = Str(process.ProcessID)
@@ -1201,6 +1212,9 @@ End
 		  End If
 		  procicon = process.largeIcon 
 		  cmdLine.Text = process.CommandLine
+		  
+		  Self.Show
+		  
 		Exception Err
 		  
 		  

@@ -11,6 +11,14 @@ Inherits Application
 		    End If
 		  Next
 		  Call registerMBSPlugin("Andrew Lambert", "MBS Win", 201105, 1462922781)
+		  
+		  If Not Platform.IsAdmin Then
+		    MsgBox("This application works best with Administrator rights.")
+		    debug(True, "User is NOT admin!")
+		  Else
+		    debug("User is Admin. A-OK")
+		  End If
+		  
 		  If Platform.EnablePrivilege("SeDebugPrivilege") Then
 		    debug("SeDebugPrivilege Enabled")
 		  Else
@@ -41,6 +49,11 @@ Inherits Application
 		    debug(SE_MANAGE_VOLUME_NAME + " NOT Enabled")
 		  End If
 		  
+		  If Platform.EnablePrivilege(SE_PROF_SINGLE_PROCESS_NAME) Then
+		    debug(SE_PROF_SINGLE_PROCESS_NAME + " Enabled")
+		  Else
+		    debug(SE_PROF_SINGLE_PROCESS_NAME + " NOT Enabled")
+		  End If
 		End Sub
 	#tag EndEvent
 

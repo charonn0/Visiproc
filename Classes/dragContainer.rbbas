@@ -103,7 +103,7 @@ Inherits Canvas
 		      Case 1
 		        DriveWindow.Show
 		      Case 2
-		        debugdetail.ShowMe
+		        debugdetail.Show
 		      End Select
 		    Else
 		      'Call GetWindowList
@@ -199,9 +199,12 @@ Inherits Canvas
 		  End If
 		  
 		  //Then, clean up any prior states
-		  buffer.Graphics.ForeColor = &c808080
+		  buffer.Graphics.ForeColor = BackColor
 		  buffer.Graphics.FillRect(0, 0, buffer.Width, buffer.Height)
-		  
+		  If Background <> Nil Then
+		    buffer.Graphics.DrawPicture(Background, 0, 0, buffer.Width, buffer.Height, 0, 0, Background.Width, Background.Height)
+		  End If
+		  If DebugMode Then DrawVersion()
 		  //Draw each dragObject one by one, starting with the bottom-most
 		  For i As Integer = 0 To objects.Ubound
 		    drawObject(i)
@@ -260,7 +263,7 @@ Inherits Canvas
 		          s.Append("ZZZZZZC")
 		        End Select
 		      Else
-		        s.Append(objects(i).Process.Name)
+		        s.Append(objects(i).Process.Name + Str(objects(i).Process.ProcessID))
 		      End If
 		      u.Append(i)
 		    Next
@@ -315,7 +318,7 @@ Inherits Canvas
 		    //Then bring it to the foreground
 		    bringToFront(currentObject)
 		  End If
-		  'Refresh(False)
+		  Refresh(False)
 		End Sub
 	#tag EndMethod
 
@@ -323,11 +326,15 @@ Inherits Canvas
 		Private Sub bringToFront(index As Integer)
 		  //Brings the object at Index to the "front" (i.e. moves it to the UBound of the objects array.
 		  //Objects get drawn from the zeroth element in the objects array, so the "top" object gets drawn last.
+		  #pragma BreakOnExceptions Off
 		  If index = -1 Then Return
 		  Dim obj As dragObject = objects(index)
 		  objects.Remove(index)
 		  objects.Append(obj)
 		  currentObject = objects.Ubound
+		  
+		Exception
+		  Return
 		End Sub
 	#tag EndMethod
 
@@ -449,13 +456,6 @@ Inherits Canvas
 
 	#tag Method, Flags = &h21
 		Private Function DrawOutline(Index As Integer) As Picture
-		  If Objects(Index).Process.Name = "svchost.exe" Then 
-		    Static id As Integer
-		    If id = 0 Then id = Objects(Index).Process.ProcessID
-		    If id <> Objects(Index).Process.ProcessID Then
-		      Break
-		    End If
-		  End If
 		  Dim p As Picture
 		  Dim pid As String
 		  If Objects(Index).Process <> Nil Then
@@ -484,6 +484,15 @@ Inherits Canvas
 		  
 		  Return p
 		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub DrawVersion()
+		  Dim x, y As Integer
+		  x = Me.Width - VersionTile.Width - 10
+		  y = Me.Height - VersionTile.Height - 10
+		  buffer.Graphics.DrawPicture(VersionTile, x, y)
+		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
@@ -526,6 +535,7 @@ Inherits Canvas
 		      Return i
 		    End If
 		  Next
+		  
 		  Return -1
 		End Function
 	#tag EndMethod
@@ -581,6 +591,7 @@ Inherits Canvas
 
 	#tag Method, Flags = &h0
 		Sub Update()
+		  #pragma BreakOnExceptions Off
 		  activeProcessesOld = activeProcesses
 		  activeProcesses = GetActiveProcesses()
 		  Dim newProcs() As ProcessInformation = getNewProcs()
@@ -609,15 +620,20 @@ Inherits Canvas
 		  If UBound(newProcs) > -1 Or UBound(activeProcessesOld) > -1 Then
 		    Arrange(lastSort)
 		  End If
-		  'If force Then
-		  'For i As Integer = 0 To UBound(Objects)
-		  'Objects(i).Update(force)
-		  'Next
-		  'End If
-		  //Refresh(False)
+		  
+		Exception
+		  Return
 		End Sub
 	#tag EndMethod
 
+
+	#tag Property, Flags = &h0
+		BackColor As Color = &c808080
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		Background As Picture
+	#tag EndProperty
 
 	#tag Property, Flags = &h21
 		Private buffer As Picture
@@ -688,12 +704,23 @@ Inherits Canvas
 			InheritedFrom="Canvas"
 		#tag EndViewProperty
 		#tag ViewProperty
+			Name="BackColor"
+			Group="Behavior"
+			InitialValue="&c808080"
+			Type="Color"
+		#tag EndViewProperty
+		#tag ViewProperty
 			Name="Backdrop"
 			Visible=true
 			Group="Appearance"
 			Type="Picture"
 			EditorType="Picture"
 			InheritedFrom="Canvas"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Background"
+			Group="Behavior"
+			Type="Picture"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="DoubleBuffer"

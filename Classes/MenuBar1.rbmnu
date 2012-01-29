@@ -2,7 +2,7 @@
 Begin Menu MenuBar1
    Begin MenuItem WinControl
       SpecialMenu = 0
-      Text = "Icons..."
+      Text = "Menu"
       Index = -2147483648
       AutoEnable = True
       Begin MenuItem arrangeMenu
@@ -67,6 +67,18 @@ Begin Menu MenuBar1
          ShortcutKey = "M"
          Shortcut = "Cmd+M"
          MenuModifier = True
+         AutoEnable = True
+      End
+      Begin MenuItem SetBackdrop
+         SpecialMenu = 0
+         Text = "Set Background Image"
+         Index = -2147483648
+         AutoEnable = True
+      End
+      Begin MenuItem SetBackColor
+         SpecialMenu = 0
+         Text = "Set Background Color"
+         Index = -2147483648
          AutoEnable = True
       End
    End

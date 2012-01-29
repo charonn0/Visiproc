@@ -134,12 +134,12 @@ Protected Module Globals
 	#tag Method, Flags = &h0
 		Sub PollDebug()
 		  Dim drvs() As Picture
-		  While DebugLog.Ubound > 30
-		    DebugLog.Remove(0)
-		  Wend
+		  'While DebugLog.Ubound > 30
+		  'DebugLog.Remove(0)
+		  'Wend
 		  Dim requiredHeight, requiredWidth As Integer
 		  Dim startat As Integer
-		  If UBound(DebugLog) <= 10 Then 
+		  If UBound(DebugLog) <= 10 Then
 		    startat = 0
 		  Else
 		    startat = DebugLog.Ubound - 10
@@ -333,6 +333,64 @@ Protected Module Globals
 		LastMem As Double
 	#tag EndComputedProperty
 
+	#tag Property, Flags = &h21
+		Private mVersionTile As Picture
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		Version As Double = 0.02
+	#tag EndProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  If mVersionTile = Nil Then
+			    Dim drvs() As Picture
+			    Dim requiredHeight, requiredWidth As Integer
+			    Dim startat As Integer
+			    Dim msgs() As String
+			    msgs.Append("Visiproc " + Format(Version, "#0.0##"))
+			    msgs.Append("Copyright " + Chr(169) + "2012 Boredom Software")
+			    Dim rand As New Random
+			    If rand.InRange(45, 51) = 50 Then msgs.Append("Now Deleting: C:\Windows... Please Wait")
+			    For i As Integer = startat To msgs.Ubound
+			      Dim p As New Picture(250, 150, 32)
+			      p.Graphics.TextFont = "System"
+			      p.Graphics.TextSize = 12
+			      p.Graphics.Bold = True
+			      Dim nm As String = msgs(i)
+			      Dim strWidth, strHeight As Integer
+			      strWidth = p.Graphics.StringWidth(nm)
+			      strHeight = p.Graphics.StringHeight(nm, p.Width)
+			      p = New Picture(strWidth, strHeight, 32)
+			      p.Graphics.TextFont = "System"
+			      p.Graphics.TextSize = 12
+			      p.Graphics.Bold = True
+			      p.Graphics.ForeColor = &c808080
+			      p.Graphics.FillRect(0, 0, p.Width, p.Height)
+			      p.Graphics.ForeColor = &c000000
+			      p.Graphics.DrawString(nm, 0, ((p.Height/2) + (strHeight/4)))
+			      drvs.Append(p)
+			      requiredHeight = requiredHeight + p.Height
+			      If p.Width > requiredWidth Then requiredWidth = p.Width
+			    Next
+			    
+			    mVersionTile = New Picture(requiredWidth, requiredHeight, 32)
+			    'mVersionTile.Transparent = 1
+			    mVersionTile.Graphics.ForeColor = &c808080
+			    mVersionTile.Graphics.FillRect(0, 0, mVersionTile.Width, mVersionTile.Height)
+			    Dim x, y As Integer
+			    For i As Integer = 0 To UBound(drvs)
+			      mVersionTile.Graphics.DrawPicture(drvs(i), x, y)
+			      y = y + drvs(i).Height
+			    Next
+			  End If
+			  Return mVersionTile
+			End Get
+		#tag EndGetter
+		VersionTile As Picture
+	#tag EndComputedProperty
+
 	#tag Property, Flags = &h0
 		WindowThread As WindowGetter
 	#tag EndProperty
@@ -424,6 +482,17 @@ Protected Module Globals
 			Group="Position"
 			InitialValue="0"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Version"
+			Group="Behavior"
+			InitialValue="0.02"
+			Type="Double"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="VersionTile"
+			Group="Behavior"
+			Type="Picture"
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Module

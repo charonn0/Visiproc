@@ -5,18 +5,16 @@ Inherits Thread
 		Sub Run()
 		  Declare Function FindWindowW Lib "user32.dll" ( lpClassName As integer, lpWindowName As integer ) as integer
 		  Declare Function GetWindow Lib "user32" ( hWnd As integer, wCmd As integer ) As integer
-		  Declare Function GetWindowTextW Lib "user32" ( hWnd As integer, lpString As ptr, cch As integer ) As integer
+		  
 		  #pragma BreakOnExceptions On
 		  Const GW_HWNDNEXT = 2
-		  Dim mb As New MemoryBlock(255)
 		  For i As Integer = 0 To ActiveProcesses.Ubound
 		    Debug(False, "Get Windows For: " + activeProcesses(i).Name)
 		    Dim ret as integer
 		    ret = FindWindowW( 0, 0 )
 		    while ret > 0
 		      If ActiveProcesses(i).ProcessID = GetProcFromWindowHandle(ret).ProcessID Then
-		        Call GetWindowTextW(ret, mb, mb.Size)
-		        Dim pw As New ProcWindow(ret, mb.WString(0))
+		        Dim pw As New ProcWindow(ret)
 		        If pw.Title <> "" Then ActiveProcesses(i).Windows.Append(pw)
 		      End If
 		      

@@ -238,7 +238,7 @@ Begin Window CPUWindow
       Left            =   486
       LockedInPosition=   False
       Mode            =   2
-      Period          =   750
+      Period          =   1250
       Scope           =   0
       TabIndex        =   5
       TabPanelIndex   =   0
@@ -361,9 +361,20 @@ End
 #tag Events Timer1
 	#tag Event
 		Sub Action()
+		  Static ne As Boolean
 		  UpdateCPU
 		  UpdatePF
 		  UpdateRAM
+		  
+		  If Not ne Then
+		    cpu.textFormat = "###.00\%"
+		    ram.textFormat = "###.00\%"
+		    PageFile.textFormat = "###.00\%"
+		    cpu.Refresh
+		    ram.Refresh
+		    PageFile.Refresh
+		    ne = True
+		  End If
 		End Sub
 	#tag EndEvent
 #tag EndEvents

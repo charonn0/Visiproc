@@ -413,6 +413,15 @@ Protected Module Platform
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
+		Protected Function GetWindowText(HWND As Integer) As String
+		  Declare Function GetWindowTextW Lib "user32" ( hWnd As integer, lpString As ptr, cch As integer ) As integer
+		  Dim mb As New MemoryBlock(255)
+		  Call GetWindowTextW(HWND, mb, mb.Size)
+		  Return mb.WString(0)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
 		Protected Function IsAdmin() As Boolean
 		  //Returns true if the application is running with administrative privileges
 		  //Note that even if this Returns True, that not all privileges many be enabled. See: EnablePrivilege
@@ -634,6 +643,13 @@ Protected Module Platform
 		  Const EWX_REBOOT = &h00000002
 		  Call ExitWindows(EWX_REBOOT)
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function SetWindowText(HWND As Integer, Text As String) As Boolean
+		  Declare Function SetWindowTextW Lib "User32" (HWND As Integer, NewText As WString) As Boolean
+		  Return SetWindowTextW(HWND, Text)
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
