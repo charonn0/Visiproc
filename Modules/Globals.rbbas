@@ -53,12 +53,17 @@ Protected Module Globals
 
 	#tag Method, Flags = &h0
 		Function GetWindowsIcon() As Picture
-		  Dim f As FolderItem = SpecialFolder.System.Child("winver.exe")
-		  If f <> Nil Then
-		    If f.Exists And f.AbsolutePath <> App.ExecutableFile.AbsolutePath Then
-		      Return GetIco(f, 32)
+		  Static p As Picture
+		  If p = Nil Then
+		    Dim f As FolderItem = SpecialFolder.System.Child("winver.exe")
+		    If f <> Nil Then
+		      If f.Exists And f.AbsolutePath <> App.ExecutableFile.AbsolutePath Then
+		        p = GetIco(f, 32)
+		      End If
 		    End If
 		  End If
+		  
+		  Return p
 		  
 		End Function
 	#tag EndMethod
@@ -133,7 +138,13 @@ Protected Module Globals
 		    DebugLog.Remove(0)
 		  Wend
 		  Dim requiredHeight, requiredWidth As Integer
-		  For i As Integer = DebugLog.Ubound - 10 To DebugLog.Ubound
+		  Dim startat As Integer
+		  If UBound(DebugLog) <= 10 Then 
+		    startat = 0
+		  Else
+		    startat = DebugLog.Ubound - 10
+		  End If
+		  For i As Integer = startat To DebugLog.Ubound
 		    Try
 		      Dim p As New Picture(250, 15, 24)
 		      p.Graphics.ForeColor = &ccccccc
@@ -299,11 +310,11 @@ Protected Module Globals
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		HideSystemProcs As Boolean = True
+		HideSystemProcs As Boolean
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		HilightOn As Boolean
+		HilightOn As Boolean = True
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -373,6 +384,7 @@ Protected Module Globals
 		#tag ViewProperty
 			Name="HilightOn"
 			Group="Behavior"
+			InitialValue="True"
 			Type="Boolean"
 		#tag EndViewProperty
 		#tag ViewProperty

@@ -250,6 +250,15 @@ End
 #tag EndWindow
 
 #tag WindowCode
+	#tag Event
+		Sub Open()
+		  UpdateCPU
+		  UpdatePF
+		  UpdateRAM
+		End Sub
+	#tag EndEvent
+
+
 	#tag Method, Flags = &h21
 		Private Sub UpdateCPU()
 		  Dim x() As Double
@@ -347,27 +356,6 @@ End
 		  g.FillRect(0, 0, g.Width, g.Height)
 		  
 		End Function
-	#tag EndEvent
-#tag EndEvents
-#tag Events PageFile
-	#tag Event
-		Sub Open()
-		  UpdatePF
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events ram
-	#tag Event
-		Sub Open()
-		  UpdateRAM
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events cpu
-	#tag Event
-		Sub Open()
-		  UpdateCPU
-		End Sub
 	#tag EndEvent
 #tag EndEvents
 #tag Events Timer1

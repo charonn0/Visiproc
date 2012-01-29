@@ -14,15 +14,6 @@ Begin Menu MenuBar1
          MenuModifier = True
          AutoEnable = True
          SubMenu = True
-         Begin MenuItem defaultSortMenu
-            SpecialMenu = 0
-            Text = "Default"
-            Index = -2147483648
-            ShortcutKey = "D"
-            Shortcut = "Cmd+D"
-            MenuModifier = True
-            AutoEnable = True
-         End
          Begin MenuItem alphaSortMenu
             SpecialMenu = 0
             Text = "Alphabetic"

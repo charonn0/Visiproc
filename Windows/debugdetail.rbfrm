@@ -93,12 +93,12 @@ End
 #tag WindowCode
 	#tag Method, Flags = &h0
 		Sub ShowMe()
-		  Listbox1.DeleteAllRows
-		  For i As Integer = 0 To UBound(DebugLog)
-		    Listbox1.AddRow(DebugLog(i))
-		  Next
-		  Self.Height = (Listbox1.RowHeight + 2) * (Listbox1.LastIndex)// + 20
-		  
+		  'Listbox1.DeleteAllRows
+		  'For i As Integer = 0 To UBound(DebugLog)
+		  'Dim x As Integer = UBound(DebugLog) - i
+		  'Listbox1.AddRow(Str(debugcount - x), DebugLog(i))
+		  'Next
+		  'Self.Height = (Listbox1.RowHeight + 2) * (Listbox1.LastIndex)// + 20
 		End Sub
 	#tag EndMethod
 
@@ -125,12 +125,16 @@ End
 #tag Events Timer1
 	#tag Event
 		Sub Action()
-		  Listbox1.DeleteAllRows
-		  For i As Integer = 0 To UBound(DebugLog)
-		    Dim x As Integer = UBound(DebugLog) - i
-		    Listbox1.AddRow(Str(debugcount - x), DebugLog(i))
-		  Next
-		  Self.Height = (Listbox1.RowHeight + 2) * (Listbox1.LastIndex)// + 20
+		  Static lastnum As Integer
+		  If debugcount > lastnum Then
+		    Listbox1.DeleteAllRows
+		    For i As Integer = 0 To UBound(DebugLog)
+		      Dim x As Integer = UBound(DebugLog) - i
+		      Listbox1.AddRow(Str(debugcount - x), DebugLog(i))
+		    Next
+		    Self.Height = (Listbox1.RowHeight + 2) * (Listbox1.LastIndex)// + 20
+		  End If
+		  lastnum = debugcount
 		End Sub
 	#tag EndEvent
 #tag EndEvents

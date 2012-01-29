@@ -1155,6 +1155,7 @@ End
 		  Call GetWindowListForProcess(process)
 		  Self.Show
 		  Proc = process
+		  Me.Title = Proc.Name + " (" + Str(Proc.ProcessID) + ") "
 		  If Proc.Suspended Then
 		    PushButton2.Caption = "Resume"
 		    Me.Title = Me.Title + " (Suspended)"
@@ -1327,8 +1328,10 @@ End
 	#tag Event
 		Sub Action()
 		  If Proc.Suspended Then
+		    Self.Title = Proc.Name + " (" + Str(Proc.ProcessID) + ") " + " (Suspended)"
 		    PushButton2.Caption = "Resume"
 		  Else
+		    Self.Title = Proc.Name + " (" + Str(Proc.ProcessID) + ") "
 		    PushButton2.Caption = "Suspend"
 		  End If
 		End Sub

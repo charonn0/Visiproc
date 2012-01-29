@@ -60,7 +60,9 @@ Begin Window Window1
       Mode            =   2
       Period          =   1000
       Scope           =   0
+      TabIndex        =   1
       TabPanelIndex   =   0
+      TabStop         =   True
       Top             =   -6
       Width           =   32
    End
@@ -86,6 +88,7 @@ Begin Window Window1
       Selectable      =   False
       TabIndex        =   1
       TabPanelIndex   =   0
+      TabStop         =   True
       Text            =   ""
       TextAlign       =   0
       TextColor       =   0
@@ -149,20 +152,13 @@ End
 	#tag EndMenuHandler
 
 	#tag MenuHandler
-		Function defaultSortMenu() As Boolean Handles defaultSortMenu.Action
-			dragContainer1.Arrange(0)
-			Return True
-			
-		End Function
-	#tag EndMenuHandler
-
-	#tag MenuHandler
 		Function hideSystemMenu() As Boolean Handles hideSystemMenu.Action
 			HideSystemProcs = Not HideSystemProcs
-			dragContainer1.Empty
-			FirstRun = True
-			dragContainer1.Update(True)
-			dragContainer1.Arrange(dragContainer1.lastSort)
+			'dragContainer1.Empty
+			'FirstRun = True
+			'dragContainer1.Update(True)
+			'dragContainer1.Arrange(dragContainer1.lastSort)
+			dragContainer1.ToggleSystem
 			Return True
 			
 		End Function
@@ -228,7 +224,7 @@ End
 		  If DebugMode Then PollDebug()
 		  If count Mod 25 = 0 Then PollDisks()
 		  dragContainer1.DynUpdate()
-		  dragContainer1.Update(count Mod 5 = 0)
+		  dragContainer1.Update()
 		  count = count + 1
 		  Status.Text = Str(UBound(activeProcesses) + 1) + " running processes."
 		  FirstRun = False

@@ -524,6 +524,7 @@ Inherits Canvas
 		#tag Setter
 			Set
 			  mtextFormat = value
+			  If Me.Width = 0 And Me.Height = 0 Then Return
 			  Me.Value = Me.Value
 			End Set
 		#tag EndSetter

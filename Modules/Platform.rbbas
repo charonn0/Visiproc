@@ -745,6 +745,7 @@ Protected Module Platform
 		  info.StructSize = Info.Size
 		  
 		  If GetVersionExA(info) Then
+		    debug(Hex(info.SuiteMask))
 		    Dim ret As String
 		    Select Case info.MajorVersion
 		      
@@ -872,7 +873,7 @@ Protected Module Platform
 		    ret.Value("HardLinks Supported") = BitwiseAnd(flags, &h00400000) = &h00400000
 		    ret.Value("Reparse Points Supported") = BitwiseAnd(flags, &h00000080) = &h00000080
 		    ret.Value("Preserve Name Casing") = BitwiseAnd(flags, &h00000002) = &h00000002
-		    ret.Value("Case Sensitive Names") = BitwiseAnd(flags, &h00000001) = &h00000001
+		    ret.Value("Case Sensitive Names Supported") = BitwiseAnd(flags, &h00000001) = &h00000001
 		    ret.Value("Unicode Filenames Supported") = BitwiseAnd(flags, &h00000004) = &h00000004
 		    ret.Value("Compression Supported") = BitwiseAnd(flags, &h00000002) = &h00000002
 		    ret.Value("Is Compressed") = BitwiseAnd(flags, &h00008000) = &h00008000

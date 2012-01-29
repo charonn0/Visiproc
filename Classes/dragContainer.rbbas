@@ -77,7 +77,7 @@ Inherits Canvas
 		  Case "Set Affinity"
 		    cpuSelect.getAffinity(procID, 0)
 		  End Select
-		  Refresh(False)
+		  Update
 		  
 		  menuUp = False
 		  'Refresh(False)
@@ -129,8 +129,9 @@ Inherits Canvas
 		      //The user wants a menu for the oject
 		      menuUp = True
 		    End If
+		    Refresh(False)
 		  End If
-		  Refresh(False)
+		  '
 		  lastX = X
 		  lastY = Y
 		  Return True
@@ -141,6 +142,7 @@ Inherits Canvas
 		Sub MouseDrag(X As Integer, Y As Integer)
 		  If currentObject > -1 Then
 		    //Calculate the new position of the object, update the object, then refresh the control.
+		    If lastX = X And lastY = Y Then Return
 		    Dim objX As Integer = x - lastx
 		    Dim objY As Integer = y - lasty
 		    lastx = x
@@ -233,7 +235,7 @@ Inherits Canvas
 		    no.y = no.y - 200
 		  End If
 		  objects.Append(no)
-		  Refresh(False)
+		  'Refresh(False)
 		  
 		End Sub
 	#tag EndMethod
@@ -242,7 +244,7 @@ Inherits Canvas
 		Sub Arrange(Order As Integer = 0)
 		  If Order = -1 Then Return
 		  Dim x As Integer = 10
-		  Dim y As Integer = 10
+		  Dim y As Integer = 17
 		  
 		  If Order = 1 Then
 		    Dim s() As String
@@ -266,20 +268,12 @@ Inherits Canvas
 		    For i As Integer = 0 To UBound(u)
 		      Objects(u(i)).x = x
 		      Objects(u(i)).y = y
-		      If Objects(u(i)).Dynamic Then
-		        If y + 170 <= Self.Height Then
-		          y = y + 170
-		        Else
-		          y = 10
-		          x = x + 210
-		        End If
+		      If Objects.Ubound = i Then Continue
+		      If Objects(u(i)).Image.height + 17 + Objects(u(i + 1)).Image.height + 17 + y <= Me.Height Then
+		        y = y + Objects(u(i)).Image.height + 17
 		      Else
-		        If y + 60 <= Self.Height Then
-		          y = y + 50
-		        Else
-		          y = 10
-		          x = x + 210
-		        End If
+		        y = 17
+		        x = x + 210
 		      End If
 		      
 		    Next
@@ -305,42 +299,12 @@ Inherits Canvas
 		    For i As Integer = 0 To UBound(u)
 		      Objects(u(i)).x = x
 		      Objects(u(i)).y = y
-		      If Objects(u(i)).Dynamic Then
-		        If y + 170 <= Self.Height Then
-		          y = y + 170
-		        Else
-		          y = 10
-		          x = x + 210
-		        End If
+		      If Objects.Ubound = i Then Continue
+		      If Objects(u(i)).Image.height + 17 + Objects(u(i + 1)).Image.height + 17 + y <= Me.Height Then
+		        y = y + Objects(u(i)).Image.height + 17
 		      Else
-		        If y + 60 <= Self.Height Then
-		          y = y + 50
-		        Else
-		          y = 10
-		          x = x + 210
-		        End If
-		      End If
-		      
-		    Next
-		  Else
-		    For i As Integer = UBound(Objects) DownTo 0
-		      Objects(i).x = x
-		      Objects(i).y = y
-		      
-		      If Objects(i).Dynamic Then
-		        If y + 170 <= Self.Height Then
-		          y = y + 170
-		        Else
-		          y = 10
-		          x = x + 210
-		        End If
-		      Else
-		        If y + 60 <= Self.Height Then
-		          y = y + 50
-		        Else
-		          y = 10
-		          x = x + 210
-		        End If
+		        y = 17
+		        x = x + 210
 		      End If
 		      
 		    Next
@@ -351,7 +315,7 @@ Inherits Canvas
 		    //Then bring it to the foreground
 		    bringToFront(currentObject)
 		  End If
-		  Refresh(False)
+		  'Refresh(False)
 		End Sub
 	#tag EndMethod
 
@@ -485,6 +449,13 @@ Inherits Canvas
 
 	#tag Method, Flags = &h21
 		Private Function DrawOutline(Index As Integer) As Picture
+		  If Objects(Index).Process.Name = "svchost.exe" Then 
+		    Static id As Integer
+		    If id = 0 Then id = Objects(Index).Process.ProcessID
+		    If id <> Objects(Index).Process.ProcessID Then
+		      Break
+		    End If
+		  End If
 		  Dim p As Picture
 		  Dim pid As String
 		  If Objects(Index).Process <> Nil Then
@@ -592,43 +563,58 @@ Inherits Canvas
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub Update(force As Boolean = False)
+		Sub ToggleSystem()
+		  If HideSystemProcs Then
+		    For i As Integer = UBound(objects) DownTo 0
+		      If Objects(i).Dynamic Then Continue
+		      If objects(i).Process.IsCritical Then
+		        Objects.Remove(i)
+		      End If
+		    Next
+		  Else
+		    Update()
+		  End If
+		  Arrange(lastSort)
+		  Refresh(False)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Update()
 		  activeProcessesOld = activeProcesses
 		  activeProcesses = GetActiveProcesses()
 		  Dim newProcs() As ProcessInformation = getNewProcs()
 		  Dim deadProcs() As ProcessInformation = getDeadProcs()
-		  If UBound(newProcs) > -1 Or UBound(deadProcs) > -1 Or force = True Then
-		    For x As Integer = UBound(deadProcs) DownTo 0
-		      For i As Integer = UBound(Objects) DownTo 0
-		        If objects(i).Process.ProcessID = deadProcs(x).ProcessID Then
-		          Objects.Remove(i)
-		          Exit For i
-		        End If
-		      Next
-		    Next
-		    If force Then
-		      drawHelp(Me.MouseX, Me.MouseY)
-		    End If
-		    
-		    For Each proc As ProcessInformation In newProcs
-		      If proc.isCritical And HideSystemProcs Then
-		        Continue
-		      Else
-		        Dim no As New dragObject(proc)
-		        'If force Then Call IsSuspended(proc)
-		        addObject(no)
+		  For x As Integer = UBound(deadProcs) DownTo 0
+		    For i As Integer = UBound(Objects) DownTo 0
+		      If objects(i).Process.ProcessID = deadProcs(x).ProcessID Then
+		        Objects.Remove(i)
+		        Exit For i
 		      End If
 		    Next
-		    If UBound(newProcs) > -1 Or UBound(activeProcessesOld) > -1 Then
-		      Arrange(lastSort)
+		  Next
+		  drawHelp(Me.MouseX, Me.MouseY)
+		  For Each item As dragObject In Objects
+		    item.Paint
+		  Next
+		  For Each proc As ProcessInformation In newProcs
+		    If proc.isCritical And HideSystemProcs Then
+		      Continue
+		    Else
+		      Dim no As New dragObject(proc)
+		      'If force Then Call IsSuspended(proc)
+		      addObject(no)
 		    End If
-		    'If force Then
-		    'For i As Integer = 0 To UBound(Objects)
-		    'Objects(i).Update(force)
-		    'Next
-		    'End If
-		    Refresh(False)
+		  Next
+		  If UBound(newProcs) > -1 Or UBound(activeProcessesOld) > -1 Then
+		    Arrange(lastSort)
 		  End If
+		  'If force Then
+		  'For i As Integer = 0 To UBound(Objects)
+		  'Objects(i).Update(force)
+		  'Next
+		  'End If
+		  //Refresh(False)
 		End Sub
 	#tag EndMethod
 

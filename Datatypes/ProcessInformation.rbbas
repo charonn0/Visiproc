@@ -261,6 +261,10 @@ Protected Class ProcessInformation
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
+		Private mPath As FolderItem
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
 		Private msmallIcon As Picture
 	#tag EndProperty
 
@@ -288,7 +292,12 @@ Protected Class ProcessInformation
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Return imageFromProcID(ProcessID)
+			  If mPath = Nil Then
+			    If ProcessID = 0 Or ProcessID = 4 Then Return Nil
+			    mPath = imageFromProcID(ProcessID)
+			  End If
+			  Return mPath
+			  
 			End Get
 		#tag EndGetter
 		path As FolderItem

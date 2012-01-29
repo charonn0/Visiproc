@@ -79,7 +79,13 @@ Protected Module ProcTools
 		  Dim good As Boolean
 		  do
 		    entry = New ProcessInformation(mb)
-		    ret.Append(entry)
+		    If entry.isCritical Then
+		      If Not HideSystemProcs Then
+		        ret.Append(entry)
+		      End If
+		    Else
+		      ret.Append(entry)
+		    End If
 		    good = Process32NextW(snapHandle, mb)
 		  loop until Not good
 		  CloseHandle(snapHandle)
@@ -107,6 +113,10 @@ Protected Module ProcTools
 
 	#tag Method, Flags = &h0
 		Function GetIco(path As FolderItem, size As Integer) As Picture
+		  If Path = Nil Then
+		    If size = 16 Then Return noicon_16
+		    If size = 32 Then Return noicon_32
+		  End If
 		  Debug("Extract icon from " + path.Name)
 		  Declare Function ExtractIconExW Lib "Shell32" ( lpszFile As WString, ByVal nIconIndex As Integer, phiconLarge As ptr, phiconSmall As ptr, ByVal nIcons As Integer ) As Integer
 		  Declare Function DrawIconEx Lib "user32" ( hDC As Integer, xLeft As Integer, yTop As Integer, hIcon As Integer, cxWidth As Integer, cyWidth As Integer, istepIfAniCur As Integer, _
@@ -117,18 +127,14 @@ Protected Module ProcTools
 		  
 		  If size = 16 Then
 		    theIcon = New Picture(16, 16, 32)
-		    //theMask = New Picture(16, 16, 8)
 		  ElseIf size = 32 Then
 		    theIcon = New Picture(32, 32, 32)
-		    //theMask = New Picture(32, 32, 8)
-		  ElseIf size = 64 Then
-		    theIcon = New Picture(64, 64, 32)
 		  End If
 		  theIcon.Transparent = 1
 		  If path = Nil Then
 		    If size = 16 Then
 		      theIcon.Graphics.DrawPicture(noicon_16, 0, 0)
-		    ElseIf size = 32 Or size = 64 Then
+		    ElseIf size = 32 Then
 		      theIcon.Graphics.DrawPicture(noicon_32, 0, 0)
 		    End If
 		    Return theIcon
@@ -136,47 +142,39 @@ Protected Module ProcTools
 		  
 		  Dim small As New MemoryBlock(4)
 		  Dim large As New MemoryBlock(4)
-		  'Dim largeMask As New MemoryBlock(4)
-		  'Dim smallMask As New MemoryBlock(4)
 		  Try
 		    Call ExtractIconExW(path.AbsolutePath, 0, large, small, 1)
-		    //Call ExtractIconExW(path.AbsolutePath, 0, largeMask, smallMask, 1)
-		    
 		    If size = 16 Then
 		      If small.Long(0) = 0 Then
 		        theIcon.Graphics.DrawPicture(noicon_16, 0, 0)
 		      Else
 		        Call DrawIconEx(theIcon.Graphics.Handle(1), 0, 0, small.Long(0), 16, 16, 0, 0, &H3)
-		        //Call DrawIconEx(theMask.Graphics.Handle(1), 0, 0, small.Long(0), 16, 16, 0, 0, &H1)
-		        //theIcon.Mask = theMask
 		      End If
-		    ElseIf size = 32 or size = 64 Then
+		    ElseIf size = 32 Then
 		      If large.Long(0) = 0 Then
 		        theIcon.Graphics.DrawPicture(noicon_32, 0, 0)
 		      Else
 		        Call DrawIconEx(theIcon.Graphics.Handle(1), 0, 0, large.Long(0), size, size, 0, 0, &H3)
-		        //Call DrawIconEx(theMask.Graphics.Handle(1), 0, 0, small.Long(0), 32, 32, 0, 0, &H1)
-		        //theIcon.Mask = theMask
 		      End If
 		    End If
 		  Catch
-		    //theIcon.Transparent = 1
 		    If size = 16 Then
 		      theIcon.Graphics.DrawPicture(noicon_16, 0, 0)
-		    ElseIf size = 32 or size = 64 Then
+		    ElseIf size = 32 Then
 		      theIcon.Graphics.DrawPicture(noicon_32, 0, 0)
 		    End If
 		  Finally
 		    Call DestroyIcon(small.Long(0))
-		    'Call DestroyIcon(smallMask.Long(0))
 		    Call DestroyIcon(large.Long(0))
-		    'Call DestroyIcon(largeMask.Long(0))
 		    Return theIcon
 		  End Try
 		  
-		  
 		Exception
-		  Return theIcon
+		  If size = 16 Then
+		    Return noicon_16
+		  Else
+		    Return noicon_32
+		  End If
 		End Function
 	#tag EndMethod
 
@@ -259,16 +257,19 @@ Protected Module ProcTools
 		    Dim ret as integer
 		    ret = FindWindowW( 0, 0 )
 		    while ret > 0
-		      If p.ProcessID = GetProcFromWindowHandle(ret).ProcessID Then
-		        For Each w As ProcWindow In p.Windows
-		          If w.Handle = ret Then
-		            ret = GetWindow( ret, GW_HWNDNEXT )
-		            Continue While
-		          End If
-		        Next
-		        Call GetWindowTextW(ret, mb, mb.Size)
-		        Dim pw As New ProcWindow(ret, mb.WString(0))
-		        If pw.Title <> "" Then p.Windows.Append(pw)
+		      Dim procWin As ProcessInformation = GetProcFromWindowHandle(ret)
+		      If procWin <> Nil Then
+		        If p.ProcessID = procWin.ProcessID Then
+		          For Each w As ProcWindow In p.Windows
+		            If w.Handle = ret Then
+		              ret = GetWindow( ret, GW_HWNDNEXT )
+		              Continue While
+		            End If
+		          Next
+		          Call GetWindowTextW(ret, mb, mb.Size)
+		          Dim pw As New ProcWindow(ret, mb.WString(0))
+		          If pw.Title <> "" Then p.Windows.Append(pw)
+		        End If
 		      End If
 		      
 		      ret = GetWindow( ret, GW_HWNDNEXT )

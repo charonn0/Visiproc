@@ -31,49 +31,29 @@ Protected Class dragObject
 
 	#tag Method, Flags = &h21
 		Private Sub CreateTile(NewProc As Boolean = True)
-		  'If Process.Name = "notepad++.exe" Then Break
 		  If Dynamic Then Return
 		  Dim ico As New Picture(10, 10, 32)
-		  drawText(ico, True, NewProc)
-		  If NewProc And HilightOn Then
-		    ico.Graphics.ForeColor = &c00FF00//&cFF0000
-		    ico.Graphics.FillRect(0, 0, ico.width, ico.height)
-		    drawText(ico, False, NewProc)
-		  End If
-		  'If Process.Suspended Then
-		  'ico.Graphics.ForeColor = &c5C5FBC
-		  'ico.Graphics.FillRect(0, 0, ico.width, ico.height)
-		  'drawText(ico, False, NewProc)
-		  'End If
+		  drawText(ico, NewProc)
 		  ico.Graphics.DrawPicture(Process.largeIcon, 0, 0)
 		  image = ico
-		  //width = image.Width
-		  //height = image.Height
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
-		Private Sub drawText(ByRef buffer As Picture, clear As Boolean = True, newproc As Boolean = False)
+		Private Sub drawText(ByRef buffer As Picture, newproc As Boolean = False)
 		  #pragma BreakOnExceptions Off
 		  buffer.Graphics.TextFont = "System"
 		  buffer.Graphics.TextSize = 12
 		  Dim nm As String
-		  If Dynamic Then
-		    nm = "Resource Monitor"
-		  Else
-		    nm = Process.Name
-		  End If
+		  nm = Process.Name
 		  Dim strWidth, strHeight As Integer
 		  strWidth = buffer.Graphics.StringWidth(nm)
 		  strHeight = buffer.Graphics.StringHeight(nm, buffer.Width)
-		  If clear Then 
-		    buffer = New Picture(strWidth + 64, 32, 32)
-		  End If
+		  buffer = New Picture(strWidth + 64, 32, 32)
 		  Try
 		    If newproc And HilightOn And Not Dynamic Then
-		      buffer.Graphics.ForeColor = &cFF0000
+		      buffer.Graphics.ForeColor = &c00FF00
 		    ElseIf Process.isCritical And HilightOn Then
-		      
 		      If Process.path <> Nil Then
 		        Dim d As FolderItem = Process.path.Parent
 		        For i As Integer = 0 To 9
@@ -106,7 +86,7 @@ Protected Class dragObject
 		  Catch NilObjectException
 		    buffer.Graphics.ForeColor = &cFFFFFE
 		  End Try
-		  If clear Then buffer.Graphics.FillRect(0, 0, buffer.Width, buffer.Height)
+		  buffer.Graphics.FillRect(0, 0, buffer.Width, buffer.Height)
 		  buffer.Graphics.ForeColor = &c000000
 		  buffer.Graphics.DrawString(nm, buffer.Width - strWidth - 10, ((buffer.Height/2) + (strHeight/4)))
 		End Sub
