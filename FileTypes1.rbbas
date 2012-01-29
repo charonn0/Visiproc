@@ -26,4 +26,14 @@
 		Name=special/any
 	#tag EndFileType
 
+	#tag FileType
+		CodeName=Text
+		Extension=.txt
+		Flags=&h0
+		MacCreator=????
+		MacType=TEXT
+		Name=text/plain
+		UTI=public.text
+	#tag EndFileType
+
 #tag EndFileTypeSet

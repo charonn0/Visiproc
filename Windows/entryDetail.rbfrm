@@ -1153,6 +1153,9 @@ End
 	#tag Method, Flags = &h0
 		Sub showMe(process As ProcessInformation)
 		  Proc = process
+		  PushButton2.Enabled = True
+		  PushButton3.Enabled = True
+		  Timer1.Mode = Timer.ModeMultiple
 		  Me.Title = Proc.Name + " (" + Str(Proc.ProcessID) + ") "
 		  If Proc.Suspended Then
 		    PushButton2.Caption = "Resume"
@@ -1214,8 +1217,6 @@ End
 		  cmdLine.Text = process.CommandLine
 		  
 		  Self.Show
-		  
-		Exception Err
 		  
 		  
 		End Sub

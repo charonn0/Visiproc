@@ -1,30 +1,45 @@
 #tag Class
-Protected Class WindowGetter
+Protected Class HashGetter
 Inherits Thread
 	#tag Event
 		Sub Run()
-		  '#If DebugBuild Then Debug(CurrentMethodName)
-		  Declare Function FindWindowW Lib "user32.dll" ( lpClassName As integer, lpWindowName As integer ) as integer
-		  Declare Function GetWindow Lib "user32" ( hWnd As integer, wCmd As integer ) As integer
-		  
-		  #pragma BreakOnExceptions On
-		  Const GW_HWNDNEXT = 2
-		  For i As Integer = 0 To ActiveProcesses.Ubound
-		    Debug(False, "Get Windows For: " + activeProcesses(i).Name)
-		    Dim ret as integer
-		    ret = FindWindowW( 0, 0 )
-		    while ret > 0
-		      If ActiveProcesses(i).ProcessID = GetProcFromWindowHandle(ret).ProcessID Then
-		        Dim pw As New ProcWindow(ret)
-		        If pw.Title <> "" Then ActiveProcesses(i).Windows.Append(pw)
-		      End If
-		      
-		      ret = GetWindow( ret, GW_HWNDNEXT )
-		    wend
-		    
-		  Next
+		  If Target <> Nil Then
+		    If Not Target.Directory Then
+		      Dim s As String
+		      Dim bs As BinaryStream
+		      bs = bs.Open(target)
+		      Dim m5 As New MD5Digest
+		      While Not bs.EOF
+		        s = bs.Read(4096)
+		        m5.Process(s)
+		      Wend
+		      bs.Close
+		      s = StringToHex(m5.Value)
+		      hashwin.Title = "MD5 - " + prettifyPath(Target.AbsolutePath)
+		      hashwin.Label1.Text = s
+		      hashwin.Show
+		    Else
+		      Call MsgBox("Can't hash a directory!", 6, "Need a file, please.")
+		    End If
+		  End If
+		  Working = False
 		End Sub
 	#tag EndEvent
+
+
+	#tag Method, Flags = &h1000
+		Sub Constructor(t As FolderItem)
+		  // Calling the overridden superclass constructor.
+		  Super.Constructor
+		  Target = t
+		  
+		End Sub
+	#tag EndMethod
+
+
+	#tag Property, Flags = &h0
+		Target As FolderItem
+	#tag EndProperty
 
 
 	#tag ViewBehavior

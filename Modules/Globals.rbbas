@@ -53,7 +53,76 @@ Protected Module Globals
 
 	#tag Method, Flags = &h0
 		Function FileDropHandler(data As MemoryBlock) As Boolean
-		  MsgBox(data.StringValue(0, data.Size))
+		  Dim f As FolderItem = GetFolderItem(data.StringValue(0, data.Size))
+		  If f <> Nil Then
+		    If f.Exists And Not f.Directory Then
+		      Dim p As Picture = Picture.Open(f)
+		      If p.Width > 500 Or p.Height > 500 Then
+		        If p.Width > p.Height Then
+		          Photo = New Picture((500 / p.Width) * p.Width, (500 / p.Width) * p.Height, p.Depth)
+		        Else
+		          Photo = New Picture((500 / p.Height) * p.Width, (500 / p.Height) * p.Height, p.Depth)
+		        End If
+		        Photo.Graphics.DrawPicture(p, 0, 0, Photo.Width, Photo.Height, 0, 0, p.Width, p.Height)
+		      Else
+		        Photo = p
+		      End If
+		    End If
+		  End If
+		  
+		  Return True
+		  
+		  
+		  'Window1.VLCPlayer.playlist.clear
+		  'Call Window1.VLCPlayer.playlist.Add(data.StringValue(0, data.Size))
+		  'Window1.VLCPlayer.playlist.playItem(Window1.VLCPlayer.playlist.itemCount - 1)
+		  'Window1.VLCPlayer.input.Time = 0
+		  '
+		  'Exception Err
+		  'If Err IsA COM.COMException Then
+		  'Return False
+		  'End If
+		  'Return True
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function FileToolHandler(data As MemoryBlock) As Boolean
+		  If Working Then
+		    Call MsgBox("One thing at a time, please.", 6, "Patience is a virtue.")
+		    Return True
+		  End If
+		  Dim f As FolderItem = GetFolderItem(data.StringValue(0, data.Size))
+		  Dim X, Y As Integer
+		  X = Window1.dragContainer1.MouseX
+		  Y = Window1.dragContainer1.MouseY
+		  X = X - Window1.dragContainer1.Objects(Window1.dragContainer1.DropIndex).x
+		  Y = Y - Window1.dragContainer1.Objects(Window1.dragContainer1.DropIndex).y
+		  
+		  Dim w, h As Integer
+		  w = Window1.dragContainer1.Objects(Window1.dragContainer1.DropIndex).image.Width
+		  h = Window1.dragContainer1.Objects(Window1.dragContainer1.DropIndex).image.Height
+		  
+		  If X < (w / 2) And Y < (h / 2) Then
+		    If f <> Nil Then
+		      Call MsgBox(Trid(f), 64, prettifyPath(f.AbsolutePath))
+		    End If
+		    Return True
+		    //Upper left
+		  ElseIf X < (w / 2) And Y > (h / 2) Then
+		    fileDetail.showMeFile(f)
+		    //Lower Left
+		  ElseIf X > (w / 2) And Y < (h / 2) Then
+		    If Not f.Directory Then f = f.Parent
+		    Dim g As FolderItem = SpecialFolder.System.Child("cmd.exe")
+		    Dim s As String = """" + g.AbsolutePath + """" + " /k cd """ + f.AbsolutePath + """"
+		    g.Launch(s)
+		    //Upper right
+		  ElseIf X > (w / 2) And Y > (h / 2) Then
+		    Call MD5Hash(f)
+		    //Lower right
+		  End If
+		  
 		  Return True
 		End Function
 	#tag EndMethod
@@ -80,8 +149,8 @@ Protected Module Globals
 		  #pragma BreakOnExceptions Off
 		  Dim times() As Double = CPUUsage
 		  Dim lines() As Integer
-		  lines.Append(times(0) * 150 / 100)
-		  lines.Append((times(1) * 150 / 100))
+		  lines.Append(times(0) * 100 / 100)
+		  lines.Append((times(1) * 100 / 100))
 		  //lines.Append(0)
 		  lastCPU(0) = times(0)
 		  lastCPU(1) = times(1)
@@ -89,7 +158,7 @@ Protected Module Globals
 		  Static history(), history1(), history2() As Integer
 		  
 		  
-		  CPUBuffer = New Picture(250, 150, 24)
+		  CPUBuffer = New Picture(250, 100, 24)
 		  drawBack(CPUBuffer)
 		  CPUBuffer.Graphics.ForeColor = &c00FF00
 		  If UBound(history) * 10 >= 250 Then
@@ -104,9 +173,9 @@ Protected Module Globals
 		  lastCPU = times
 		  For i As Integer = 0 To UBound(history)
 		    Try
-		      CPUBuffer.Graphics.DrawLine(i * 10, 150 - history(i - 1), i * 10 + 10, 150 - history(i))
+		      CPUBuffer.Graphics.DrawLine(i * 10, 100 - history(i - 1), i * 10 + 10, 100 - history(i))
 		    Catch OutOfBoundsException
-		      CPUBuffer.Graphics.DrawLine(0, 150 - history(i), 10, 150 - history(i))
+		      CPUBuffer.Graphics.DrawLine(0, 100 - history(i), 10, 100 - history(i))
 		    End Try
 		  Next
 		  
@@ -116,9 +185,9 @@ Protected Module Globals
 		  
 		  For i As Integer = 0 To UBound(history1)
 		    Try
-		      CPUBuffer.Graphics.DrawLine(i * 10, 150 - history1(i - 1), i * 10 + 10, 150 - history1(i))
+		      CPUBuffer.Graphics.DrawLine(i * 10, 100 - history1(i - 1), i * 10 + 10, 100 - history1(i))
 		    Catch OutOfBoundsException
-		      CPUBuffer.Graphics.DrawLine(0, 150 - history1(i), 10, 150 - history1(i))
+		      CPUBuffer.Graphics.DrawLine(0, 100 - history1(i), 10, 100 - history1(i))
 		    End Try
 		  Next
 		  
@@ -128,9 +197,9 @@ Protected Module Globals
 		  
 		  For i As Integer = 0 To UBound(history2)
 		    Try
-		      CPUBuffer.Graphics.DrawLine(i * 10, 150 - history2(i - 1), i * 10 + 10, 150 - history2(i))
+		      CPUBuffer.Graphics.DrawLine(i * 10, 100 - history2(i - 1), i * 10 + 10, 100 - history2(i))
 		    Catch OutOfBoundsException
-		      CPUBuffer.Graphics.DrawLine(0, 150 - history2(i), 10, 150 - history2(i))
+		      CPUBuffer.Graphics.DrawLine(0, 100 - history2(i), 10, 100 - history2(i))
 		    End Try
 		  Next
 		  
@@ -154,7 +223,7 @@ Protected Module Globals
 		      p.Graphics.ForeColor = &ccccccc
 		      p.Graphics.FillRect(0, 0, p.Width, p.Height)
 		      p.Graphics.ForeColor = &c0000FF00//&cFF0000
-		      p.Graphics.TextFont = "System"
+		      p.Graphics.TextFont = gTextFont
 		      p.Graphics.TextSize = 10
 		      Dim nm As String = Str(i) + ": " + DebugLog(i)
 		      Dim strWidth, strHeight As Integer
@@ -209,7 +278,7 @@ Protected Module Globals
 		      End If
 		      //p.Graphics.FillRect(0, 0, ((100 - perc) * p.Width / 100), p.Height)
 		      p.Graphics.ForeColor = &c0000FF00//&cFF0000
-		      p.Graphics.TextFont = "System"
+		      p.Graphics.TextFont = gTextFont
 		      p.Graphics.TextSize = 10
 		      Dim nm As String = Volume(i).AbsolutePath
 		      Dim strWidth, strHeight As Integer
@@ -253,6 +322,51 @@ Protected Module Globals
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function Scale(Source As Picture, Ratio As Double = 1.0) As Picture
+		  Dim wRatio, hRatio As Double
+		  wRatio = (Ratio * Source.width)
+		  hRatio = (Ratio * Source.Height)
+		  If wRatio = Source.Width And hRatio = Source.Height Then Return Source
+		  Dim photo As New Picture(wRatio, hRatio, Source.Depth)
+		  Photo.Graphics.DrawPicture(Source, 0, 0, Photo.Width, Photo.Height, 0, 0, Source.Width, Source.Height)
+		  Return photo
+		  
+		Exception
+		  Return Source
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function Trid(f As FolderItem) As String
+		  If f.Directory Then Return "That is a directory."
+		  Dim g As FolderItem = SpecialFolder.Temporary.Child("trid.exe")
+		  Dim d As FolderItem = SpecialFolder.Temporary.Child("triddefs.trd")
+		  Dim tos As TextOutputStream
+		  tos = tos.Create(g)
+		  tos.Write(trid1)
+		  tos.Close
+		  tos = tos.Create(d)
+		  tos.Write(triddefs)
+		  tos.Close
+		  
+		  Dim sh As New Shell
+		  Dim ret As String = "Filetype not known."
+		  sh.Execute("""" + g.AbsolutePath + """" + " """ + f.AbsolutePath + """")
+		  Dim search() As String = sh.Result.Split(EndOfLine)
+		  Dim pattern As String = "([+-]?\d*\.\d+)(?![-+0-9\.])(%)(\s+)(.*)\((\d*)"
+		  For i As Integer = 0 To UBound(search)
+		    Dim res() As String = search(i).RegExFind(pattern)
+		    If UBound(res) > -1 Then
+		      ret = "Trid says: " + res(4)
+		      Exit
+		    End If
+		  Next
+		  
+		  Return ret
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function Volumes() As String
 		  Declare Function FindFirstVolumeW Lib "Kernel32" (guid As Ptr, guidsize As Integer) As Integer
 		  Declare Function FindNextVolumeW Lib "Kernel32" (fHandle As Integer, guid As Ptr, guidsize As Integer) As Boolean
@@ -284,6 +398,10 @@ Protected Module Globals
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		CPUThread As CPUGetter
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		debugBuffer As Picture
 	#tag EndProperty
 
@@ -308,6 +426,10 @@ Protected Module Globals
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		DropTarget As Picture
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		FirstRun As Boolean = True
 	#tag EndProperty
 
@@ -316,11 +438,35 @@ Protected Module Globals
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		GLOBALPAUSE As Boolean
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		gTextFont As String = "System"
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		gTextSize As Integer = 12
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		GUIThread As UpdGUIThread
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		HideDynamics As Boolean
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		HideSystemProcs As Boolean
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
 		HilightOn As Boolean = True
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		InvalidSystemProcColor As Color = &cF5772C
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -347,7 +493,7 @@ Protected Module Globals
 		#tag Getter
 			Get
 			  If mmagImage = Nil Then
-			    magImage = New Picture(250, 150, 24)
+			    magImage = New Picture(250, 100, 24)
 			    Dim runner As New Magnifyer
 			    runner.Run
 			  End If
@@ -371,11 +517,23 @@ Protected Module Globals
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		NewProcColor As Color = &c00FF00
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		Photo As Picture
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		SystemProcColor As Color = &c00A8F9
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		Throttle As Boolean = True
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		Version As Double = 0.03
+		Version As Double = 0.04
 	#tag EndProperty
 
 	#tag ComputedProperty, Flags = &h0
@@ -391,17 +549,17 @@ Protected Module Globals
 			    Dim rand As New Random
 			    If rand.InRange(45, 51) = 50 Then msgs.Append("Now Deleting: C:\Windows... Please Wait")
 			    For i As Integer = startat To msgs.Ubound
-			      Dim p As New Picture(250, 150, 32)
-			      p.Graphics.TextFont = "System"
-			      p.Graphics.TextSize = 12
+			      Dim p As New Picture(250, 100, 32)
+			      p.Graphics.TextFont = gTextFont
+			      p.Graphics.TextSize = gTextSize
 			      p.Graphics.Bold = True
 			      Dim nm As String = msgs(i)
 			      Dim strWidth, strHeight As Integer
 			      strWidth = p.Graphics.StringWidth(nm)
 			      strHeight = p.Graphics.StringHeight(nm, p.Width)
 			      p = New Picture(strWidth, strHeight, 32)
-			      p.Graphics.TextFont = "System"
-			      p.Graphics.TextSize = 12
+			      p.Graphics.TextFont = gTextFont
+			      p.Graphics.TextSize = gTextSize
 			      p.Graphics.Bold = True
 			      p.Graphics.ForeColor = &c808080
 			      p.Graphics.FillRect(0, 0, p.Width, p.Height)
@@ -436,6 +594,10 @@ Protected Module Globals
 		WMIobj As WindowsWMIMBS
 	#tag EndProperty
 
+	#tag Property, Flags = &h0
+		Working As Boolean
+	#tag EndProperty
+
 
 	#tag ViewBehavior
 		#tag ViewProperty
@@ -465,9 +627,37 @@ Protected Module Globals
 			Type="Picture"
 		#tag EndViewProperty
 		#tag ViewProperty
+			Name="DropTarget"
+			Group="Behavior"
+			Type="Picture"
+		#tag EndViewProperty
+		#tag ViewProperty
 			Name="FirstRun"
 			Group="Behavior"
 			InitialValue="True"
+			Type="Boolean"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="GLOBALPAUSE"
+			Group="Behavior"
+			Type="Boolean"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="gTextFont"
+			Group="Behavior"
+			InitialValue="System"
+			Type="String"
+			EditorType="MultiLineEditor"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="gTextSize"
+			Group="Behavior"
+			InitialValue="12"
+			Type="Integer"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="HideDynamics"
+			Group="Behavior"
 			Type="Boolean"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -488,6 +678,12 @@ Protected Module Globals
 			Group="ID"
 			InitialValue="-2147483648"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="InvalidSystemProcColor"
+			Group="Behavior"
+			InitialValue="&cF5772C"
+			Type="Color"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="lastFPS"
@@ -518,10 +714,27 @@ Protected Module Globals
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
+			Name="NewProcColor"
+			Group="Behavior"
+			InitialValue="&c00FF00"
+			Type="Color"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Photo"
+			Group="Behavior"
+			Type="Picture"
+		#tag EndViewProperty
+		#tag ViewProperty
 			Name="Super"
 			Visible=true
 			Group="ID"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="SystemProcColor"
+			Group="Behavior"
+			InitialValue="&c00A8F9"
+			Type="Color"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Throttle"
@@ -546,6 +759,11 @@ Protected Module Globals
 			Name="VersionTile"
 			Group="Behavior"
 			Type="Picture"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Working"
+			Group="Behavior"
+			Type="Boolean"
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Module

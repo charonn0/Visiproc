@@ -549,11 +549,11 @@ End
 		    getAffinity(theProcess, theMode)
 		  End If
 		  
-		Exception Err
-		  If Err IsA AccessDenied Then
-		    Call MsgBox("Access Denied", 16, Err.Message)
-		    Debug(True, "Try to get the handle For process " + Err.Message)
-		  End If
+		  'Exception Err
+		  'If Err IsA AccessDenied Then
+		  'Call MsgBox("Access Denied", 16, Err.Message)
+		  'Debug(True, "Try to get the handle For process " + Err.Message)
+		  'End If
 		  Self.Close
 		End Sub
 	#tag EndEvent

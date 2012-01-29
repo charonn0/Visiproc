@@ -31,6 +31,7 @@ Begin Window Window1
       BackColor       =   8421504
       Backdrop        =   ""
       DoubleBuffer    =   False
+      DropIndex       =   -1
       Enabled         =   True
       EraseBackground =   True
       FPS             =   0
@@ -46,6 +47,7 @@ Begin Window Window1
       LockRight       =   True
       LockTop         =   True
       Scope           =   0
+      ShowText        =   True
       TabIndex        =   0
       TabPanelIndex   =   0
       TabStop         =   True
@@ -53,20 +55,6 @@ Begin Window Window1
       UseFocusRing    =   True
       Visible         =   True
       Width           =   1015
-   End
-   Begin Timer Timer1
-      Height          =   32
-      Index           =   -2147483648
-      Left            =   1086
-      LockedInPosition=   False
-      Mode            =   2
-      Period          =   1000
-      Scope           =   0
-      TabIndex        =   1
-      TabPanelIndex   =   0
-      TabStop         =   True
-      Top             =   -6
-      Width           =   32
    End
    Begin Label Status
       AutoDeactivate  =   True
@@ -138,6 +126,20 @@ Begin Window Window1
       Visible         =   True
       Width           =   507
    End
+   Begin Timer Timer1
+      Height          =   32
+      Index           =   -2147483648
+      Left            =   1121
+      LockedInPosition=   False
+      Mode            =   2
+      Period          =   1000
+      Scope           =   0
+      TabIndex        =   3
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Top             =   -8
+      Width           =   32
+   End
 End
 #tag EndWindow
 
@@ -158,6 +160,26 @@ End
 		  Dim mi As New ThrottleMenu("Throttle Drawing")
 		  mi.Checked = True
 		  Me.MenuBar.Item(0).Append(mi)
+		  
+		  Dim perc As New MenuItem("Resize Tiles")
+		  perc.Append(New PercentMenu("10%"))
+		  perc.Append(New PercentMenu("20%"))
+		  perc.Append(New PercentMenu("30%"))
+		  perc.Append(New PercentMenu("40%"))
+		  perc.Append(New PercentMenu("50%"))
+		  perc.Append(New PercentMenu("60%"))
+		  perc.Append(New PercentMenu("70%"))
+		  perc.Append(New PercentMenu("80%"))
+		  perc.Append(New PercentMenu("90%"))
+		  Dim onehundred As New PercentMenu("100%")
+		  onehundred.Checked = True 
+		  perc.Append(onehundred)
+		  'perc.Append(New PercentMenu("110%"))
+		  'perc.Append(New PercentMenu("120%"))
+		  'perc.Append(New PercentMenu("130%"))
+		  'perc.Append(New PercentMenu("140%"))
+		  'perc.Append(New PercentMenu("150%"))
+		  Me.MenuBar.Item(0).Insert(1,perc)
 		End Sub
 	#tag EndEvent
 
@@ -181,6 +203,16 @@ End
 	#tag MenuHandler
 		Function dissarrayMenu() As Boolean Handles dissarrayMenu.Action
 			dragContainer1.Arrange(3)
+			Return True
+			
+		End Function
+	#tag EndMenuHandler
+
+	#tag MenuHandler
+		Function hideDynamic() As Boolean Handles hideDynamic.Action
+			hideDynamics = Not hideDynamics
+			dragContainer1.Arrange(dragContainer1.lastSort)
+			dragContainer1.Refresh(False)
 			Return True
 			
 		End Function
@@ -265,6 +297,17 @@ End
 		End Function
 	#tag EndMenuHandler
 
+	#tag MenuHandler
+		Function unhidemenu() As Boolean Handles unhidemenu.Action
+			For i As Integer = 0 To UBound(dragContainer1.objects)
+			dragContainer1.objects(i).Hidden = False
+			Next
+			dragContainer1.Arrange(dragContainer1.lastSort)
+			Return True
+			
+		End Function
+	#tag EndMenuHandler
+
 
 	#tag Property, Flags = &h0
 		AutoArrange As Boolean
@@ -280,18 +323,20 @@ End
 #tag Events Timer1
 	#tag Event
 		Sub Action()
-		  PollCPU()
+		  '#If DebugBuild Then Debug(CurrentMethodName)
+		  'If GLOBALPAUSE Then Break
+		  If Window1.count Mod 25 = 0 Then PollDisks()
+		  Window1.dragContainer1.DynUpdate()
 		  If DebugMode Then PollDebug()
-		  If count Mod 25 = 0 Then PollDisks()
-		  dragContainer1.DynUpdate()
-		  dragContainer1.Update()
-		  count = count + 1
-		  Status.Text = "Showing: " + Str((UBound(activeProcesses) + 1) - (dragContainer1.sysProcs.Ubound + 1)) + " of " + Str(UBound(activeProcesses) + 1) + " running processes."
+		  Window1.dragContainer1.Update()
+		  Window1.count = Window1.count + 1
 		  FirstRun = False
-		  lastFPS = dragContainer1.FPS
-		  dragContainer1.FPS = 0
+		  lastFPS = Window1.dragContainer1.FPS
+		  Window1.dragContainer1.FPS = 0
 		  Dim d As New Date
-		  Status1.Text = d.LongDate + " " + d.LongTime + "   "
+		  Window1.Status1.Text = d.LongDate + " " + d.LongTime + "   "
+		  Window1.Status.Text = "Showing: " + Str((UBound(activeProcesses) + 1) - (Window1.dragContainer1.sysProcs.Ubound + 1)) + " of " + Str(UBound(activeProcesses) + 1) + " running processes."
+		  
 		End Sub
 	#tag EndEvent
 #tag EndEvents

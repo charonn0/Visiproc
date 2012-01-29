@@ -1,30 +1,25 @@
 #tag Class
-Protected Class WindowGetter
+Protected Class CPUGetter
 Inherits Thread
 	#tag Event
 		Sub Run()
-		  '#If DebugBuild Then Debug(CurrentMethodName)
-		  Declare Function FindWindowW Lib "user32.dll" ( lpClassName As integer, lpWindowName As integer ) as integer
-		  Declare Function GetWindow Lib "user32" ( hWnd As integer, wCmd As integer ) As integer
-		  
-		  #pragma BreakOnExceptions On
-		  Const GW_HWNDNEXT = 2
-		  For i As Integer = 0 To ActiveProcesses.Ubound
-		    Debug(False, "Get Windows For: " + activeProcesses(i).Name)
-		    Dim ret as integer
-		    ret = FindWindowW( 0, 0 )
-		    while ret > 0
-		      If ActiveProcesses(i).ProcessID = GetProcFromWindowHandle(ret).ProcessID Then
-		        Dim pw As New ProcWindow(ret)
-		        If pw.Title <> "" Then ActiveProcesses(i).Windows.Append(pw)
-		      End If
-		      
-		      ret = GetWindow( ret, GW_HWNDNEXT )
-		    wend
-		    
-		  Next
+		  While True
+		    doit()
+		    'If GUIThread.State = 4 Then 
+		    'Break
+		    'GUIThread.Run
+		    'End If
+		    Me.Sleep(1000)
+		  Wend
 		End Sub
 	#tag EndEvent
+
+
+	#tag Method, Flags = &h21
+		Private Sub doit()
+		  PollCPU
+		End Sub
+	#tag EndMethod
 
 
 	#tag ViewBehavior

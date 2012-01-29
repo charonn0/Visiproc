@@ -81,11 +81,40 @@ Begin Window debugdetail
       Mode            =   2
       Period          =   1000
       Scope           =   0
+      TabPanelIndex   =   0
+      Top             =   0
+      Width           =   32
+   End
+   Begin PushButton PushButton1
+      AutoDeactivate  =   True
+      Bold            =   ""
+      ButtonStyle     =   0
+      Cancel          =   True
+      Caption         =   "Untitled"
+      Default         =   True
+      Enabled         =   True
+      Height          =   22
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   ""
+      Left            =   512
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Scope           =   0
       TabIndex        =   1
       TabPanelIndex   =   0
       TabStop         =   True
-      Top             =   0
-      Width           =   32
+      TextFont        =   "System"
+      TextSize        =   0
+      TextUnit        =   0
+      Top             =   -47
+      Underline       =   ""
+      Visible         =   True
+      Width           =   80
    End
 End
 #tag EndWindow
@@ -123,6 +152,13 @@ End
 		    Listbox1.ScrollPosition = Listbox1.LastIndex
 		  End If
 		  lastnum = debugcount
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events PushButton1
+	#tag Event
+		Sub Action()
+		  Self.Close
 		End Sub
 	#tag EndEvent
 #tag EndEvents

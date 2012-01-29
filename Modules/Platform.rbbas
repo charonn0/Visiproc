@@ -526,6 +526,13 @@ Protected Module Platform
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Sub FlashWindow(WinHandle As Integer, count As Integer = 3)
+		  Declare Function MyFlashWindow Lib "user32" Alias "FlashWindow" (hwnd As integer, bInvert As integer) As integer
+		  Call MyFlashWindow(WinHandle, count)
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h21
 		Private Function GetMetric(metric As Integer) As Integer
 		  Declare Function GetSystemMetrics Lib "User32"  (nIndex As Integer) As integer

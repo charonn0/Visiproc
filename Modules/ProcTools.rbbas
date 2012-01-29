@@ -2,6 +2,7 @@
 Protected Module ProcTools
 	#tag Method, Flags = &h0
 		Function closeProcHandle(pHandle As Integer) As Integer
+		  '#If DebugBuild Then Debug(CurrentMethodName)
 		  Declare Function CloseHandle Lib "Kernel32.dll" (ByVal Handle As Integer) As Integer
 		  Return CloseHandle(pHandle)
 		End Function
@@ -9,6 +10,7 @@ Protected Module ProcTools
 
 	#tag Method, Flags = &h0
 		Function CPUUsage() As Double()
+		  '#If DebugBuild Then Debug(CurrentMethodName)
 		  Declare Function GetSystemTimes Lib "kernel32.dll" (idleTime As Ptr, kernelTime As Ptr, userTime As Ptr) As Boolean
 		  Declare Function FileTimeToSystemTime Lib "kernel32.dll" (fileTime As Ptr, systemTime As Ptr) As Boolean
 		  Dim user, kernel, idle As MemoryBlock
@@ -39,6 +41,7 @@ Protected Module ProcTools
 
 	#tag Method, Flags = &h21
 		Private Function FormatErrorMessage(err As Integer) As String
+		  '#If DebugBuild Then Debug(CurrentMethodName)
 		  Dim ret As Integer
 		  Dim buffer As memoryBlock
 		  Declare Function FormatMessageW Lib "kernel32" (dwFlags As Integer, lpSource As Integer, dwMessageId As Integer, dwLanguageId As Integer, lpBuffer As ptr, _
@@ -58,6 +61,7 @@ Protected Module ProcTools
 
 	#tag Method, Flags = &h0
 		Function GetActiveProcesses() As ProcessInformation()
+		  '#If DebugBuild Then Debug(CurrentMethodName)
 		  Static cc As Integer
 		  If cc Mod 10 = 0 Then Debug("Query Process List")
 		  cc = cc + 1
@@ -90,6 +94,7 @@ Protected Module ProcTools
 
 	#tag Method, Flags = &h0
 		Function getDeadProcs() As ProcessInformation()
+		  '#If DebugBuild Then Debug(CurrentMethodName)
 		  Dim ret() As ProcessInformation
 		  
 		  For i As Integer = 0 To activeProcessesOld.Ubound
@@ -107,6 +112,7 @@ Protected Module ProcTools
 
 	#tag Method, Flags = &h0
 		Function GetIco(path As FolderItem, size As Integer) As Picture
+		  '#If DebugBuild Then Debug(CurrentMethodName)
 		  If Path = Nil Then
 		    If size = 16 Then Return noicon_16
 		    If size = 32 Then Return noicon_32
@@ -182,6 +188,7 @@ Protected Module ProcTools
 
 	#tag Method, Flags = &h0
 		Function getNewProcs() As ProcessInformation()
+		  '#If DebugBuild Then Debug(CurrentMethodName)
 		  Dim ret() As ProcessInformation
 		  For n As Integer = 0 To UBound(activeProcesses)
 		    For o As Integer = 0 to UBound(activeProcessesOld)
@@ -198,6 +205,7 @@ Protected Module ProcTools
 
 	#tag Method, Flags = &h0
 		Function GetProcFromWindowHandle(handle As Integer) As ProcessInformation
+		  '#If DebugBuild Then Debug(CurrentMethodName)
 		  Declare Sub GetWindowThreadProcessId  Lib "User32" ( hwnd as Integer, ByRef procId as Integer )
 		  dim processID as Integer
 		  GetWindowThreadProcessId( handle, processId )
@@ -218,6 +226,7 @@ Protected Module ProcTools
 
 	#tag Method, Flags = &h0
 		Function getProcHandle(procID As Integer, access As Integer) As Integer
+		  '#If DebugBuild Then Debug(CurrentMethodName)
 		  Declare Function OpenProcess Lib "Kernel32.dll" (ByVal dwDesiredAccessAs As Integer, ByVal bInheritHandle As Integer, ByVal dwProcId As Integer) As Integer
 		  Dim pHandle As Integer = OpenProcess(access, 0, procID)
 		  if pHandle = 0 Then
@@ -230,6 +239,7 @@ Protected Module ProcTools
 
 	#tag Method, Flags = &h0
 		Function GetWindowList() As Boolean
+		  '#If DebugBuild Then Debug(CurrentMethodName)
 		  If WindowThread = Nil Then
 		    WindowThread = New WindowGetter
 		    WindowThread.Run
@@ -247,6 +257,7 @@ Protected Module ProcTools
 
 	#tag Method, Flags = &h0
 		Function GetWindowListForProcess(ByRef p As ProcessInformation) As Boolean
+		  '#If DebugBuild Then Debug(CurrentMethodName)
 		  Debug("Get window list for ProcID: " + Str(p.ProcessID))
 		  Declare Function FindWindowW Lib "user32.dll" ( lpClassName As integer, lpWindowName As integer ) as integer
 		  Declare Function GetWindow Lib "user32" ( hWnd As integer, wCmd As integer ) As integer
@@ -280,6 +291,7 @@ Protected Module ProcTools
 
 	#tag Method, Flags = &h0
 		Function imageFromProcID(processID As Integer) As FolderItem
+		  '#If DebugBuild Then Debug(CurrentMethodName)
 		  Debug("Get executable image for ProcID: " + Str(processID))
 		  Declare Function CloseHandle Lib "Kernel32.dll" (ByVal Handle As Integer) As Integer
 		  Declare Function OpenProcess Lib "Kernel32.dll" (ByVal dwDesiredAccessAs As Integer, ByVal bInheritHandle As Integer, ByVal dwProcId As Integer) _
@@ -339,6 +351,7 @@ Protected Module ProcTools
 
 	#tag Method, Flags = &h0
 		Function isRunning(Extends s As String) As Boolean
+		  '#If DebugBuild Then Debug(CurrentMethodName)
 		  For Each proc As ProcessInformation In activeProcesses
 		    If proc.Name = s Then
 		      Return True
@@ -350,6 +363,7 @@ Protected Module ProcTools
 
 	#tag Method, Flags = &h0
 		Function IsSuspended(proc As ProcessInformation) As Boolean
+		  '#If DebugBuild Then Debug(CurrentMethodName)
 		  Declare Function ResumeThread Lib "Kernel32" (hThread As Integer) As Integer
 		  Declare Function SuspendThread Lib "Kernel32" (hThread As Integer) As Integer
 		  Declare Function OpenThread Lib "Kernel32" (access As Integer, inherit As Boolean, threadID As Integer) As Integer
@@ -441,6 +455,7 @@ Protected Module ProcTools
 
 	#tag Method, Flags = &h0
 		Function ProcInfoFromID(Extends procID As Integer) As ProcessInformation
+		  '#If DebugBuild Then Debug(CurrentMethodName)
 		  For Each proc As ProcessInformation In activeProcesses
 		    If proc.ProcessID = procID Then
 		      Return proc

@@ -13,6 +13,7 @@ Protected Module Debugging
 		  
 		Exception error
 		  DebugLog.Append("Warning: Oh, shit!")
+		  Raise Error
 		End Sub
 	#tag EndMethod
 

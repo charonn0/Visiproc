@@ -51,6 +51,15 @@ Begin Menu MenuBar1
             AutoEnable = True
          End
       End
+      Begin MenuItem unhidemenu
+         SpecialMenu = 0
+         Text = "Unhide All Hidden Tiles"
+         Index = -2147483648
+         ShortcutKey = "U"
+         Shortcut = "Cmd+U"
+         MenuModifier = True
+         AutoEnable = True
+      End
       Begin MenuItem hilightingmenu
          SpecialMenu = 0
          Text = "Toggle Hilighting"
@@ -78,16 +87,32 @@ Begin Menu MenuBar1
          MenuModifier = True
          AutoEnable = True
       End
+      Begin MenuItem hideDynamic
+         SpecialMenu = 0
+         Text = "Toggle Dynamic Tiles"
+         Index = -2147483648
+         ShortcutKey = "O"
+         Shortcut = "Cmd+O"
+         MenuModifier = True
+         AutoEnable = True
+      End
       Begin MenuItem SetBackdrop
          SpecialMenu = 0
          Text = "Set Background Image"
          Index = -2147483648
+         ShortcutKey = "I"
+         Shortcut = "Cmd+I"
+         MenuModifier = True
          AutoEnable = True
       End
       Begin MenuItem SetBackColor
          SpecialMenu = 0
          Text = "Set Background Color"
          Index = -2147483648
+         ShortcutKey = "C"
+         Shortcut = "Cmd+Shift+C"
+         MenuModifier = True
+         AltMenuModifier = True
          AutoEnable = True
       End
    End

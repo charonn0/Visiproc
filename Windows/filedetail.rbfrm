@@ -1,13 +1,13 @@
 #tag Window
-Begin Window DriveDetail
-   BackColor       =   9216
+Begin Window filedetail
+   BackColor       =   16777215
    Backdrop        =   ""
    CloseButton     =   True
    Composite       =   False
-   Frame           =   3
+   Frame           =   0
    FullScreen      =   False
    HasBackColor    =   False
-   Height          =   196
+   Height          =   274
    ImplicitInstance=   True
    LiveResize      =   True
    MacProcID       =   0
@@ -17,13 +17,13 @@ Begin Window DriveDetail
    MenuBar         =   ""
    MenuBarVisible  =   True
    MinHeight       =   64
-   MinimizeButton  =   True
+   MinimizeButton  =   False
    MinWidth        =   64
    Placement       =   3
    Resizeable      =   False
-   Title           =   "Drive Detail"
+   Title           =   "File"
    Visible         =   True
-   Width           =   377
+   Width           =   424
    Begin Listbox Listbox1
       AutoDeactivate  =   True
       AutoHideScrollbars=   True
@@ -42,7 +42,7 @@ Begin Window DriveDetail
       GridLinesVertical=   0
       HasHeading      =   True
       HeadingIndex    =   -1
-      Height          =   196
+      Height          =   274
       HelpTag         =   ""
       Hierarchical    =   ""
       Index           =   -2147483648
@@ -50,10 +50,10 @@ Begin Window DriveDetail
       InitialValue    =   "Key	Value"
       Italic          =   ""
       Left            =   0
-      LockBottom      =   True
+      LockBottom      =   ""
       LockedInPosition=   False
       LockLeft        =   True
-      LockRight       =   True
+      LockRight       =   ""
       LockTop         =   True
       RequiresSelection=   ""
       Scope           =   0
@@ -64,13 +64,13 @@ Begin Window DriveDetail
       TabPanelIndex   =   0
       TabStop         =   True
       TextFont        =   "System"
-      TextSize        =   12
+      TextSize        =   0
       TextUnit        =   0
       Top             =   0
       Underline       =   ""
       UseFocusRing    =   True
       Visible         =   True
-      Width           =   377
+      Width           =   424
       _ScrollWidth    =   -1
    End
    Begin PushButton PushButton1
@@ -86,7 +86,7 @@ Begin Window DriveDetail
       Index           =   -2147483648
       InitialParent   =   ""
       Italic          =   ""
-      Left            =   513
+      Left            =   492
       LockBottom      =   ""
       LockedInPosition=   False
       LockLeft        =   True
@@ -99,7 +99,7 @@ Begin Window DriveDetail
       TextFont        =   "System"
       TextSize        =   0
       TextUnit        =   0
-      Top             =   -52
+      Top             =   -57
       Underline       =   ""
       Visible         =   True
       Width           =   80
@@ -109,41 +109,72 @@ End
 
 #tag WindowCode
 	#tag Method, Flags = &h0
-		Sub ShowMe(Drive As String)
-		  Dim theVolume As Dictionary = Platform.VolumeInfo(Drive)
-		  Me.Title = "Drive Detail - " + Drive
+		Sub showMeFile(f As FolderItem)
+		  Me.Title = "File Detail: " + prettifyPath(f.AbsolutePath)
 		  Listbox1.DeleteAllRows
-		  If theVolume = Nil Then
-		    Listbox1.AddRow("No Volume Mounted.")
-		  Else
-		    For i As Integer = 0 To theVolume.Count - 1
-		      Listbox1.AddRow(theVolume.Key(i), theVolume.Value(theVolume.Key(i)))
+		  Listbox1.AddRow("Path", f.AbsolutePath)
+		  Listbox1.AddRow("Size", prettifyBytes(f.Length))
+		  
+		  Dim verinfo As Dictionary = f.VersionInfo
+		  If verinfo <> Nil Then
+		    For i As Integer = 0 To verinfo.Count - 1
+		      Listbox1.AddRow(verinfo.Key(i), verinfo.Value(verinfo.Key(i)))
 		    Next
-		    Self.Height = (Listbox1.RowHeight + 2) * (Listbox1.LastIndex)// + 20
 		  End If
+		  Self.Icon = GetIco(f, 16)
+		  
+		  
+		  If f.Archive Then
+		    Listbox1.AddRow("Marked For Archiving", "Yes")
+		  Else
+		    Listbox1.AddRow("Marked For Archiving", "No")
+		  End If
+		  
+		  
+		  If f.Compressed Then
+		    Listbox1.AddRow("Compressed", "Yes")
+		  Else
+		    Listbox1.AddRow("Compressed", "No")
+		  End If
+		  
+		  If f.Encrypted Then
+		    Listbox1.AddRow("Encrypted", "Yes")
+		  Else
+		    Listbox1.AddRow("Encrypted", "No")
+		  End If
+		  
+		  Listbox1.AddRow("Shortpath", f.GetShortName)
+		  
+		  If f.Hidden Then
+		    Listbox1.AddRow("Hidden", "Yes")
+		  Else
+		    Listbox1.AddRow("Hidden", "No")
+		  End If
+		  
+		  If f.SystemFile Then
+		    Listbox1.AddRow("System File", "Yes")
+		  Else
+		    Listbox1.AddRow("System File", "No")
+		  End If
+		  
+		  If f.ReadOnly Then
+		    Listbox1.AddRow("Readonly", "Yes")
+		  Else
+		    Listbox1.AddRow("Read Only", "No")
+		  End If
+		  
+		  Listbox1.AddRow("Data Stream Count", Str(f.StreamCount))
+		  
+		  
+		  
+		  Self.Show
+		  
 		End Sub
 	#tag EndMethod
 
 
 #tag EndWindowCode
 
-#tag Events Listbox1
-	#tag Event
-		Function CellBackgroundPaint(g As Graphics, row As Integer, column As Integer) As Boolean
-		  'If row Mod 2=0 then
-		  'g.foreColor= &cC0C0C0
-		  'else
-		  'g.foreColor= &c9E9E9E
-		  'end if
-		  'g.FillRect 0,0,g.width,g.height
-		  
-		  #pragma Unused row
-		  #pragma Unused column
-		  g.ForeColor = &cF0F0F0
-		  g.FillRect(0, 0, g.Width, g.Height)
-		End Function
-	#tag EndEvent
-#tag EndEvents
 #tag Events PushButton1
 	#tag Event
 		Sub Action()

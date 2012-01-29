@@ -688,7 +688,7 @@ Protected Module File_Ops
 		  //Returns the Hex representation of the hash
 		  //
 		  //See Win32Crypto.Hash for additional hashing functionality
-		  
+		  #pragma Unused readSize
 		  Dim s As String
 		  If target.Length < sizeCutoff Then
 		    Dim tis As TextInputStream
@@ -696,16 +696,13 @@ Protected Module File_Ops
 		    s = tis.ReadAll
 		    tis.Close
 		    s = StringToHex(MD5(s))
+		    hashwin.Title = "MD5 - " + prettifyPath(Target.AbsolutePath)
+		    hashwin.Label1.Text = s
+		    hashwin.Show
 		  Else
-		    Dim bs As BinaryStream
-		    bs = bs.Open(target)
-		    Dim m5 As New MD5Digest
-		    While Not bs.EOF
-		      s = bs.Read(readSize)
-		      m5.Process(s)
-		    Wend
-		    bs.Close
-		    s = StringToHex(m5.Value)
+		    Dim ht As New HashGetter(Target)
+		    Working = True
+		    ht.Run
 		  End If
 		  
 		  Return s

@@ -2,6 +2,18 @@
 Protected Class App
 Inherits Application
 	#tag Event
+		Function CancelClose() As Boolean
+		  Dim g As FolderItem = SpecialFolder.Temporary.Child("trid.exe")
+		  Dim d As FolderItem = SpecialFolder.Temporary.Child("triddefs.trd")
+		  If g.Exists Then g.Delete
+		  If d.Exists Then d.Delete
+		  'GUIThread.Kill
+		  CPUThread.Kill
+		  Return False
+		End Function
+	#tag EndEvent
+
+	#tag Event
 		Sub Open()
 		  Dim args() As String = System.CommandLine.Split(" ")
 		  For Each arg As String In args
@@ -54,13 +66,19 @@ Inherits Application
 		  Else
 		    debug(SE_PROF_SINGLE_PROCESS_NAME + " NOT Enabled")
 		  End If
+		  PollCPU
+		  'GUIThread = New UpdGUIThread
+		  'GUIThread.Run
+		  CPUThread = New CPUGetter
+		  CPUThread.Run
+		  
 		End Sub
 	#tag EndEvent
 
 	#tag Event
 		Function UnhandledException(error As RuntimeException) As Boolean
-		  #pragma Unused Error
 		  debug(True, "Swallowed Exception: " + Introspection.GetType(error).Name)
+		  If error IsA StackOverflowException Then Quit(0)
 		  Return True
 		End Function
 	#tag EndEvent

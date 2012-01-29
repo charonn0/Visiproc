@@ -1,13 +1,13 @@
 #tag Window
-Begin Window DriveDetail
-   BackColor       =   9216
+Begin Window hashwin
+   BackColor       =   16777215
    Backdrop        =   ""
    CloseButton     =   True
    Composite       =   False
    Frame           =   3
    FullScreen      =   False
    HasBackColor    =   False
-   Height          =   196
+   Height          =   64
    ImplicitInstance=   True
    LiveResize      =   True
    MacProcID       =   0
@@ -21,57 +21,43 @@ Begin Window DriveDetail
    MinWidth        =   64
    Placement       =   3
    Resizeable      =   False
-   Title           =   "Drive Detail"
+   Title           =   "Hash"
    Visible         =   True
-   Width           =   377
-   Begin Listbox Listbox1
+   Width           =   396
+   Begin Label Label1
       AutoDeactivate  =   True
-      AutoHideScrollbars=   True
       Bold            =   ""
-      Border          =   True
-      ColumnCount     =   2
-      ColumnsResizable=   ""
-      ColumnWidths    =   ""
       DataField       =   ""
       DataSource      =   ""
-      DefaultRowHeight=   -1
       Enabled         =   True
-      EnableDrag      =   ""
-      EnableDragReorder=   ""
-      GridLinesHorizontal=   0
-      GridLinesVertical=   0
-      HasHeading      =   True
-      HeadingIndex    =   -1
-      Height          =   196
+      Height          =   29
       HelpTag         =   ""
-      Hierarchical    =   ""
       Index           =   -2147483648
       InitialParent   =   ""
-      InitialValue    =   "Key	Value"
       Italic          =   ""
       Left            =   0
-      LockBottom      =   True
+      LockBottom      =   ""
       LockedInPosition=   False
       LockLeft        =   True
-      LockRight       =   True
+      LockRight       =   ""
       LockTop         =   True
-      RequiresSelection=   ""
+      Multiline       =   ""
       Scope           =   0
-      ScrollbarHorizontal=   ""
-      ScrollBarVertical=   True
-      SelectionType   =   0
+      Selectable      =   True
       TabIndex        =   0
       TabPanelIndex   =   0
       TabStop         =   True
+      Text            =   ""
+      TextAlign       =   1
+      TextColor       =   0
       TextFont        =   "System"
-      TextSize        =   12
+      TextSize        =   15
       TextUnit        =   0
       Top             =   0
+      Transparent     =   False
       Underline       =   ""
-      UseFocusRing    =   True
       Visible         =   True
-      Width           =   377
-      _ScrollWidth    =   -1
+      Width           =   396
    End
    Begin PushButton PushButton1
       AutoDeactivate  =   True
@@ -79,14 +65,14 @@ Begin Window DriveDetail
       ButtonStyle     =   0
       Cancel          =   True
       Caption         =   "Untitled"
-      Default         =   True
+      Default         =   False
       Enabled         =   True
       Height          =   22
       HelpTag         =   ""
       Index           =   -2147483648
       InitialParent   =   ""
       Italic          =   ""
-      Left            =   513
+      Left            =   557
       LockBottom      =   ""
       LockedInPosition=   False
       LockLeft        =   True
@@ -99,54 +85,60 @@ Begin Window DriveDetail
       TextFont        =   "System"
       TextSize        =   0
       TextUnit        =   0
-      Top             =   -52
+      Top             =   -46
       Underline       =   ""
       Visible         =   True
       Width           =   80
+   End
+   Begin PushButton PushButton2
+      AutoDeactivate  =   True
+      Bold            =   ""
+      ButtonStyle     =   0
+      Cancel          =   ""
+      Caption         =   "Copy To Clipboard"
+      Default         =   True
+      Enabled         =   True
+      Height          =   22
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   ""
+      Left            =   129
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Scope           =   0
+      TabIndex        =   2
+      TabPanelIndex   =   0
+      TabStop         =   True
+      TextFont        =   "System"
+      TextSize        =   12
+      TextUnit        =   0
+      Top             =   41
+      Underline       =   ""
+      Visible         =   True
+      Width           =   138
    End
 End
 #tag EndWindow
 
 #tag WindowCode
-	#tag Method, Flags = &h0
-		Sub ShowMe(Drive As String)
-		  Dim theVolume As Dictionary = Platform.VolumeInfo(Drive)
-		  Me.Title = "Drive Detail - " + Drive
-		  Listbox1.DeleteAllRows
-		  If theVolume = Nil Then
-		    Listbox1.AddRow("No Volume Mounted.")
-		  Else
-		    For i As Integer = 0 To theVolume.Count - 1
-		      Listbox1.AddRow(theVolume.Key(i), theVolume.Value(theVolume.Key(i)))
-		    Next
-		    Self.Height = (Listbox1.RowHeight + 2) * (Listbox1.LastIndex)// + 20
-		  End If
-		End Sub
-	#tag EndMethod
-
-
 #tag EndWindowCode
 
-#tag Events Listbox1
-	#tag Event
-		Function CellBackgroundPaint(g As Graphics, row As Integer, column As Integer) As Boolean
-		  'If row Mod 2=0 then
-		  'g.foreColor= &cC0C0C0
-		  'else
-		  'g.foreColor= &c9E9E9E
-		  'end if
-		  'g.FillRect 0,0,g.width,g.height
-		  
-		  #pragma Unused row
-		  #pragma Unused column
-		  g.ForeColor = &cF0F0F0
-		  g.FillRect(0, 0, g.Width, g.Height)
-		End Function
-	#tag EndEvent
-#tag EndEvents
 #tag Events PushButton1
 	#tag Event
 		Sub Action()
+		  Self.Close
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events PushButton2
+	#tag Event
+		Sub Action()
+		  Dim cl As New Clipboard
+		  cl.Text = Label1.Text
 		  Self.Close
 		End Sub
 	#tag EndEvent

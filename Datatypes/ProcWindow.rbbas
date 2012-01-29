@@ -110,15 +110,6 @@ Protected Class ProcWindow
 
 	#tag Method, Flags = &h0
 		Sub Identify()
-		  'Declare Function GetSystemMetrics Lib "user32"  (nIndex As integer) As integer
-		  'Dim ret() As Integer
-		  'ret.Append(GetSystemMetrics(0)) //width
-		  'ret.Append(GetSystemMetrics(1)) //height
-		  'if ret(0) = 0 Or ret(1) = 0 Then
-		  'ret(0) = 800
-		  'ret(1) = 600
-		  'end if
-		  'Window1.Timer1.Mode = Timer.ModeOff
 		  Visible()
 		  Declare Function FlashWindow Lib "user32" (hwnd As integer, bInvert As integer) As integer
 		  Call FlashWindow(Handle, 1)
@@ -181,15 +172,6 @@ Protected Class ProcWindow
 		    
 		    Call DeleteDC hdc
 		  End If
-		  
-		  
-		  
-		  Window1.Timer1.Mode = Timer.ModeMultiple
-		  
-		  
-		  
-		  
-		  
 		End Sub
 	#tag EndMethod
 

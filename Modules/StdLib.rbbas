@@ -199,6 +199,20 @@ Protected Module StdLib
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub Icon(extends w as Window, assigns newIcon as Picture)
+		  // We want to set the new icon for this window
+		  Const WM_SETICON = &h80
+		  Const ICON_SMALL = 0
+		  
+		  Declare Function SendMessageW Lib "User32" ( hwnd as Integer, msg as Integer, wParam as Integer, lParam as Ptr ) As Integer
+		  
+		  dim ret as Integer = SendMessageW(w.Handle, WM_SETICON, ICON_SMALL, newIcon.CopyOSHandle(Picture.HandleType.WindowsICON))
+		  Return
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function IntToColor(extends c as Integer) As Color
 		  //From WFS, converts an Integer to a Color
 		  Dim mb as new MemoryBlock(4)
@@ -270,6 +284,7 @@ Protected Module StdLib
 		  End If
 		  
 		Exception err
+		  If err IsA ThreadEndException Or err IsA EndException Then Raise Err
 		  Return path
 		End Function
 	#tag EndMethod
