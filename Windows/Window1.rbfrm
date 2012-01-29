@@ -79,7 +79,6 @@ Begin Window Window1
       Selectable      =   False
       TabIndex        =   1
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   ""
       TextAlign       =   0
       TextColor       =   0
@@ -114,7 +113,6 @@ Begin Window Window1
       Selectable      =   False
       TabIndex        =   2
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   ""
       TextAlign       =   2
       TextColor       =   0
@@ -135,10 +133,20 @@ Begin Window Window1
       Mode            =   2
       Period          =   1
       Scope           =   0
-      TabIndex        =   3
       TabPanelIndex   =   0
-      TabStop         =   True
       Top             =   -8
+      Width           =   32
+   End
+   Begin Timer WildTimer
+      Height          =   32
+      Index           =   -2147483648
+      Left            =   1106
+      LockedInPosition=   False
+      Mode            =   0
+      Period          =   100
+      Scope           =   0
+      TabPanelIndex   =   0
+      Top             =   254
       Width           =   32
    End
 End
@@ -151,6 +159,14 @@ End
 		    Count = 0
 		  ElseIf Asc(key) = &hD2 Then
 		    Self.FullScreen = Not Self.FullScreen
+		  ElseIf Key = "=" Then
+		    For i As Integer = 0 To UBound(Window1.dragContainer1.objects)
+		      Window1.dragContainer1.objects(i).ResizeTo = Window1.dragContainer1.objects(i).ResizeTo + 5
+		    Next
+		  ElseIf Key = "-" Then
+		    For i As Integer = 0 To UBound(Window1.dragContainer1.objects)
+		      Window1.dragContainer1.objects(i).ResizeTo = Window1.dragContainer1.objects(i).ResizeTo - 5
+		    Next
 		  End If
 		End Function
 	#tag EndEvent
@@ -281,6 +297,18 @@ End
 		End Function
 	#tag EndMenuHandler
 
+	#tag MenuHandler
+		Function wildmode() As Boolean Handles wildmode.Action
+			If WildTimer.Mode = Timer.ModeOff Then
+			WildTimer.Mode = Timer.ModeMultiple
+			Else
+			WildTimer.Mode = Timer.ModeOff
+			End If
+			Return True
+			
+		End Function
+	#tag EndMenuHandler
+
 
 	#tag Property, Flags = &h0
 		AutoArrange As Boolean
@@ -308,6 +336,14 @@ End
 		  Window1.Status.Text = "Showing: " + Str((UBound(activeProcesses) + 1) - (Window1.dragContainer1.HiddenProcCount)) + " of " + Str(UBound(activeProcesses) + 1) + " running processes."
 		  Init = False
 		  Me.Period = 1000
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events WildTimer
+	#tag Event
+		Sub Action()
+		  dragContainer1.lastSort = 0
+		  dragContainer1.Arrange(4)
 		End Sub
 	#tag EndEvent
 #tag EndEvents

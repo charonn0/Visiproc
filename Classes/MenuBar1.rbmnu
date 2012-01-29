@@ -96,6 +96,15 @@ Begin Menu MenuBar1
          MenuModifier = True
          AutoEnable = True
       End
+      Begin MenuItem wildmode
+         SpecialMenu = 0
+         Text = "Toggle Wild Mode"
+         Index = -2147483648
+         ShortcutKey = "Z"
+         Shortcut = "Cmd+Z"
+         MenuModifier = True
+         AutoEnable = True
+      End
       Begin MenuItem setts
          SpecialMenu = 0
          Text = "Settings"

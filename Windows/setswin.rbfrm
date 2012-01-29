@@ -43,6 +43,7 @@ Begin Window setswin
       Scope           =   0
       TabIndex        =   0
       TabPanelIndex   =   0
+      TabStop         =   True
       Top             =   4
       Visible         =   True
       Width           =   27
@@ -69,6 +70,7 @@ Begin Window setswin
       Selectable      =   False
       TabIndex        =   1
       TabPanelIndex   =   0
+      TabStop         =   True
       Text            =   "New Process"
       TextAlign       =   0
       TextColor       =   0
@@ -100,6 +102,7 @@ Begin Window setswin
       Scope           =   0
       TabIndex        =   2
       TabPanelIndex   =   0
+      TabStop         =   True
       Top             =   38
       Visible         =   True
       Width           =   27
@@ -126,6 +129,7 @@ Begin Window setswin
       Selectable      =   False
       TabIndex        =   3
       TabPanelIndex   =   0
+      TabStop         =   True
       Text            =   "Normal Process"
       TextAlign       =   0
       TextColor       =   0
@@ -157,6 +161,7 @@ Begin Window setswin
       Scope           =   0
       TabIndex        =   4
       TabPanelIndex   =   0
+      TabStop         =   True
       Top             =   72
       Visible         =   True
       Width           =   27
@@ -183,6 +188,7 @@ Begin Window setswin
       Selectable      =   False
       TabIndex        =   5
       TabPanelIndex   =   0
+      TabStop         =   True
       Text            =   "System Process"
       TextAlign       =   0
       TextColor       =   0
@@ -214,6 +220,7 @@ Begin Window setswin
       Scope           =   0
       TabIndex        =   6
       TabPanelIndex   =   0
+      TabStop         =   True
       Top             =   4
       Visible         =   True
       Width           =   27
@@ -240,6 +247,7 @@ Begin Window setswin
       Selectable      =   False
       TabIndex        =   7
       TabPanelIndex   =   0
+      TabStop         =   True
       Text            =   "Bad System Process"
       TextAlign       =   0
       TextColor       =   0
@@ -274,6 +282,7 @@ Begin Window setswin
       Selectable      =   False
       TabIndex        =   8
       TabPanelIndex   =   0
+      TabStop         =   True
       Text            =   "Text Font:"
       TextAlign       =   2
       TextColor       =   0
@@ -370,6 +379,7 @@ Begin Window setswin
       Selectable      =   False
       TabIndex        =   11
       TabPanelIndex   =   0
+      TabStop         =   True
       Text            =   "Text Color:"
       TextAlign       =   2
       TextColor       =   0
@@ -401,6 +411,7 @@ Begin Window setswin
       Scope           =   0
       TabIndex        =   12
       TabPanelIndex   =   0
+      TabStop         =   True
       Top             =   120
       Visible         =   True
       Width           =   27
@@ -424,6 +435,7 @@ Begin Window setswin
       Scope           =   0
       TabIndex        =   13
       TabPanelIndex   =   0
+      TabStop         =   True
       Top             =   70
       Visible         =   True
       Width           =   27
@@ -450,6 +462,7 @@ Begin Window setswin
       Selectable      =   False
       TabIndex        =   14
       TabPanelIndex   =   0
+      TabStop         =   True
       Text            =   "Background Color"
       TextAlign       =   0
       TextColor       =   0
@@ -543,6 +556,7 @@ Begin Window setswin
       Scope           =   0
       TabIndex        =   17
       TabPanelIndex   =   0
+      TabStop         =   True
       Top             =   36
       Visible         =   True
       Width           =   27
@@ -569,6 +583,7 @@ Begin Window setswin
       Selectable      =   False
       TabIndex        =   18
       TabPanelIndex   =   0
+      TabStop         =   True
       Text            =   "Tooltip Color"
       TextAlign       =   0
       TextColor       =   0

@@ -463,7 +463,6 @@ Inherits Canvas
 		    Next
 		    lastSort = 2
 		  Case 3
-		    
 		    If lastSort = 3 Then Return
 		    Dim rand As New Random
 		    For i As Integer = 0 To UBound(Objects)
@@ -479,6 +478,35 @@ Inherits Canvas
 		      End If
 		    Next
 		    lastSort = 3
+		  Case 4
+		    Dim r As Integer = (0.015625 * Me.Width)
+		    Static up As Boolean
+		    Objects.Insert(0, objects.Pop)
+		    'If r > 1 And r <= 30 Then
+		    'If up = False Then
+		    'r = r - 1
+		    'Else
+		    'r = r + 1
+		    'End If
+		    'Else
+		    'If r > 30 Then
+		    'up = False
+		    'r = r - 1
+		    'Else
+		    'up = True
+		    'r = r + 1
+		    'End If
+		    'End If
+		    For i As Integer = 0 To UBound(Objects)
+		      x = (i * r) + 20
+		      //Rand.InRange(0, Window1.dragContainer1.Width)
+		      y = Cos(i / 20 * 2 * 3.14159265358979323846264338327950) * 100 + (0.33 * Me.Height)
+		      //Rand.InRange(0, Window1.dragContainer1.Height)
+		      
+		      Objects(i).x = x
+		      Objects(i).y = y
+		    Next
+		    lastSort = 4
 		  End Select
 		  
 		  //First, check whether an object was clicked on

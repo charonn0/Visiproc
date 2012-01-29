@@ -221,9 +221,6 @@ Protected Class dragObject
 			  If Not Dynamic Then
 			    ret = mimage
 			  Else
-			    'If hideDynamics Then
-			    'Return New Picture(1, 1, 1)
-			    'End If
 			    Select Case DynType
 			    Case 0
 			      Ret = CPUBuffer
