@@ -29,8 +29,8 @@ Protected Class ProcessInformation
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h21
-		Private Sub LoadThreads()
+	#tag Method, Flags = &h0
+		Sub LoadThreads()
 		  // Because we know things like this process' ID number, we can load
 		  // all the thread information for the process as well
 		  
@@ -72,6 +72,63 @@ Protected Class ProcessInformation
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Function Resume() As Boolean
+		  Declare Function NtResumeProcess Lib "ntdll"(pHandle As Integer) As Integer
+		  Dim pHandle As Integer = getProcHandle(ProcessID, PROCESS_ALL_ACCESS)
+		  Dim ret As Integer = ntResumeProcess(pHandle)
+		  Call closeProcHandle(pHandle)
+		  If ret > -1 Then
+		    debug("Resumed " + Name)
+		    Return True
+		  Else
+		    debug("Could Not Resume " + Name)
+		    Return False
+		  End If
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function Suspend() As Boolean
+		  Declare Function NtSuspendProcess Lib "ntdll"(pHandle As Integer) As Integer
+		  Dim pHandle As Integer = getProcHandle(ProcessID, PROCESS_ALL_ACCESS)
+		  Dim Ret As Integer = NtSuspendProcess(pHandle)
+		  Call closeProcHandle(pHandle)
+		  
+		  If ret > -1 Then
+		    debug("Suspended " + Name)
+		    Return True
+		  Else
+		    debug("Could Not Suspend " + Name)
+		    Return False
+		  End If
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function Terminate(exitCode As Integer = 0) As Boolean
+		  Declare Function TerminateProcess Lib "Kernel32" (handle As Integer, exitCode As Integer) As Integer
+		  Declare Function OpenProcess Lib "Kernel32" (access As Integer, inheritHandle As Boolean, processId As Integer) As Integer
+		  Declare Sub CloseHandle Lib "Kernel32" (handle As Integer)
+		  
+		  Dim processHandle As Integer = OpenProcess(PROCESS_TERMINATE, False, ProcessID)
+		  If processHandle <> 0 then
+		    If TerminateProcess(processHandle, exitCode) = 0 Then
+		      debug("Terminated " + Name)
+		      Return True
+		    Else
+		      processHandle = GetLastError()
+		      debug("Could Not Terminate " + Name)
+		      Return False
+		    End If
+		    CloseHandle(processHandle)
+		  Else
+		    debug("Could Not Terminate " + Name)
+		    Return False
+		  End If
+		End Function
+	#tag EndMethod
+
 
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
@@ -94,7 +151,7 @@ Protected Class ProcessInformation
 			  If processHandle <> 0 Then
 			    success = GetProcessAffinityMask(processHandle, lpProc, sysProc)
 			  Else
-			    //debug(True, "Try to get the handle For process ID " + Str(processId))
+			    Debug(True, "Try to get the handle For process ID " + Str(processId))
 			  End If
 			  CloseHandle(processHandle)
 			  Dim ret As Byte
@@ -118,7 +175,7 @@ Protected Class ProcessInformation
 			  If processHandle <> 0 Then
 			    Dim theMask As String = value.pad
 			    If Not SetProcessAffinityMask(processHandle, theMask.str2bin) Then
-			      //debug(True, "Try to change affinity on process ID " + Str(ProcessID) + " to " + Str(value))
+			      Debug(True, "Try to change affinity on process ID " + Str(ProcessID) + " to " + Str(value))
 			    End If
 			  Else
 			    If GetLastError = 5 Then
@@ -136,6 +193,33 @@ Protected Class ProcessInformation
 	#tag Property, Flags = &h0
 		BaseThreadPriority As Integer
 	#tag EndProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  If mCommandLine = "" Then
+			    Debug("Get Command Line For ProcID: " + Str(ProcessID))
+			    If WMIobj = Nil Then WMIobj = New WindowsWMIMBS
+			    if WMIobj.ConnectServer("root\cimv2") then
+			      if WMIobj.query("WQL","select CommandLine from Win32_Process where ProcessId='" + Str(ProcessID) + "'") then
+			        if WMIobj.NextItem then
+			          mCommandLine = WMIobj.GetPropertyString("CommandLine") // string
+			          If mCommandLine = "" Then mCommandLine = Name
+			        else
+			          mCommandLine =  ""
+			        end if
+			      else
+			        mCommandLine =  ""
+			      end if
+			    else
+			      mCommandLine =  ""
+			    end if
+			  End If
+			   Return mCommandLine
+			End Get
+		#tag EndGetter
+		CommandLine As String
+	#tag EndComputedProperty
 
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
@@ -167,6 +251,10 @@ Protected Class ProcessInformation
 		#tag EndSetter
 		largeIcon As Picture
 	#tag EndComputedProperty
+
+	#tag Property, Flags = &h21
+		Private mCommandLine As String
+	#tag EndProperty
 
 	#tag Property, Flags = &h21
 		Private mlargeIcon As Picture
@@ -220,7 +308,7 @@ Protected Class ProcessInformation
 			    ret = GetPriorityClass(processHandle)
 			    CloseHandle(processHandle)
 			  Else
-			    //debug(True, "Try to get the handle For process ID " + Str(ProcessID))
+			    Debug(True, "Try to get the handle For process ID " + Str(ProcessID))
 			    CloseHandle(processHandle)
 			  End If
 			  
@@ -238,7 +326,7 @@ Protected Class ProcessInformation
 			  If processHandle <> 0 Then
 			    Dim ret As Integer = SetPriorityClass(processHandle, value)
 			    If ret = 0 Then
-			      //debug(True, "Try to change priority on process ID " + Str(processId) + " to " + Str(value))
+			      Debug(True, "Try to change priority on process ID " + Str(processId) + " to " + Str(value))
 			    End If
 			  Else
 			    If GetLastError = 5 Then
@@ -305,6 +393,12 @@ Protected Class ProcessInformation
 			Group="Behavior"
 			InitialValue="0"
 			Type="Integer"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="CommandLine"
+			Group="Behavior"
+			Type="String"
+			EditorType="MultiLineEditor"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Index"
