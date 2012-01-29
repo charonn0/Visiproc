@@ -28,6 +28,7 @@ Begin Window Window1
       AcceptFocus     =   ""
       AcceptTabs      =   ""
       AutoDeactivate  =   True
+      BackColor       =   8421504
       Backdrop        =   ""
       DoubleBuffer    =   False
       Enabled         =   True
@@ -106,6 +107,8 @@ End
 		Function KeyDown(Key As String) As Boolean
 		  If Asc(key) = &hCC Then
 		    Count = 0
+		  ElseIf Asc(key) = &hD2 Then
+		    Self.FullScreen = Not Self.FullScreen
 		  End If
 		End Function
 	#tag EndEvent
@@ -143,6 +146,14 @@ End
 	#tag MenuHandler
 		Function arrangeMenu() As Boolean Handles arrangeMenu.Action
 			dragContainer1.Arrange()
+			Return True
+			
+		End Function
+	#tag EndMenuHandler
+
+	#tag MenuHandler
+		Function dissarrayMenu() As Boolean Handles dissarrayMenu.Action
+			dragContainer1.Disarray()
 			Return True
 			
 		End Function
@@ -249,6 +260,8 @@ End
 		  count = count + 1
 		  Status.Text = Str(UBound(activeProcesses) + 1) + " running processes."
 		  FirstRun = False
+		  lastFPS = dragContainer1.FPS
+		  dragContainer1.FPS = 0
 		End Sub
 	#tag EndEvent
 #tag EndEvents

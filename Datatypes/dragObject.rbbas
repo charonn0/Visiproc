@@ -126,7 +126,7 @@ Protected Class dragObject
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		DynType As Integer = 0
+		DynType As Integer
 	#tag EndProperty
 
 	#tag Property, Flags = &h21

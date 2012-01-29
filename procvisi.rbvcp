@@ -61,6 +61,7 @@ Window=DriveWindow;Windows/DriveWindow.rbfrm;&h4283B7FF;&h3AB527FF;false
 Window=entryDetail;Windows/entryDetail.rbfrm;&h22F957FF;&h3AB527FF;false
 Window=cpuSelect;Windows/cpuSelect.rbfrm;&h3471B7FF;&h3AB527FF;false
 Window=Window1;Windows/Window1.rbfrm;&h8FC6FFF;&h3AB527FF;false
+Window=createprocess;Windows/createprocess.rbfrm;&h21D9A7FF;&h3AB527FF;false
 Window=DriveDetail;Windows/DriveDetail.rbfrm;&h18C977FF;&h3AB527FF;false
 Window=debugdetail;Windows/debugdetail.rbfrm;&h14AC57FF;&h3AB527FF;false
 DefaultWindow=Window1

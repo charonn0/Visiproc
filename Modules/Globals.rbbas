@@ -321,6 +321,10 @@ Protected Module Globals
 		lastCPU(3) As Double
 	#tag EndProperty
 
+	#tag Property, Flags = &h0
+		lastFPS As Integer
+	#tag EndProperty
+
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
@@ -451,6 +455,11 @@ Protected Module Globals
 			Group="ID"
 			InitialValue="-2147483648"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="lastFPS"
+			Group="Behavior"
+			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="LastMem"

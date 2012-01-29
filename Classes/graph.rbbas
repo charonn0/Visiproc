@@ -66,13 +66,8 @@ Inherits Canvas
 		        buff.Graphics.DrawLine(i * 10, Me.Height - history(i - 1), i * 10 + 10, Me.Height - history(i))
 		      Catch OutOfBoundsException
 		        buff.Graphics.DrawLine(0, Me.Height - history(i), 10, Me.Height - history(i))
-		        //buff.Graphics.DrawLine(0, Me.Height, 0, Me.Height - history(i))
 		      End Try
-		      //buff.Graphics.DrawLine(i, Me.Height - history(i), i, Me.Height)
 		    Next
-		    
-		    //time = time + 1
-		    //Me.Graphics.DrawPicture(buff, 0, 0)
 		    myBuff = buff
 		    Refresh(False)
 		    drawing.Leave

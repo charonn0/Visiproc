@@ -114,24 +114,35 @@ Inherits Canvas
 		        End If
 		      Next
 		    End If
+		  Else
+		    createprocess.Show
 		  End If
 		End Sub
 	#tag EndEvent
 
 	#tag Event
 		Function MouseDown(X As Integer, Y As Integer) As Boolean
-		  //First, check whether an object was clicked on
+		  //First, save the old currentObject
+		  Dim refreshn As Integer = currentObject
+		  
+		  //Get the new currentobject
 		  currentObject = hitpointToObject(x, y)
+		  
 		  If currentObject > -1 Then
-		    //Then bring it to the foreground
 		    bringToFront(currentObject)
 		    If IsContextualClick Then
 		      //The user wants a menu for the oject
-		      menuUp = True
+		      If Not Objects(currentObject).Dynamic Then
+		        menuUp = True
+		      End If
 		    End If
 		    Refresh(False)
+		  ElseIf refreshn > -1 Then
+		    //Clean up the outline if a tile was outlined.
+		    drawObject(refreshn)
+		    Refresh(False)
 		  End If
-		  '
+		  
 		  lastX = X
 		  lastY = Y
 		  Return True
@@ -140,51 +151,54 @@ Inherits Canvas
 
 	#tag Event
 		Sub MouseDrag(X As Integer, Y As Integer)
-		  If currentObject > -1 Then
-		    //Calculate the new position of the object, update the object, then refresh the control.
-		    If lastX = X And lastY = Y Then Return
-		    Dim objX As Integer = x - lastx
-		    Dim objY As Integer = y - lasty
-		    lastx = x
-		    lasty = y
-		    objects(currentObject).x = objects(currentObject).x + objX
-		    objects(currentObject).y = objects(currentObject).y + objY
-		    Refresh(False)
+		  Static doit As Integer
+		  If doit = 5 Or Platform.IsOlderThan(Platform.WinVista) Then  //Performance kludge. Only update every OTHER time we're called
+		    doit = 0
+		    If currentObject > -1 Then
+		      //Calculate the new position of the object, update the object, then refresh the control.
+		      If lastX = X And lastY = Y Then Return
+		      Dim objX As Integer = x - lastx
+		      Dim objY As Integer = y - lasty
+		      lastx = x
+		      lasty = y
+		      objects(currentObject).x = objects(currentObject).x + objX
+		      objects(currentObject).y = objects(currentObject).y + objY
+		      Refresh(False)
+		    End If
 		  End If
+		  doit = doit + 1
 		End Sub
 	#tag EndEvent
 
 	#tag Event
 		Sub MouseMove(X As Integer, Y As Integer)
-		  drawHelp(X, Y)
-		End Sub
-	#tag EndEvent
-
-	#tag Event
-		Sub MouseUp(X As Integer, Y As Integer)
-		  #pragma Unused x
-		  #pragma Unused y
-		  'If Not menuUp Then currentObject = -1
-		  
+		  Static doit As Boolean
+		  If doit Then  //Performance kludge. Only update every OTHER time we're called
+		    drawHelp(X, Y)
+		  End If
+		  doit = Not doit
 		End Sub
 	#tag EndEvent
 
 	#tag Event
 		Sub Open()
-		  buffer = New Picture(Me.Width, Me.Height, 24)
-		  buffer.Graphics.ForeColor = &c808080
+		  //Create the dynamic tiles
+		  
 		  Dim cpuWin As New dragObject
 		  cpuWin.DynType = 0
+		  
 		  Dim diskWin As New dragObject
 		  diskWin.DynType = 1
+		  
 		  addObject(cpuWin)
 		  addObject(diskWin)
+		  
 		  If DebugMode Then
 		    Dim debugWin As New dragObject
 		    debugWin.DynType = 2
 		    addObject(debugWin)
 		  End If
-		  'Refresh(False)
+		  
 		End Sub
 	#tag EndEvent
 
@@ -199,13 +213,19 @@ Inherits Canvas
 		  End If
 		  
 		  //Then, clean up any prior states
-		  buffer.Graphics.ForeColor = BackColor
-		  buffer.Graphics.FillRect(0, 0, buffer.Width, buffer.Height)
 		  If Background <> Nil Then
 		    buffer.Graphics.DrawPicture(Background, 0, 0, buffer.Width, buffer.Height, 0, 0, Background.Width, Background.Height)
+		  Else
+		    buffer.Graphics.ForeColor = BackColor
+		    buffer.Graphics.FillRect(0, 0, buffer.Width, buffer.Height)
 		  End If
-		  If DebugMode Then DrawVersion()
-		  //Draw each dragObject one by one, starting with the bottom-most
+		  
+		  If DebugMode Then 
+		    DrawVersion()  //draw the version text
+		    DrawFPS()      //Update the FPS text
+		  End If
+		  
+		  //Draw each dragObject one by one, starting with the bottom-most (Z-Ordering is reverse of the objects array's order)
 		  For i As Integer = 0 To objects.Ubound
 		    drawObject(i)
 		  Next
@@ -222,7 +242,7 @@ Inherits Canvas
 		  Const CAPTUREBLT = &h40000000
 		  Const SRCCOPY = &hCC0020
 		  Call BitBlt(g.Handle(1), 0, 0, g.Width, g.Height, buffer.Graphics.Handle(1), left, top, SRCCOPY Or CAPTUREBLT)
-		  
+		  FPS = FPS + 1
 		  
 		  
 		  
@@ -342,6 +362,43 @@ Inherits Canvas
 		Private Sub deleteObject(Index As Integer)
 		  objects.Remove(Index)
 		  Refresh(False)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Disarray()
+		  lastSort = -1
+		  Dim x, y As Integer
+		  Dim rand As New Random
+		  For i As Integer = 0 To UBound(Objects)
+		    x = Rand.InRange(0, Window1.dragContainer1.Width)
+		    y = Rand.InRange(0, Window1.dragContainer1.Height)
+		    
+		    Objects(i).x = x
+		    Objects(i).y = y
+		    
+		    If Objects(i).x > Me.Width Or Objects(i).y > Me.Height Then
+		      Objects(i).x = Objects(i).x - 200
+		      Objects(i).y = Objects(i).y - 200
+		    End If
+		  Next
+		  
+		  Update()
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub DrawFPS()
+		  Dim percStr As String
+		  Buffer.Graphics.TextSize = 20
+		  Buffer.Graphics.Bold = True
+		  percStr = Str(lastFPS) + " FPS"
+		  Buffer.Graphics.ForeColor = &c000000
+		  Dim strWidth, strHeight As Integer
+		  strWidth = Buffer.Graphics.StringWidth(percStr)
+		  strHeight = Buffer.Graphics.StringHeight(percStr, Buffer.Width)
+		  Buffer.Graphics.DrawString(percStr, (Buffer.Width) - (strWidth) - 10, strHeight + 10)
+		  
 		End Sub
 	#tag EndMethod
 
@@ -574,16 +631,16 @@ Inherits Canvas
 
 	#tag Method, Flags = &h0
 		Sub ToggleSystem()
-		  If HideSystemProcs Then
-		    For i As Integer = UBound(objects) DownTo 0
-		      If Objects(i).Dynamic Then Continue
-		      If objects(i).Process.IsCritical Then
-		        Objects.Remove(i)
-		      End If
-		    Next
-		  Else
-		    Update()
-		  End If
+		  'If HideSystemProcs Then
+		  'For i As Integer = UBound(objects) DownTo 0
+		  'If Objects(i).Dynamic Then Continue
+		  'If objects(i).Process.IsCritical Then
+		  'Objects.Remove(i)
+		  'End If
+		  'Next
+		  'Else
+		  Update()
+		  'End If
 		  Arrange(lastSort)
 		  Refresh(False)
 		End Sub
@@ -591,7 +648,7 @@ Inherits Canvas
 
 	#tag Method, Flags = &h0
 		Sub Update()
-		  #pragma BreakOnExceptions Off
+		  //First, find which processes have died
 		  activeProcessesOld = activeProcesses
 		  activeProcesses = GetActiveProcesses()
 		  Dim newProcs() As ProcessInformation = getNewProcs()
@@ -599,30 +656,31 @@ Inherits Canvas
 		  For x As Integer = UBound(deadProcs) DownTo 0
 		    For i As Integer = UBound(Objects) DownTo 0
 		      If objects(i).Process.ProcessID = deadProcs(x).ProcessID Then
+		        //And remove them from the objects array
 		        Objects.Remove(i)
 		        Exit For i
 		      End If
 		    Next
 		  Next
-		  drawHelp(Me.MouseX, Me.MouseY)
-		  For Each item As dragObject In Objects
-		    item.Paint
-		  Next
+		  
+		  
+		  //Then, add any new processes that we want to show
 		  For Each proc As ProcessInformation In newProcs
 		    If proc.isCritical And HideSystemProcs Then
 		      Continue
 		    Else
 		      Dim no As New dragObject(proc)
-		      'If force Then Call IsSuspended(proc)
 		      addObject(no)
 		    End If
 		  Next
+		  
+		  //If we added or removed any objects, we should re-sort
 		  If UBound(newProcs) > -1 Or UBound(activeProcessesOld) > -1 Then
 		    Arrange(lastSort)
 		  End If
 		  
-		Exception
-		  Return
+		  //Finally, draw the helptext, if any.
+		  drawHelp(Me.MouseX, Me.MouseY)
 		End Sub
 	#tag EndMethod
 
@@ -644,6 +702,10 @@ Inherits Canvas
 			Represents the index of the currently active object in the objects array
 		#tag EndNote
 		Private currentObject As Integer = -1
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		FPS As Integer
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
@@ -745,6 +807,11 @@ Inherits Canvas
 			InitialValue="True"
 			Type="Boolean"
 			InheritedFrom="Canvas"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="FPS"
+			Group="Behavior"
+			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Height"

@@ -35,7 +35,7 @@ Begin Window entryDetail
       Index           =   -2147483648
       InitialParent   =   ""
       Italic          =   ""
-      Left            =   36
+      Left            =   54
       LockBottom      =   ""
       LockedInPosition=   False
       LockLeft        =   True
@@ -57,7 +57,7 @@ Begin Window entryDetail
       Transparent     =   True
       Underline       =   ""
       Visible         =   True
-      Width           =   78
+      Width           =   60
    End
    Begin TextField path
       AcceptTabs      =   ""
@@ -1233,6 +1233,36 @@ End
 
 #tag EndWindowCode
 
+#tag Events StaticText1
+	#tag Event
+		Sub MouseEnter()
+		  Me.Underline = True
+		  Me.MouseCursor = System.Cursors.FingerPointer
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub MouseExit()
+		  Me.Underline = False
+		  Me.MouseCursor = System.Cursors.StandardPointer
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub MouseUp(X As Integer, Y As Integer)
+		  #pragma Unused x
+		  #pragma Unused y
+		  If proc.path <> Nil Then 
+		    proc.path.ShowInExplorer
+		  End If
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Function MouseDown(X As Integer, Y As Integer) As Boolean
+		  #pragma Unused X
+		  #pragma Unused Y
+		  Return True
+		End Function
+	#tag EndEvent
+#tag EndEvents
 #tag Events PushButton1
 	#tag Event
 		Sub Action()

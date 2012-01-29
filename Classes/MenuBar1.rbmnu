@@ -32,6 +32,15 @@ Begin Menu MenuBar1
             MenuModifier = True
             AutoEnable = True
          End
+         Begin MenuItem dissarrayMenu
+            SpecialMenu = 0
+            Text = "General Disarray"
+            Index = -2147483648
+            ShortcutKey = "D"
+            Shortcut = "Cmd+D"
+            MenuModifier = True
+            AutoEnable = True
+         End
          Begin MenuItem ToggleAutoArrange
             SpecialMenu = 0
             Text = "Toggle Auto Arrange"

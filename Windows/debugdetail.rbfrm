@@ -81,7 +81,9 @@ Begin Window debugdetail
       Mode            =   2
       Period          =   1000
       Scope           =   0
+      TabIndex        =   1
       TabPanelIndex   =   0
+      TabStop         =   True
       Top             =   0
       Width           =   32
    End
