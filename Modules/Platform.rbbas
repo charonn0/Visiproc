@@ -157,6 +157,35 @@ Protected Module Platform
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
+		Protected Function BootMode() As Integer
+		  Return GetMetric(67)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function ComputerName() As String
+		  #if TargetWin32
+		    Soft Declare Sub GetComputerNameA Lib "Kernel32" ( name as Ptr, ByRef size as Integer )
+		    Soft Declare Sub GetComputerNameW Lib "Kernel32" ( name as Ptr, ByRef size as Integer )
+		    
+		    dim mb as new MemoryBlock( 1024 )
+		    dim size as Integer = mb.Size()
+		    
+		    if System.IsFunctionAvailable( "GetComputerNameW", "Kernel32" ) then
+		      GetComputerNameW( mb, size )
+		      
+		      return mb.WString( 0 )
+		    else
+		      GetComputerNameA( mb, size )
+		      
+		      return mb.CString( 0 )
+		    end if
+		  #endif
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
 		Protected Function CPUArchitecture() As Integer
 		  //Returns the CPU architecture of the installed operating system. See the PROCESSOR_ARCHITECTURE_* constants for possible return values
 		  //This may differ from the information provided by OSArchitecture since a 32 bit OS can run on a 64 bit capable processor (see below)
@@ -176,6 +205,28 @@ Protected Module Platform
 		  End If
 		  
 		  Return info.OEMID
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function CPUID() As String
+		  Try
+		    Dim reg As New RegistryItem("HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\CentralProcessor\0", False)
+		    Return reg.Value("Identifier")
+		  Catch RegistryAccessErrorException
+		    Return ""
+		  End Try
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function CPUSpeed() As Integer
+		  Try
+		    Dim reg As New RegistryItem("HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\CentralProcessor\0", False)
+		    Return Val(reg.Value("~MHZ"))
+		  Catch RegistryAccessErrorException
+		    Return 0
+		  End Try
 		End Function
 	#tag EndMethod
 
@@ -238,6 +289,69 @@ Protected Module Platform
 		    Return ""
 		  End If
 		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function DesktopWallpaper() As String
+		  Dim mb as new MemoryBlock( 1024 )
+		  Const SPI_GETDESKWALLPAPER = &h73
+		  
+		  SystemParametersInfo( SPI_GETDESKWALLPAPER, mb.Size, mb )
+		  
+		  if System.IsFunctionAvailable( "SystemParametersInfoW", "User32" ) then
+		    return mb.WString( 0 )
+		  else
+		    return mb.CString( 0 )
+		  end if
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Sub DesktopWallpaper(assigns newWallpaper as FolderItem)
+		  Const SPI_SETDESKWALLPAPER = &h14
+		  Dim mb as new MemoryBlock( 2048 )
+		  
+		  if newWallpaper = nil then
+		    // We want to remove the old wallpaper and bail out
+		    SystemParametersInfo( SPI_SETDESKWALLPAPER, 0, mb )
+		    return
+		  end
+		  
+		  dim wallpaper as String = newWallpaper.AbsolutePath
+		  dim wallpaperPicture as Picture
+		  dim saveSpot as FolderItem
+		  
+		  if right( wallpaper, 4 ) <> ".bmp" then
+		    // In order to set the wallpaper properly, it must be
+		    // in bitmap form.  How brilliant.  This isn't, so we'll
+		    // try to open the file and convert it to a bitmap
+		    wallpaperPicture = wallpaperPicture.Open(newWallpaper)
+		    if wallpaperPicture = nil then
+		      // We couldn't open the picture, so just bail out
+		      return
+		    end
+		    
+		    // Now that we have the picture, save it as a BMP
+		    // in a good place
+		    saveSpot = SpecialFolder.Temporary.Child( "Wallpaper1.bmp" )
+		    if saveSpot = nil then return
+		    
+		    // Save to the temp folder
+		    wallpaperPicture.Save(saveSpot, Picture.SaveAsMostCompatible)
+		    // And be sure to get the new absolute path
+		    wallpaper = saveSpot.AbsolutePath
+		  end
+		  
+		  // Set the memory block to point to the new wallpaper
+		  if System.IsFunctionAvailable( "SystemParametersInfoW", "User32" ) then
+		    mb.WString( 0 ) = wallpaper
+		  else
+		    mb.CString( 0 ) = wallpaper
+		  end if
+		  
+		  // And set the wallpaper to the new bitmap
+		  SystemParametersInfo( SPI_SETDESKWALLPAPER, mb.Size, mb )
+		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
@@ -412,12 +526,73 @@ Protected Module Platform
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h21
+		Private Function GetMetric(metric As Integer) As Integer
+		  Declare Function GetSystemMetrics Lib "User32"  (nIndex As Integer) As integer
+		  Return GetSystemMetrics(metric)
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h1
 		Protected Function GetWindowText(HWND As Integer) As String
 		  Declare Function GetWindowTextW Lib "user32" ( hWnd As integer, lpString As ptr, cch As integer ) As integer
 		  Dim mb As New MemoryBlock(255)
 		  Call GetWindowTextW(HWND, mb, mb.Size)
 		  Return mb.WString(0)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function HostName() As String
+		  Declare Function GetHostName Lib "ws2_32" (name As Ptr, size As Integer) As Integer
+		  
+		  Dim mb As New MemoryBlock(1024)
+		  If gethostname(mb, mb.Size) = 0 Then
+		    Return mb.CString(0)
+		  End
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function IPAdaptors() As Dictionary()
+		  Declare Function GetAdaptersInfo Lib "Iphlpapi" (info As Ptr, ByRef size As Integer) As Integer
+		  Dim x, y As Integer
+		  Dim info As New MemoryBlock(1280)
+		  y = info.Size
+		  x = GetAdaptersInfo(info, y)
+		  Dim d() As Dictionary
+		  If x = 0 Then
+		    While True
+		      Dim e As New Dictionary
+		      e.Value("MAC") = info.CString(8)
+		      e.Value("Description") = info.CString(&h10C)
+		      e.Value("IP Address") = info.CString(&h1B0)
+		      e.Value("Subnet Mask") = info.CString(&h1C0)
+		      e.Value("Gateway") = info.CString(&h1D8)
+		      d.Append(e)
+		      If Info.UInt32Value(0) > 0 Then
+		        Try
+		          info = info.Ptr(0)
+		        Catch
+		          Exit While
+		        End Try
+		      Else
+		        Exit While
+		      End If
+		    Wend
+		  End If
+		  Return d
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function IPStats() As MIB_IPSTATS
+		  Declare Function GetIpStatistics Lib "Iphlpapi" (ByRef Info As MIB_IPSTATS) As Integer
+		  Dim ib As MIB_IPSTATS
+		  If GetIpStatistics(ib) = 0 Then
+		    Return ib
+		  End If
 		End Function
 	#tag EndMethod
 
@@ -500,11 +675,27 @@ Protected Module Platform
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
+		Protected Function IsShuttingDown() As Boolean
+		  //True if the user requires an application to present information visually in situations where it would otherwise 
+		  //present the information only in audible form. i.e. for deaf users.
+		  Return GetMetric(&h2000) <> 0
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
 		Protected Function LastErrorCode() As Integer
 		  //Returns the last error for the current process. Error codes are documented here: http://msdn.microsoft.com/en-us/library/ms681381%28v=VS.85%29.aspx
 		  
 		  Declare Function GetLastError Lib "Kernel32" () As Integer
 		  Return GetLastError()
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function LeftHandedMouse() As Boolean
+		  //True if the user requires an application to present information visually in situations where it would otherwise 
+		  //present the information only in audible form. i.e. for deaf users.
+		  Return GetMetric(23) <> 0
 		End Function
 	#tag EndMethod
 
@@ -563,6 +754,12 @@ Protected Module Platform
 		  Catch RegistryAccessErrorException
 		    Return ""
 		  End Try
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function MouseButtonCount() As Integer
+		  Return GetMetric(43)
 		End Function
 	#tag EndMethod
 
@@ -637,12 +834,55 @@ Protected Module Platform
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
+		Protected Function PublicIP() As String
+		  Dim h As New HTTPSocket
+		  Call h.Get("http://www.boredomsoft.org/ip.php", 10)
+		  Try
+		    Return h.PageHeaders.Value("X-Client")
+		  Catch
+		    Return ""
+		  End Try
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
 		Protected Sub Reboot()
 		  //Reboots the computer
 		  
 		  Const EWX_REBOOT = &h00000002
 		  Call ExitWindows(EWX_REBOOT)
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function ScreenCount() As Integer
+		  Return GetMetric(80)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function ScreenHeight() As Integer
+		  Declare Function GetSystemMetrics Lib "User32"  (nIndex As Integer) As integer
+		  Return GetSystemMetrics(1)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function ScreenVirtualHeight() As Integer
+		  Return GetMetric(79)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function ScreenVirtualWidth() As Integer
+		  Return GetMetric(78)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function ScreenWidth() As Integer
+		  Return GetMetric(0)
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
@@ -653,11 +893,78 @@ Protected Module Platform
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
+		Protected Function ShowSounds() As Boolean
+		  //True if the user requires an application to present information visually in situations where it would otherwise 
+		  //present the information only in audible form. i.e. for deaf users.
+		  Return GetMetric(70) <> 0
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
 		Protected Sub ShutDown()
 		  //Shuts the computer down.
 		  
 		  Const EWX_SHUTDOWN = &h00000001
 		  Call ExitWindows(EWX_SHUTDOWN)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub SystemParametersInfo(action as Integer, param1 as Integer, oddSet as Boolean, iniChange as Integer)
+		  #if TargetWin32
+		    Soft Declare Sub SystemParametersInfoA Lib "User32" ( action as Integer, _
+		    param1 as Integer, param2 as Boolean, change as Integer )
+		    Soft Declare Sub SystemParametersInfoW Lib "User32" ( action as Integer, _
+		    param1 as Integer, param2 as Boolean, change as Integer )
+		    
+		    if System.IsFunctionAvailable( "SystemParametersInfoW", "User32" ) then
+		      SystemParametersInfoW( action, param1, oddSet, iniChange )
+		    else
+		      SystemParametersInfoA( action, param1, oddSet, iniChange )
+		    end if
+		  #endif
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub SystemParametersInfo(action as Integer, param1 as Integer, param2 as Integer, iniChange as Integer)
+		  #if TargetWin32
+		    Soft Declare Sub SystemParametersInfoA Lib "User32" ( action as Integer, _
+		    param1 as Integer, param2 as Integer, change as Integer )
+		    Soft Declare Sub SystemParametersInfoW Lib "User32" ( action as Integer, _
+		    param1 as Integer, param2 as Integer, change as Integer )
+		    
+		    if System.IsFunctionAvailable( "SystemParametersInfoW", "User32" ) then
+		      SystemParametersInfoW( action, param1, param2, iniChange )
+		    else
+		      SystemParametersInfoA( action, param1, param2, iniChange )
+		    end if
+		  #endif
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub SystemParametersInfo(action as Integer, param1 as Integer, param2 as MemoryBlock, iniChange as Integer = &h2)
+		  if param2 = nil then
+		    SystemParametersInfo( action, param1, 0, iniChange )
+		    return
+		  end if
+		  
+		  #if TargetWin32
+		    Soft Declare Function SystemParametersInfoA Lib "User32" ( action as Integer, _
+		    param1 as Integer, param2 as Ptr, change as Integer ) as Boolean
+		    Soft Declare Function SystemParametersInfoW Lib "User32" ( action as Integer, _
+		    param1 as Integer, param2 as Ptr, change as Integer ) as Boolean
+		    
+		    
+		    dim ret as Boolean
+		    if System.IsFunctionAvailable( "SystemParametersInfoW", "User32" ) then
+		      ret = SystemParametersInfoW( action, param1, param2, iniChange )
+		    else
+		      ret = SystemParametersInfoA( action, param1, param2, iniChange )
+		    end if
+		    
+		  #endif
 		End Sub
 	#tag EndMethod
 

@@ -84,7 +84,6 @@ Protected Module ProcTools
 		    good = Process32NextW(snapHandle, mb)
 		  loop until Not good
 		  CloseHandle(snapHandle)
-		  ProcessCount = UBound(ret) + 1
 		  Return ret
 		End Function
 	#tag EndMethod

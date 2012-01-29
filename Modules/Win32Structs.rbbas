@@ -86,6 +86,32 @@ Protected Module Win32Structs
 		reserved As UInt64
 	#tag EndStructure
 
+	#tag Structure, Name = MIB_IPSTATS, Flags = &h0
+		Forwarding As Integer
+		  DefaultTTL As Integer
+		  InReceives As Integer
+		  InHeaderErrors As Integer
+		  InAddressErrors As Integer
+		  Forwarded As Integer
+		  InUnknownProtos As Integer
+		  InDiscards As Integer
+		  InDelivered As Integer
+		  OutRequests As Integer
+		  RoutingDiscards As Integer
+		  OutDiscards As Integer
+		  OutNoRoutes As Integer
+		  ReassemTimeout As Integer
+		  ReassemReqds As Integer
+		  ReassemOK As Integer
+		  ReassemFails As Integer
+		  FragOKs As Integer
+		  FragFails As Integer
+		  FragCreates As Integer
+		  NumIf As Integer
+		  NumAddresses As Integer
+		NumRoutes As Integer
+	#tag EndStructure
+
 	#tag Structure, Name = MODULEENTRY32, Flags = &h0
 		sSize As Integer
 		  ModuleID As Integer
@@ -97,6 +123,24 @@ Protected Module Win32Structs
 		  Handle As Integer
 		  Name As WString*256
 		Path As WString*260
+	#tag EndStructure
+
+	#tag Structure, Name = NOTIFYICONDATA, Flags = &h0
+		sSize As Integer
+		  WindowHandle As Integer
+		  uID As UInt32
+		  Flags As UInt32
+		  CallbackMessage As UInt32
+		  IconHandle As Integer
+		  ToolTip As WString*64
+		  State As Integer
+		  StateMask As Integer
+		  BalloonText As Wstring*256
+		  Timeout_Version_Union As UInt32
+		  BalloonTitle As WString*64
+		  InfoFlags As Integer
+		  GUIDitem As GUID
+		BalloonIconHandle As Integer
 	#tag EndStructure
 
 	#tag Structure, Name = OFSTRUCT, Flags = &h0

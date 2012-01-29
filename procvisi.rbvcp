@@ -34,6 +34,7 @@ Picture=meh;../../Realbasic/Active/System Utilities/VisiProc/Images/meh.png;&h32
 Picture=noicon_16;../../Realbasic/Active/System Utilities/VisiProc/Images/noicon_16.png;&h6BF8B7FF;&h4961DFFF;false;0;&h0
 Picture=noicon_32;../../Realbasic/Active/System Utilities/VisiProc/Images/noicon_32.png;&h71C4FFFF;&h4961DFFF;false;0;&h0
 Picture=prior;../../Realbasic/Active/System Utilities/VisiProc/Images/prior.png;&h19A747FF;&h4961DFFF;false;0;&h0
+Picture=Down;../../Realbasic/Active/System Utilities/VisiProc/Down.png;&h10A417FF;&h4961DFFF;false;0;&h0
 Picture=Safe;../../Realbasic/Active/System Utilities/VisiProc/Images/Safe.png;&h375EF7FF;&h4961DFFF;false;0;&h0
 Picture=sched;../../Realbasic/Active/System Utilities/VisiProc/Images/sched.png;&h667507FF;&h4961DFFF;false;0;&h0
 Picture=target;../../Realbasic/Active/System Utilities/VisiProc/Images/target.png;&h5CD127FF;&h4961DFFF;false;0;&h0

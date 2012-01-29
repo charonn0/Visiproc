@@ -122,6 +122,14 @@ Inherits Canvas
 
 	#tag Event
 		Sub DropObject(obj As DragItem, action As Integer)
+		  Dim hoverobject As Integer = hitpointToObject(Me.MouseX, Me.MouseY)
+		  If hoverobject > -1 Then
+		    If Objects(hoverobject).DynType = 4 Then
+		      Dim mb As MemoryBlock = "Hello!"
+		      Call Objects(hoverobject).SpecialHandler.Invoke(mb)
+		      Return
+		    End If
+		  End If
 		  If action = DragItem.DragActionCopy Then
 		    Dim f As FolderItem = Obj.FolderItem
 		    Dim p As Picture = Picture.Open(f)
@@ -227,6 +235,12 @@ Inherits Canvas
 		  'Dim mag As New dragObject  //Very slow
 		  'mag.DynType = 3
 		  'addObject(mag)
+		  
+		  'Dim mag As New dragObject  //drop target
+		  'mag.DynType = 4
+		  'mag.SpecialHandler = AddressOf FileDropHandler
+		  'addObject(mag)
+		  
 		End Sub
 	#tag EndEvent
 
@@ -253,7 +267,7 @@ Inherits Canvas
 		    DrawFPS()      //Update the FPS text
 		    FPS = FPS + 1
 		  End If
-		  
+		  FrameCount = FrameCount + 1
 		  //Draw each dragObject one by one, starting with the bottom-most (Z-Ordering is reverse of the objects array's order)
 		  For i As Integer = 0 To objects.Ubound
 		    drawObject(i)
@@ -310,6 +324,8 @@ Inherits Canvas
 		            s.Append("ZZZZZZC")
 		          Case 3
 		            s.Append("ZZZZZZD")
+		          Case 4
+		            s.Append("ZZZZZZE")
 		          End Select
 		        Else
 		          s.Append(objects(i).Process.Name + Str(objects(i).Process.ProcessID))
@@ -346,6 +362,8 @@ Inherits Canvas
 		            s.Append(9999998)
 		          Case 2
 		            s.Append(9999999)
+		          Case 4
+		            s.Append(9999996)
 		          End Select
 		        Else
 		          s.Append(objects(i).Process.ProcessID)
@@ -426,6 +444,12 @@ Inherits Canvas
 		  strWidth = Buffer.Graphics.StringWidth(percStr)
 		  strHeight = Buffer.Graphics.StringHeight(percStr, Buffer.Width)
 		  Buffer.Graphics.DrawString(percStr, (Buffer.Width) - (strWidth) - 10, strHeight + 10)
+		  Dim lahe As Integer = strHeight
+		  Buffer.Graphics.TextSize = 10
+		  percStr = Format(FrameCount, "###,###,###,###,###,###,##0")+ " Frames So Far"
+		  strWidth = Buffer.Graphics.StringWidth(percStr)
+		  strHeight = Buffer.Graphics.StringHeight(percStr, Buffer.Width)
+		  Buffer.Graphics.DrawString(percStr, Buffer.Width - (strWidth) - 10, strHeight + 10 + lahe)
 		  
 		End Sub
 	#tag EndMethod
@@ -794,8 +818,8 @@ Inherits Canvas
 		Private objects() As dragObject
 	#tag EndProperty
 
-	#tag Property, Flags = &h21
-		Private sysProcs() As dragObject
+	#tag Property, Flags = &h0
+		sysProcs() As dragObject
 	#tag EndProperty
 
 	#tag Property, Flags = &h21

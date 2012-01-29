@@ -240,9 +240,7 @@ Begin Window CPUWindow
       Mode            =   2
       Period          =   1250
       Scope           =   0
-      TabIndex        =   5
       TabPanelIndex   =   0
-      TabStop         =   True
       Top             =   85
       Width           =   32
    End
@@ -345,6 +343,7 @@ End
 		  Me.AddRow("Total Pagefile: " + prettifyBytes(Platform.TotalPageFile) + "; Available Pagefile: "+ prettifyBytes(Platform.AvailablePageFile))
 		  Me.AddRow("Total Address Space For This Program: " + prettifyBytes(Platform.TotalProcessAddressSpace))
 		  Me.AddRow("Available Address Space For This Program: " + prettifyBytes(Platform.AvailableProcessAddressSpace))
+		  Me.AddRow("Public IP Address:" + Platform.PublicIP)
 		  'Me.AddRow(Platform.OEM)
 		End Sub
 	#tag EndEvent

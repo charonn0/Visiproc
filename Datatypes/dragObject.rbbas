@@ -100,6 +100,10 @@ Protected Class dragObject
 		End Sub
 	#tag EndMethod
 
+	#tag DelegateDeclaration, Flags = &h0
+		Delegate Function SpecialFuntion(Data As MemoryBlock) As Boolean
+	#tag EndDelegateDeclaration
+
 	#tag Method, Flags = &h21
 		Private Sub TimerHandler(Sender As Timer)
 		  #pragma Unused Sender
@@ -163,6 +167,8 @@ Protected Class dragObject
 			      Return debugBuffer
 			    Case 3
 			      Return magImage
+			    Case 4
+			      Return Down
 			    End Select
 			  End If
 			End Get
@@ -185,6 +191,10 @@ Protected Class dragObject
 
 	#tag Property, Flags = &h0
 		Process As ProcessInformation
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		SpecialHandler As SpecialFuntion
 	#tag EndProperty
 
 	#tag Property, Flags = &h21

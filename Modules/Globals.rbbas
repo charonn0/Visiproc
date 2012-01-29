@@ -52,6 +52,13 @@ Protected Module Globals
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function FileDropHandler(data As MemoryBlock) As Boolean
+		  MsgBox(data.StringValue(0, data.Size))
+		  Return True
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function GetWindowsIcon() As Picture
 		  Static p As Picture
 		  If p = Nil Then
@@ -305,6 +312,10 @@ Protected Module Globals
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		FrameCount As UInt64
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		HideSystemProcs As Boolean
 	#tag EndProperty
 
@@ -360,15 +371,11 @@ Protected Module Globals
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		ProcessCount As Integer
-	#tag EndProperty
-
-	#tag Property, Flags = &h0
 		Throttle As Boolean = True
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		Version As Double = 0.02
+		Version As Double = 0.03
 	#tag EndProperty
 
 	#tag ComputedProperty, Flags = &h0
@@ -509,11 +516,6 @@ Protected Module Globals
 			Visible=true
 			Group="ID"
 			InheritedFrom="Object"
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="ProcessCount"
-			Group="Behavior"
-			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"

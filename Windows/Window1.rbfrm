@@ -62,7 +62,9 @@ Begin Window Window1
       Mode            =   2
       Period          =   1000
       Scope           =   0
+      TabIndex        =   1
       TabPanelIndex   =   0
+      TabStop         =   True
       Top             =   -6
       Width           =   32
    End
@@ -88,6 +90,7 @@ Begin Window Window1
       Selectable      =   False
       TabIndex        =   1
       TabPanelIndex   =   0
+      TabStop         =   True
       Text            =   ""
       TextAlign       =   0
       TextColor       =   0
@@ -98,7 +101,42 @@ Begin Window Window1
       Transparent     =   False
       Underline       =   ""
       Visible         =   True
-      Width           =   1015
+      Width           =   507
+   End
+   Begin Label Status1
+      AutoDeactivate  =   True
+      Bold            =   ""
+      DataField       =   ""
+      DataSource      =   ""
+      Enabled         =   True
+      Height          =   20
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   ""
+      Left            =   508
+      LockBottom      =   True
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   True
+      LockTop         =   False
+      Multiline       =   ""
+      Scope           =   0
+      Selectable      =   False
+      TabIndex        =   2
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Text            =   ""
+      TextAlign       =   2
+      TextColor       =   0
+      TextFont        =   "System"
+      TextSize        =   0
+      TextUnit        =   0
+      Top             =   589
+      Transparent     =   False
+      Underline       =   ""
+      Visible         =   True
+      Width           =   507
    End
 End
 #tag EndWindow
@@ -248,10 +286,12 @@ End
 		  dragContainer1.DynUpdate()
 		  dragContainer1.Update()
 		  count = count + 1
-		  Status.Text = Str(ProcessCount) + " running processes."
+		  Status.Text = "Showing: " + Str((UBound(activeProcesses) + 1) - (dragContainer1.sysProcs.Ubound + 1)) + " of " + Str(UBound(activeProcesses) + 1) + " running processes."
 		  FirstRun = False
 		  lastFPS = dragContainer1.FPS
 		  dragContainer1.FPS = 0
+		  Dim d As New Date
+		  Status1.Text = d.LongDate + " " + d.LongTime + "   "
 		End Sub
 	#tag EndEvent
 #tag EndEvents
