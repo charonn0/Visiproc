@@ -95,7 +95,15 @@ Inherits Canvas
 		  #pragma Unused x
 		  #pragma Unused y
 		  If currentObject > -1 Then
-		    entryDetail.showMe(Objects(currentObject).Process)
+		    If Objects(currentObject).Dynamic Then
+		      If Objects(currentObject).DynType = 0 Then
+		        CPUWindow.Show
+		      ElseIf Objects(currentObject).DynType = 1 Then
+		        DriveWindow.Show
+		      End If
+		    Else
+		      entryDetail.showMe(Objects(currentObject).Process)
+		    End If
 		  End If
 		End Sub
 	#tag EndEvent
@@ -136,43 +144,7 @@ Inherits Canvas
 
 	#tag Event
 		Sub MouseMove(X As Integer, Y As Integer)
-		  Dim i As Integer = hitpointToObject(X, Y)
-		  
-		  If i > -1 Then
-		    Dim s As String
-		    If Objects(i).Dynamic Then 
-		      Dim d() As Double = lastCPU
-		      s = "CPU: " + Format(d(0), "##0.00\%") + "; RAM: " + Format(LastMem, "##0.00\%")
-		      If s.InStr("J") > 0 Then Break
-		    Else
-		      Try
-		        s = getCmdLine(Objects(i).Process)
-		        If s = "" Then s = objects(i).Process.Name
-		        If Objects(i).Process.Suspended Then 
-		          s = s + " (Suspended)"
-		        End If
-		      Catch
-		        s = "Image Not Resolved."
-		      End Try
-		    End If
-		    helptext = New Picture(10, 10, 32)
-		    helptext.Graphics.TextFont = "System"
-		    helptext.Graphics.TextSize = 12
-		    Dim strWidth, strHeight As Integer
-		    strWidth = helptext.Graphics.StringWidth(s)
-		    strHeight = helptext.Graphics.StringHeight(s, strWidth + 5)
-		    helptext = New Picture(strWidth + 4, strHeight + 4, 32)
-		    helptext.Graphics.ForeColor = &cFFFF80
-		    helptext.Graphics.FillRect(0, 0, helptext.Width, helptext.Height)
-		    helptext.Graphics.ForeColor = &c000000
-		    helptext.Graphics.DrawString(s, 2, ((helptext.Height/2) + (strHeight/4)))
-		    Refresh(False)
-		  Else
-		    If helptext <> Nil Then
-		      helptext = Nil
-		      Refresh(False)
-		    End If
-		  End If
+		  drawHelp(X, Y)
 		End Sub
 	#tag EndEvent
 
@@ -191,10 +163,10 @@ Inherits Canvas
 		  buffer.Graphics.ForeColor = &c808080
 		  Dim cpuWin As New dragObject
 		  cpuWin.DynType = 0
-		  Dim memWin As New dragObject
-		  memWin.DynType = 1
+		  Dim diskWin As New dragObject
+		  diskWin.DynType = 1
 		  addObject(cpuWin)
-		  'addObject(memWin)
+		  addObject(diskWin)
 		  'If DebugMode Then
 		  'DebugTimer = New Timer
 		  'DebugTimer.Period = 50000
@@ -262,7 +234,11 @@ Inherits Canvas
 		    Dim u() As Integer
 		    For i As Integer = 0 To UBound(objects)
 		      If objects(i).Dynamic Then
-		        s.Append("ZZZZZZZ")
+		        If objects(i).DynType = 0 Then
+		          s.Append("ZZZZZZA")
+		        Else
+		          s.Append("ZZZZZZZ")
+		        End If
 		      Else
 		        s.Append(objects(i).Process.Name)
 		      End If
@@ -272,11 +248,20 @@ Inherits Canvas
 		    For i As Integer = 0 To UBound(u)
 		      Objects(u(i)).x = x
 		      Objects(u(i)).y = y
-		      If y + 60 <= Self.Height Then
-		        y = y + 50
+		      If Objects(u(i)).Dynamic Then
+		        If y + 170 <= Self.Height Then
+		          y = y + 170
+		        Else
+		          y = 10
+		          x = x + 210
+		        End If
 		      Else
-		        y = 10
-		        x = x + 210
+		        If y + 60 <= Self.Height Then
+		          y = y + 50
+		        Else
+		          y = 10
+		          x = x + 210
+		        End If
 		      End If
 		      
 		    Next
@@ -285,7 +270,11 @@ Inherits Canvas
 		    Dim u() As Integer
 		    For i As Integer = 0 To UBound(objects)
 		      If objects(i).Dynamic Then
-		        s.Append(999999)
+		        If objects(i).DynType = 0 Then
+		          s.Append(9999998)
+		        Else
+		          s.Append(9999999)
+		        End If
 		      Else
 		        s.Append(objects(i).Process.ProcessID)
 		      End If
@@ -295,11 +284,20 @@ Inherits Canvas
 		    For i As Integer = 0 To UBound(u)
 		      Objects(u(i)).x = x
 		      Objects(u(i)).y = y
-		      If y + 60 <= Self.Height Then
-		        y = y + 50
+		      If Objects(u(i)).Dynamic Then
+		        If y + 170 <= Self.Height Then
+		          y = y + 170
+		        Else
+		          y = 10
+		          x = x + 210
+		        End If
 		      Else
-		        y = 10
-		        x = x + 210
+		        If y + 60 <= Self.Height Then
+		          y = y + 50
+		        Else
+		          y = 10
+		          x = x + 210
+		        End If
 		      End If
 		      
 		    Next
@@ -308,11 +306,20 @@ Inherits Canvas
 		      Objects(i).x = x
 		      Objects(i).y = y
 		      
-		      If y + 60 <= Self.Height Then
-		        y = y + 50
+		      If Objects(i).Dynamic Then
+		        If y + 170 <= Self.Height Then
+		          y = y + 170
+		        Else
+		          y = 10
+		          x = x + 210
+		        End If
 		      Else
-		        y = 10
-		        x = x + 210
+		        If y + 60 <= Self.Height Then
+		          y = y + 50
+		        Else
+		          y = 10
+		          x = x + 210
+		        End If
 		      End If
 		      
 		    Next
@@ -347,6 +354,81 @@ Inherits Canvas
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
+		Private Sub drawHelp(X As Integer, Y As Integer)
+		  Dim i As Integer = hitpointToObject(X, Y)
+		  
+		  If i > -1 Then
+		    Dim s As String
+		    If Objects(i).Dynamic Then
+		      If objects(i).DynType = 0 Then
+		        Dim d() As Double = lastCPU
+		        s = "u: " + Format(d(0), "##0.00\%") + ";   k:" + Format(d(1), "##0.00\%") + EndOfLine + "Memory: " + Format(LastMem, "##0.00\%")
+		        If s.InStr("J") > 0 Then Break
+		      ElseIf Objects(i).DynType = 1 Then
+		        For Each pp As Pair In Drives
+		          If pp.Right > 100 Or pp.Right < 0 Then
+		            s = s + "Drive " + pp.Left + " is not mounted.  " + EndOfLine
+		          Else
+		            s = s + "Drive " + pp.Left + " is " + Format(100 - pp.Right.DoubleValue, "##0.00\%") + " Full  " + EndOfLine
+		          End If
+		        Next
+		      End If
+		    Else
+		      Try
+		        s = getCmdLine(Objects(i).Process)
+		        If s = "" Then s = objects(i).Process.Name
+		        If Objects(i).Process.Suspended Then
+		          s = s + " (Suspended)"
+		        End If
+		      Catch
+		        s = "Image Not Resolved."
+		      End Try
+		    End If
+		    helptext = New Picture(10, 10, 32)
+		    helptext.Graphics.TextFont = "System"
+		    helptext.Graphics.TextSize = 12
+		    Dim strWidth, strHeight As Integer
+		    If Instr(s, EndOfLine) > 0 Then
+		      Dim drvs() As String = s.Split(EndOfLine)
+		      Dim requiredHeight, requiredWidth As Integer
+		      For z As Integer = 0 To UBound(drvs)
+		        Dim drv As String = drvs(z).Trim
+		        If drv = "" Then Continue
+		        Dim a, b As Integer
+		        a = helptext.Graphics.StringWidth(drv)
+		        b = helptext.Graphics.StringHeight(drv, a)
+		        If requiredWidth < a Then requiredWidth = a
+		        requiredHeight = requiredHeight + b
+		      Next
+		      strWidth = requiredWidth
+		      strHeight = requiredHeight
+		      helptext = New Picture(strWidth + 8, strHeight + 8, 32)
+		      helptext.Graphics.ForeColor = &cFFFF80
+		      helptext.Graphics.FillRect(0, 0, helptext.Width, helptext.Height)
+		      helptext.Graphics.ForeColor = &c000000
+		      helptext.Graphics.DrawString(s, 2, 15)
+		      
+		    Else
+		      strWidth = helptext.Graphics.StringWidth(s)
+		      strHeight = helptext.Graphics.StringHeight(s, strWidth + 5)
+		      helptext = New Picture(strWidth + 4, strHeight + 4, 32)
+		      helptext.Graphics.ForeColor = &cFFFF80
+		      helptext.Graphics.FillRect(0, 0, helptext.Width, helptext.Height)
+		      helptext.Graphics.ForeColor = &c000000
+		      helptext.Graphics.DrawString(s, 2, ((helptext.Height/2) + (strHeight/4)))
+		    End If
+		    
+		    Refresh(False)
+		  Else
+		    If helptext <> Nil Then
+		      helptext = Nil
+		      Refresh(False)
+		    End If
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
 		Private Sub drawObject(index As Integer)
 		  //Draws the object onto to buffer
 		  //Objects(index).Update(False)
@@ -363,7 +445,13 @@ Inherits Canvas
 		  'Else
 		  buffer.Graphics.ForeColor = &c000000
 		  'End If
-		  buffer.Graphics.DrawRect(objects(index).x - 1, objects(index).y - 1, objects(index).width + 1, objects(index).height + 1)
+		  If Objects(index).Dynamic Then
+		    If Objects(index).image <> Nil Then
+		      buffer.Graphics.DrawRect(objects(index).x - 1, objects(index).y - 1, objects(index).image.width + 1, objects(index).image.height + 1)
+		    End If
+		  Else
+		    buffer.Graphics.DrawRect(objects(index).x - 1, objects(index).y - 1, objects(index).width + 1, objects(index).height + 1)
+		  End If
 		  buffer.Graphics.ForeColor = &c808080
 		  If Objects(index).image <> Nil Then buffer.Graphics.DrawPicture(objects(index).image, objects(index).x, objects(index).y)
 		End Sub
@@ -376,7 +464,11 @@ Inherits Canvas
 		  If Objects(Index).Process <> Nil Then
 		    pid = "PID: " + Str(Objects(Index).Process.ProcessID)
 		  Else
-		    pid = "Resource Monitor"
+		    If objects(Index).DynType = 0 Then
+		      pid = "Resource Monitor"
+		    ElseIf objects(Index).DynType = 1 Then
+		      pid = "Drive Space"
+		    End If
 		  End If
 		  buffer.Graphics.TextFont = "System"
 		  buffer.Graphics.TextSize = 12
@@ -413,9 +505,10 @@ Inherits Canvas
 		  ReDim activeProcessesOld(-1)
 		  Dim cpuWin As New dragObject
 		  cpuWin.DynType = 0
-		  Dim memWin As New dragObject
-		  memWin.DynType = 1
+		  Dim diskWin As New dragObject
+		  diskWin.DynType = 1
 		  addObject(cpuWin)
+		  addObject(diskwin)
 		  Refresh()
 		End Sub
 	#tag EndMethod
@@ -424,7 +517,7 @@ Inherits Canvas
 		Private Function hitpointToObject(x As Integer, y As Integer) As Integer
 		  //Given an (x,y) coordinate returns the index (in the objects array) of the topmost object occupying those coordinates, if any.
 		  For i As Integer = objects.Ubound DownTo 0
-		    If (objects(i).x < x) And (x < objects(i).x + objects(i).width) And (objects(i).y < y) And (y < objects(i).y + objects(i).height) Then
+		    If (objects(i).x < x) And (x < objects(i).x + objects(i).image.Width) And (objects(i).y < y) And (y < objects(i).y + objects(i).image.height) Then
 		      Return i
 		    End If
 		  Next
@@ -449,7 +542,7 @@ Inherits Canvas
 		    Next
 		    If force Then
 		      Call GetWindowList()
-		      
+		      drawHelp(Me.MouseX, Me.MouseY)
 		    End If
 		    
 		    For Each proc As ProcessInformation In newProcs

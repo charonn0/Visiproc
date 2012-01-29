@@ -1,6 +1,6 @@
 #tag Window
 Begin Window Window1
-   BackColor       =   65535
+   BackColor       =   255
    Backdrop        =   ""
    CloseButton     =   True
    Composite       =   False
@@ -102,6 +102,14 @@ End
 #tag EndWindow
 
 #tag WindowCode
+	#tag Event
+		Function KeyDown(Key As String) As Boolean
+		  If Asc(key) = &hCC Then
+		    Count = 0
+		  End If
+		End Function
+	#tag EndEvent
+
 	#tag Event
 		Sub Open()
 		  Me.Maximize
@@ -224,17 +232,21 @@ End
 		AutoArrange As Boolean
 	#tag EndProperty
 
+	#tag Property, Flags = &h0
+		Count As Integer
+	#tag EndProperty
+
 
 #tag EndWindowCode
 
 #tag Events Timer1
 	#tag Event
 		Sub Action()
-		  Static i As Integer
-		  Poll()
+		  PollCPU()
+		  If count Mod 25 = 0 Then PollDisks()
 		  dragContainer1.DynUpdate()
-		  dragContainer1.Update(i Mod 5 = 0)
-		  i = i + 1
+		  dragContainer1.Update(count Mod 5 = 0)
+		  count = count + 1
 		  Status.Text = Str(UBound(activeProcesses) + 1) + " running processes."
 		  FirstRun = False
 		End Sub

@@ -310,15 +310,6 @@ Protected Module Platform
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h21
-		Private Function GetFileAttributes(f As FolderItem) As Integer
-		  Declare Function GetFileAttributesW Lib "Kernel32" (path As WString) As Integer
-		  Return GetFileAttributesW(f.AbsolutePath)
-		  
-		  
-		End Function
-	#tag EndMethod
-
 	#tag Method, Flags = &h1
 		Protected Function IsAdmin() As Boolean
 		  //Returns true if the application is running with administrative privileges
@@ -483,14 +474,6 @@ Protected Module Platform
 		  Const EWX_SHUTDOWN = &h00000001
 		  Call ExitWindows(EWX_SHUTDOWN)
 		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function SystemFile(Extends target As FolderItem) As Boolean
-		  //Returns True if the target has the System File attribute set
-		  Dim attribs As Integer = GetFileAttributes(target)
-		  Return BitwiseAnd(attribs, &h4) = &h4
-		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1

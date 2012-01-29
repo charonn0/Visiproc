@@ -32,6 +32,11 @@ Protected Module Win32Structs
 		UILengthDrawn As UInt32
 	#tag EndStructure
 
+	#tag Structure, Name = FILETIME, Flags = &h0
+		HighDateTime As Integer
+		LowDateTime As Integer
+	#tag EndStructure
+
 	#tag Structure, Name = FILE_STREAM_INFO, Flags = &h0
 		NextEntryOffset As Integer
 		  SteamNameLength As Integer

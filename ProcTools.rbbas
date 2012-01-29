@@ -8,6 +8,20 @@ Protected Module ProcTools
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function CPUTimes() As Pair
+		  Declare Function GetSystemTimes Lib "Kernel32" (ByRef idle As FILETIME, ByRef kernel As FILETIME, ByRef user As FILETIME) As Boolean
+		  Dim k, u, i As FILETIME
+		  Call GetSystemTimes(i, k, u)
+		  Dim totaltime As Integer = i.LowDateTime + k.LowDateTime + u.LowDateTime
+		  Dim user As Integer = u.LowDateTime * 100 / totaltime
+		  Dim idle As Integer = i.LowDateTime * 100 / totaltime
+		  Dim kernel As Integer = (k.LowDateTime * 100 / totaltime) * user / 100
+		  
+		  Return user:kernel
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function CPUUsage() As Double()
 		  Dim s() As Double = kernelTime()
 		  //s.Append(0)
@@ -98,21 +112,6 @@ Protected Module ProcTools
 		  
 		  
 		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Sub drawBack(ByRef Buffer As Picture)
-		  Buffer.Graphics.ForeColor = &c000000
-		  Buffer.Graphics.FillRect(0, 0, Buffer.Width, Buffer.Height)
-		  Buffer.Graphics.ForeColor = &c008000
-		  For i As Integer = 0 To Buffer.Width Step 10
-		    Buffer.Graphics.DrawLine(i, 0, i, Buffer.Height)
-		  Next
-		  For i As Integer = 0 To Buffer.Height Step 10
-		    Buffer.Graphics.DrawLine(0, i, Buffer.Width, i)
-		  Next
-		  
-		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
@@ -517,6 +516,10 @@ Protected Module ProcTools
 		  oldK = kernel.UInt64Value(0)
 		  oldI = idle.UInt64Value(0)
 		  oldU = user.UInt64Value(0)
+		  
+		  'Dim total As Double = (k + u) - i * 100 / (k + u)
+		  'Dim kern As Double = 
+		  
 		  '
 		  'Dim kP, iP, uP As Int64
 		  'Dim totalTime As UInt64 = k + u
@@ -528,9 +531,11 @@ Protected Module ProcTools
 		  'kP = 100 - kP * 100 / sNumProcessors + .5
 		  
 		  Dim ret() As Double
-		  ret.Append(k + u - i) * 100 / (k + u)
+		  Dim sys As Double = k + u
+		  ret.Append((sys - i) * 100 / sys)
 		  
-		  ret.Append(((k) * 100 / (k + u)) * (k + u) / 100)
+		  ret.Append((sys - i - u) * 100 / sys)
+		  ret.Append(100 - ret(0) - ret(1))
 		  
 		  
 		  
@@ -570,69 +575,6 @@ Protected Module ProcTools
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub Poll()
-		  #pragma BreakOnExceptions Off
-		  Dim times() As Double = CPUUsage
-		  Dim lines() As Integer
-		  lines.Append(times(0) * 150 / 100)
-		  lines.Append((times(1) * 150 / 100))
-		  //lines.Append(0)
-		  lastCPU(0) = times(0)
-		  lastCPU(1) = times(1)
-		  Dim memInfo As Int64 = getMemInfo()
-		  lines.Append(memInfo)
-		  lastMem = lines(2)
-		  Static history(), history1(), history2() As Integer
-		  
-		  
-		  CPUBuffer = New Picture(250, 150, 24)
-		  drawBack(CPUBuffer)
-		  CPUBuffer.Graphics.ForeColor = &c00FF00
-		  If UBound(history) * 10 >= 250 Then
-		    history.Remove(0)
-		  End If
-		  
-		  CPUBuffer.Graphics.ForeColor = &c00FF00
-		  if lines(0) = 0 Then lines(0) = 1
-		  history.Append(lines(0))
-		  lastCPU = times
-		  For i As Integer = 0 To UBound(history)
-		    Try
-		      CPUBuffer.Graphics.DrawLine(i * 10, 150 - history(i - 1), i * 10 + 10, 150 - history(i))
-		    Catch OutOfBoundsException
-		      CPUBuffer.Graphics.DrawLine(0, 150 - history(i), 10, 150 - history(i))
-		    End Try
-		  Next
-		  
-		  CPUBuffer.Graphics.ForeColor = &cF47A00
-		  if lines(1) = 0 Then lines(1) = 1
-		  history1.Append(lines(1))
-		  
-		  For i As Integer = 0 To UBound(history1)
-		    Try
-		      CPUBuffer.Graphics.DrawLine(i * 10, 150 - history1(i - 1), i * 10 + 10, 150 - history1(i))
-		    Catch OutOfBoundsException
-		      CPUBuffer.Graphics.DrawLine(0, 150 - history1(i), 10, 150 - history1(i))
-		    End Try
-		  Next
-		  
-		  CPUBuffer.Graphics.ForeColor = &cFFFF80
-		  if lines(2) = 0 Then lines(2) = 1
-		  history2.Append(lines(2))
-		  
-		  For i As Integer = 0 To UBound(history2)
-		    Try
-		      CPUBuffer.Graphics.DrawLine(i * 10, 150 - history2(i - 1), i * 10 + 10, 150 - history2(i))
-		    Catch OutOfBoundsException
-		      CPUBuffer.Graphics.DrawLine(0, 150 - history2(i), 10, 150 - history2(i))
-		    End Try
-		  Next
-		  
-		  
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Function ProcInfoFromID(Extends procID As Integer) As ProcessInformation
 		  For Each proc As ProcessInformation In activeProcesses
 		    If proc.ProcessID = procID Then
@@ -640,19 +582,6 @@ Protected Module ProcTools
 		    End If
 		  Next
 		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Sub ShowInExplorer(extends f As FolderItem)
-		  //Shows the file in Windows Explorer
-		  
-		  Dim param As String = "/select, """ + f.AbsolutePath + """"
-		  Soft Declare Sub ShellExecuteW Lib "Shell32" (hwnd As Integer, op As WString, file As WString, params As WString, directory As Integer, _
-		  cmd As Integer)
-		  
-		  Const SW_SHOW = 5
-		  ShellExecuteW(0, "open", "explorer", param, 0, SW_SHOW)
-		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
@@ -695,15 +624,15 @@ Protected Module ProcTools
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		CPUBuffer As Picture
-	#tag EndProperty
-
-	#tag Property, Flags = &h0
 		DebugLog() As String
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
 		DebugMode As Boolean = True
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		Drives() As Pair
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -787,11 +716,6 @@ Protected Module ProcTools
 
 
 	#tag ViewBehavior
-		#tag ViewProperty
-			Name="CPUBuffer"
-			Group="Behavior"
-			Type="Picture"
-		#tag EndViewProperty
 		#tag ViewProperty
 			Name="DebugMode"
 			Group="Behavior"

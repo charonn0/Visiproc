@@ -3,9 +3,7 @@ Protected Class dragObject
 	#tag Method, Flags = &h0
 		Sub Constructor()
 		  Dim rand As New Random
-		  width = 250
-		  height = 150
-		  image = New Picture(width, height, 24)
+		  image = New Picture(250, 150, 24)
 		  Dynamic = True
 		  x = Rand.InRange(0, Window1.dragContainer1.Width)
 		  y = Rand.InRange(0, Window1.dragContainer1.Height)
@@ -53,8 +51,8 @@ Protected Class dragObject
 		    ico.Graphics.DrawPicture(Process.smallIcon, 0, 0)
 		  End If
 		  image = ico
-		  width = image.Width
-		  height = image.Height
+		  //width = image.Width
+		  //height = image.Height
 		End Sub
 	#tag EndMethod
 
@@ -113,10 +111,16 @@ Protected Class dragObject
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Sub Paint()
+		  CreateTile(False)
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h21
 		Private Sub TimerHandler(Sender As Timer)
 		  #pragma Unused Sender
-		  CreateTile(False)
+		  Paint()
 		End Sub
 	#tag EndMethod
 
@@ -148,9 +152,14 @@ Protected Class dragObject
 		Private flashTimer As Timer
 	#tag EndProperty
 
-	#tag Property, Flags = &h0
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  return mimage.Height
+			End Get
+		#tag EndGetter
 		height As Integer
-	#tag EndProperty
+	#tag EndComputedProperty
 
 	#tag Property, Flags = &h0
 		history() As Integer
@@ -162,7 +171,11 @@ Protected Class dragObject
 			  If Not Dynamic Then
 			    return mimage
 			  Else
-			    Return CPUBuffer
+			    If DynType = 0 Then
+			      Return CPUBuffer
+			    ElseIf DynType = 1 Then
+			      Return diskBuffer
+			    End If
 			  End If
 			End Get
 		#tag EndGetter
@@ -178,6 +191,10 @@ Protected Class dragObject
 		Private mimage As Picture
 	#tag EndProperty
 
+	#tag Property, Flags = &h21
+		Private mwidth As Integer
+	#tag EndProperty
+
 	#tag Property, Flags = &h0
 		Process As ProcessInformation
 	#tag EndProperty
@@ -186,16 +203,21 @@ Protected Class dragObject
 		Private time As Integer = 0
 	#tag EndProperty
 
-	#tag Property, Flags = &h0
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  return mimage.Width
+			End Get
+		#tag EndGetter
 		width As Integer
+	#tag EndComputedProperty
+
+	#tag Property, Flags = &h0
+		x As Integer
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		x As Integer = 75
-	#tag EndProperty
-
-	#tag Property, Flags = &h0
-		y As Integer = 75
+		y As Integer
 	#tag EndProperty
 
 
