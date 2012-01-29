@@ -1,6 +1,6 @@
 #tag Window
 Begin Window Window1
-   BackColor       =   255
+   BackColor       =   16711680
    Backdrop        =   ""
    CloseButton     =   True
    Composite       =   False
@@ -37,6 +37,7 @@ Begin Window Window1
       FPS             =   0
       Height          =   589
       HelpTag         =   ""
+      HiddenProcCount =   0
       Index           =   -2147483648
       InitialParent   =   ""
       lastSort        =   -1
@@ -78,7 +79,6 @@ Begin Window Window1
       Selectable      =   False
       TabIndex        =   1
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   ""
       TextAlign       =   0
       TextColor       =   0
@@ -113,7 +113,6 @@ Begin Window Window1
       Selectable      =   False
       TabIndex        =   2
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   ""
       TextAlign       =   2
       TextColor       =   0
@@ -132,11 +131,9 @@ Begin Window Window1
       Left            =   1121
       LockedInPosition=   False
       Mode            =   2
-      Period          =   1000
+      Period          =   1
       Scope           =   0
-      TabIndex        =   3
       TabPanelIndex   =   0
-      TabStop         =   True
       Top             =   -8
       Width           =   32
    End
@@ -202,6 +199,7 @@ End
 
 	#tag MenuHandler
 		Function dissarrayMenu() As Boolean Handles dissarrayMenu.Action
+			dragContainer1.lastSort = 0
 			dragContainer1.Arrange(3)
 			Return True
 			
@@ -220,12 +218,7 @@ End
 
 	#tag MenuHandler
 		Function hideSystemMenu() As Boolean Handles hideSystemMenu.Action
-			
 			HideSystemProcs = Not HideSystemProcs
-			'dragContainer1.Empty
-			'FirstRun = True
-			'dragContainer1.Update(True)
-			'dragContainer1.Arrange(dragContainer1.lastSort)
 			dragContainer1.ToggleSystem
 			Return True
 			
@@ -234,12 +227,7 @@ End
 
 	#tag MenuHandler
 		Function hilightingmenu() As Boolean Handles hilightingmenu.Action
-			'HilightOn = Not HilightOn
-			'dragContainer1.Empty
-			'FirstRun = True
-			'dragContainer1.Update(True)
-			'dragContainer1.Arrange(dragContainer1.lastSort)
-			dragContainer1.ToggleHilight
+			dragContainer1.ToggleHilight()
 			Return True
 			
 		End Function
@@ -278,6 +266,14 @@ End
 	#tag EndMenuHandler
 
 	#tag MenuHandler
+		Function setts() As Boolean Handles setts.Action
+			setswin.Show
+			Return True
+			
+		End Function
+	#tag EndMenuHandler
+
+	#tag MenuHandler
 		Function ToggleAutoArrange() As Boolean Handles ToggleAutoArrange.Action
 			If dragContainer1.lastSort > -1 Then
 			dragContainer1.lastSort = -1
@@ -299,10 +295,7 @@ End
 
 	#tag MenuHandler
 		Function unhidemenu() As Boolean Handles unhidemenu.Action
-			For i As Integer = 0 To UBound(dragContainer1.objects)
-			dragContainer1.objects(i).Hidden = False
-			Next
-			dragContainer1.Arrange(dragContainer1.lastSort)
+			dragContainer1.ToggleHidden()
 			Return True
 			
 		End Function
@@ -324,19 +317,17 @@ End
 	#tag Event
 		Sub Action()
 		  '#If DebugBuild Then Debug(CurrentMethodName)
-		  'If GLOBALPAUSE Then Break
 		  If Window1.count Mod 25 = 0 Then PollDisks()
-		  Window1.dragContainer1.DynUpdate()
 		  If DebugMode Then PollDebug()
 		  Window1.dragContainer1.Update()
 		  Window1.count = Window1.count + 1
-		  FirstRun = False
 		  lastFPS = Window1.dragContainer1.FPS
 		  Window1.dragContainer1.FPS = 0
 		  Dim d As New Date
 		  Window1.Status1.Text = d.LongDate + " " + d.LongTime + "   "
-		  Window1.Status.Text = "Showing: " + Str((UBound(activeProcesses) + 1) - (Window1.dragContainer1.sysProcs.Ubound + 1)) + " of " + Str(UBound(activeProcesses) + 1) + " running processes."
-		  
+		  Window1.Status.Text = "Showing: " + Str((UBound(activeProcesses) + 1) - (Window1.dragContainer1.HiddenProcCount)) + " of " + Str(UBound(activeProcesses) + 1) + " running processes."
+		  Init = False
+		  Me.Period = 1000
 		End Sub
 	#tag EndEvent
 #tag EndEvents

@@ -115,6 +115,13 @@ Begin Menu MenuBar1
          AltMenuModifier = True
          AutoEnable = True
       End
+      Begin MenuItem setts
+         SpecialMenu = 0
+         Text = "Settings..."
+         Index = -2147483648
+         MenuModifier = True
+         AutoEnable = True
+      End
    End
 End
 #tag EndMenu

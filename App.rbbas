@@ -15,6 +15,7 @@ Inherits Application
 
 	#tag Event
 		Sub Open()
+		  LoadConf()
 		  Dim args() As String = System.CommandLine.Split(" ")
 		  For Each arg As String In args
 		    If arg = "--debug" Then
@@ -82,6 +83,31 @@ Inherits Application
 		  Return True
 		End Function
 	#tag EndEvent
+
+
+	#tag Method, Flags = &h0
+		Sub LoadConf()
+		  Dim tis As TextInputStream
+		  Dim f As FolderItem = App.ExecutableFile.Parent.Child("visiproc.conf")
+		  If f.Exists Then
+		    tis = tis.Open(f)
+		    Dim js As New JSONItem(tis.ReadAll)
+		    
+		    tis.Close
+		    NewProcColor = Val("&h" + js.Value("NewProcColor").StringValue).IntToColor
+		    SystemProcColor = Val("&h" + js.Value("SystemProcColor").StringValue).IntToColor
+		    InvalidSystemProcColor = Val("&h" + js.Value("InvalidSystemProcColor").StringValue).IntToColor
+		    StringColor = Val("&h" + js.Value("StringColor").StringValue).IntToColor
+		    Globals.gTextFont = js.Value("TextFont").StringValue
+		    If js.HasName("Backdrop") Then Globals.BackDrop = GetFolderItem(js.Value("Backdrop").StringValue)
+		  End If
+		  'js.Value("NormalProcColor") = Hex(NormalProcColor)
+		  'js.Value("SystemProcColor") = Hex(SystemProcColor)
+		  'js.Value("InvalidSystemProcColor") = Hex(InvalidSystemProcColor)
+		  'js.Value("StringColor") = Hex(StringColor)
+		  'js.Value("TextFont") = Globals.gTextFont
+		End Sub
+	#tag EndMethod
 
 
 	#tag Constant, Name = kEditClear, Type = String, Dynamic = False, Default = \"&Delete", Scope = Public

@@ -82,7 +82,6 @@ Inherits Canvas
 		  
 		  Select Case hitItem.Text
 		  Case "Hide"
-		    Objects(currentObject).Hidden = True
 		    Hide(currentObject)
 		    'GLOBALPAUSE = True
 		  Case "Real Time"
@@ -169,6 +168,7 @@ Inherits Canvas
 		      If Obj.FolderItemAvailable Then
 		        Dim mb As MemoryBlock = Obj.FolderItem.AbsolutePath
 		        Call Objects(DropIndex).SpecialHandler.Invoke(mb)
+		        Objects(DropIndex).Name = Obj.FolderItem.Name
 		        Return
 		      End If
 		    End If
@@ -260,6 +260,7 @@ Inherits Canvas
 
 	#tag Event
 		Function MouseWheel(X As Integer, Y As Integer, deltaX as Integer, deltaY as Integer) As Boolean
+		  #pragma Unused deltaX
 		  '#If DebugBuild Then Debug(CurrentMethodName)
 		  Static doit As Integer
 		  If doit = 2 Or Not Throttle Then  //Performance kludge. Only update every fifth time we're called
@@ -269,7 +270,6 @@ Inherits Canvas
 		    If obj > -1 Then
 		      If Objects(obj).ResizeTo + deltaY > 5 And Objects(obj).ResizeTo + deltaY < 150 Then
 		        Objects(obj).ResizeTo = Objects(obj).ResizeTo + deltaY
-		        'GUIThread.Resume
 		        Refresh(False)
 		      End If
 		    End If
@@ -286,82 +286,62 @@ Inherits Canvas
 		  '#If DebugBuild Then Debug(CurrentMethodName)
 		  //Create the dynamic tiles
 		  Me.AcceptFileDrop(FileTypes1.Any)
-		  Dim cpuWin As New dragObject
-		  cpuWin.DynType = 0
-		  addObject(cpuWin)
-		  
-		  Dim diskWin As New dragObject
-		  diskWin.DynType = 1
-		  addObject(diskWin)
-		  
-		  If DebugMode Then
-		    Dim debugWin As New dragObject
-		    debugWin.DynType = 2
-		    addObject(debugWin)
-		  End If
-		  
-		  UpdateMutex = New Mutex("BS.Lock")
-		  
-		  'Dim mag As New dragObject  //Very slow
-		  'mag.DynType = 3
-		  'addObject(mag)
-		  
-		  Dim picdrop As New dragObject  //drop target
-		  picdrop.DynType = 4
-		  picdrop.SpecialHandler = AddressOf FileDropHandler
-		  picdrop.ResizeTo = 50
-		  addObject(picdrop)
-		  
-		  Dim tridDrop As New dragObject  //trid target
-		  tridDrop.DynType = 5
-		  tridDrop.SpecialHandler = AddressOf FileToolHandler
-		  addObject(tridDrop)
-		  
+		  'InitializeDynamics()
 		End Sub
 	#tag EndEvent
 
 	#tag Event
 		Sub Paint(g As Graphics)
 		  '#If DebugBuild Then Debug(CurrentMethodName)
-		  //First make sure we haven't been resized. If we have then we need to resize the buffer, too.
-		  Static lastWidth, lastHeight As Integer
-		  If lastWidth <> Me.Width Or lastHeight <> Me.Height Then
-		    buffer = New Picture(Me.Width, Me.Height, 24)
-		    lastWidth = Me.Width
-		    lastHeight = Me.Height
-		  End If
-		  If buffer = Nil Then Return
-		  //Then, clean up any prior states
-		  If Background <> Nil Then
-		    buffer.Graphics.DrawPicture(Background, 0, 0, buffer.Width, buffer.Height, 0, 0, Background.Width, Background.Height)
+		  If Window1.Visible Then
+		    If Globals.Init Then
+		      g.DrawPicture(InitImg, 0, 0)
+		      buffer = New Picture(Me.Width, Me.Height, 24)
+		      Return
+		    End If
+		    
+		    //First make sure we haven't been resized. If we have then we need to resize the buffer, too.
+		    Static lastWidth, lastHeight As Integer
+		    If lastWidth <> Me.Width Or lastHeight <> Me.Height Then
+		      buffer = New Picture(Me.Width, Me.Height, 24)
+		      lastWidth = Me.Width
+		      lastHeight = Me.Height
+		    End If
+		    If buffer = Nil Then Return
+		    //Then, clean up any prior states
+		    If Background <> Nil Then
+		      buffer.Graphics.DrawPicture(Background, 0, 0, buffer.Width, buffer.Height, 0, 0, Background.Width, Background.Height)
+		    Else
+		      buffer.Graphics.ForeColor = BackColor
+		      buffer.Graphics.FillRect(0, 0, buffer.Width, buffer.Height)
+		    End If
+		    
+		    If DebugMode Then 
+		      DrawVersion()  //draw the version text
+		      DrawFPS()      //Update the FPS text
+		      FPS = FPS + 1
+		    End If
+		    FrameCount = FrameCount + 1
+		    //Draw each dragObject one by one, starting with the bottom-most (Z-Ordering is reverse of the objects array's order)
+		    For i As Integer = 0 To objects.Ubound
+		      drawObject(i)
+		    Next
+		    
+		    If helptext <> Nil Then
+		      buffer.Graphics.DrawPicture(helptext, Me.MouseX + 10, Me.MouseY + 10)
+		    End If
+		    //Draw the buffer to the Canvas
+		    'g.DrawPicture(buffer, 0, 0)
+		    
+		    
+		    Declare Function BitBlt Lib "GDI32" (DCdest As Integer, xDest As Integer, yDest As Integer, nWidth As Integer, nHeight As Integer, _
+		    DCdource As Integer, xSource As Integer, ySource As Integer, rasterOp As Integer) As Boolean
+		    
+		    Call BitBlt(g.Handle(1), 0, 0, g.Width, g.Height, buffer.Graphics.Handle(1), left, top, SRCCOPY Or CAPTUREBLT)
 		  Else
-		    buffer.Graphics.ForeColor = BackColor
-		    buffer.Graphics.FillRect(0, 0, buffer.Width, buffer.Height)
+		    Break
+		    
 		  End If
-		  
-		  If DebugMode Then 
-		    DrawVersion()  //draw the version text
-		    DrawFPS()      //Update the FPS text
-		    FPS = FPS + 1
-		  End If
-		  FrameCount = FrameCount + 1
-		  //Draw each dragObject one by one, starting with the bottom-most (Z-Ordering is reverse of the objects array's order)
-		  For i As Integer = 0 To objects.Ubound
-		    drawObject(i)
-		  Next
-		  
-		  If helptext <> Nil Then
-		    buffer.Graphics.DrawPicture(helptext, Me.MouseX + 10, Me.MouseY + 10)
-		  End If
-		  //Draw the buffer to the Canvas
-		  'g.DrawPicture(buffer, 0, 0)
-		  
-		  
-		  Declare Function BitBlt Lib "GDI32" (DCdest As Integer, xDest As Integer, yDest As Integer, nWidth As Integer, nHeight As Integer, _
-		  DCdource As Integer, xSource As Integer, ySource As Integer, rasterOp As Integer) As Boolean
-		  
-		  Call BitBlt(g.Handle(1), 0, 0, g.Width, g.Height, buffer.Graphics.Handle(1), left, top, SRCCOPY Or CAPTUREBLT)
-		  
 		Exception
 		  Return
 		End Sub
@@ -384,13 +364,11 @@ Inherits Canvas
 	#tag Method, Flags = &h0
 		Sub Arrange(Order As Integer = 0)
 		  '#If DebugBuild Then Debug(CurrentMethodName)
-		  //If UpdateMutex.TryEnter Then
 		  
-		  'If Order = -1 Then Return
 		  
 		  Dim x As Integer = 14
 		  Dim y As Integer = 14
-		  //Needs cleanup
+		  
 		  Select Case Order
 		  Case 1
 		    Dim s() As String
@@ -422,6 +400,8 @@ Inherits Canvas
 		      Objects(u(i)).x = x
 		      Objects(u(i)).y = y
 		      If Objects.Ubound = i Then Continue
+		      If Objects(u(i + 1)).Image = Nil Then Continue
+		      
 		      If Objects(u(i)).Image.height + 14 + Objects(u(i + 1)).Image.height + 14 + y <= Me.Height Then
 		        y = y + Objects(u(i)).Image.height + 14
 		        If Objects(u(i)).Image.Width > widest Then 
@@ -486,7 +466,6 @@ Inherits Canvas
 		    If lastSort = 3 Then Return
 		    Dim rand As New Random
 		    For i As Integer = 0 To UBound(Objects)
-		      If Objects(i).Hidden Then Continue
 		      x = Rand.InRange(0, Window1.dragContainer1.Width)
 		      y = Rand.InRange(0, Window1.dragContainer1.Height)
 		      
@@ -573,7 +552,7 @@ Inherits Canvas
 		      Select Case objects(i).DynType
 		      Case 0
 		        Dim d() As Double = lastCPU
-		        s = "u: " + Format(d(0), "##0.00\%") + ";   k:" + Format(d(1), "##0.00\%") + EndOfLine + "Memory: " + Format(LastMem, "##0.00\%")
+		        s = "u: " + Format(d(0), "##0.00\%") + ";   k:" + Format(d(1), "##0.00\%") + EndOfLine + "RAM: " + Format(LastMem, "##0.00\%") + EndOfLine + "Page File: " + Format(LastPF, "##0.00\%")
 		        If s.InStr("J") > 0 Then Break
 		      Case 1
 		        For Each pp As VolumeInformation In Drives
@@ -596,9 +575,9 @@ Inherits Canvas
 		      Try
 		        s = Objects(i).Process.CommandLine
 		        If s = "" Then s = objects(i).Process.Name
-		        If Objects(i).Process.Suspended Then
-		          s = s + " (Suspended)"
-		        End If
+		        'If Objects(i).Process.Suspended Then
+		        's = s + " (Suspended)"
+		        'End If
 		      Catch
 		        s = "Image Not Resolved."
 		      End Try
@@ -622,18 +601,18 @@ Inherits Canvas
 		      strWidth = requiredWidth
 		      strHeight = requiredHeight
 		      helptext = New Picture(strWidth + 8, strHeight + 8, 32)
-		      helptext.Graphics.ForeColor = &cFFFF80
+		      helptext.Graphics.ForeColor = HelpColor
 		      helptext.Graphics.FillRect(0, 0, helptext.Width, helptext.Height)
-		      helptext.Graphics.ForeColor = &c000000
+		      helptext.Graphics.ForeColor = StringColor
 		      helptext.Graphics.DrawString(s, 2, 15)
 		      
 		    Else
 		      strWidth = helptext.Graphics.StringWidth(s)
 		      strHeight = helptext.Graphics.StringHeight(s, strWidth + 5)
 		      helptext = New Picture(strWidth + 4, strHeight + 4, 32)
-		      helptext.Graphics.ForeColor = &cFFFF80
+		      helptext.Graphics.ForeColor = HelpColor
 		      helptext.Graphics.FillRect(0, 0, helptext.Width, helptext.Height)
-		      helptext.Graphics.ForeColor = &c000000
+		      helptext.Graphics.ForeColor = StringColor
 		      helptext.Graphics.DrawString(s, 2, ((helptext.Height/2) + (strHeight/4)))
 		    End If
 		    helptext.Graphics.ForeColor = &c363636
@@ -653,7 +632,7 @@ Inherits Canvas
 		  '#If DebugBuild Then Debug(CurrentMethodName)
 		  //Draws the object onto to buffer
 		  //Objects(index).Update(False)
-		  If (Objects(index).Dynamic And hideDynamics) Or Objects(index).Hidden Then Return
+		  If (Objects(index).Dynamic And hideDynamics) Then Return
 		  
 		  If index = currentObject Then
 		    Dim p As Picture = DrawOutline(Index)
@@ -696,7 +675,7 @@ Inherits Canvas
 		    Case 2
 		      pid = "Debug Messages"
 		    Case 4
-		      pid = "Photo Frame"
+		      pid = objects(Index).Name
 		    Case 5
 		      pid = "File Multi-Tool"
 		    End Select
@@ -733,34 +712,12 @@ Inherits Canvas
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub DynUpdate()
-		  '#If DebugBuild Then Debug(CurrentMethodName)
-		  For i As Integer = 0 To UBound(Objects)
-		    If objects(i).Dynamic Then
-		      drawObject(i)
-		    End If
-		  Next
-		  Refresh(False)
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Sub Empty()
 		  '#If DebugBuild Then Debug(CurrentMethodName)
 		  ReDim objects(-1)
 		  ReDim activeProcesses(-1)
 		  ReDim activeProcessesOld(-1)
-		  Dim cpuWin As New dragObject
-		  cpuWin.DynType = 0
-		  Dim diskWin As New dragObject
-		  diskWin.DynType = 1
-		  addObject(cpuWin)
-		  addObject(diskwin)
-		  If DebugMode Then
-		    Dim debugWin As New dragObject
-		    debugWin.DynType = 2
-		    addObject(debugWin)
-		  End If
+		  InitializeDynamics()
 		  Refresh(False)
 		End Sub
 	#tag EndMethod
@@ -768,17 +725,11 @@ Inherits Canvas
 	#tag Method, Flags = &h21
 		Private Sub Hide(i As Integer)
 		  '#If DebugBuild Then Debug(CurrentMethodName)
-		  If Objects(i).Hidden Then
-		    currentObject = -1
-		    HiddenProcs.Append(Objects(i))
-		    Objects.Remove(i)
-		  Else
-		    While HiddenProcs.Ubound > -1
-		      Dim ob As dragObject = HiddenProcs.Pop
-		      ob.Hidden = False
-		      addObject(ob)
-		    Wend
-		  End If
+		  If Not Objects(i).Dynamic Then HiddenProcCount = HiddenProcCount + 1
+		  currentObject = -1
+		  HiddenProcs.Append(Objects(i))
+		  Objects.Remove(i)
+		  
 		End Sub
 	#tag EndMethod
 
@@ -789,13 +740,48 @@ Inherits Canvas
 		  #pragma BreakOnExceptions Off
 		  For i As Integer = objects.Ubound DownTo 0
 		    If (objects(i).x < x) And (x < objects(i).x + objects(i).image.Width) And (objects(i).y < y) And (y < objects(i).y + objects(i).image.height) Then
-		      If (Objects(i).Dynamic And hideDynamics) Or Objects(i).Hidden Then Return -1
+		      If (Objects(i).Dynamic And hideDynamics) Then Return -1
 		      Return i
 		    End If
 		  Next
 		  
 		  Return -1
 		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub InitializeDynamics()
+		  Dim cpuWin As New dragObject
+		  cpuWin.DynType = 0
+		  addObject(cpuWin)
+		  
+		  Dim diskWin As New dragObject
+		  diskWin.DynType = 1
+		  addObject(diskWin)
+		  
+		  If DebugMode Then
+		    Dim debugWin As New dragObject
+		    debugWin.DynType = 2
+		    addObject(debugWin)
+		  End If
+		  
+		  'Dim mag As New dragObject  //Very slow
+		  'mag.DynType = 3
+		  'addObject(mag)
+		  
+		  Dim picdrop As New dragObject  //drop target
+		  picdrop.DynType = 4
+		  picdrop.SpecialHandler = AddressOf FileDropHandler
+		  picdrop.ResizeTo = 50
+		  picdrop.Name = "Photo Frame"
+		  addObject(picdrop)
+		  
+		  Dim tridDrop As New dragObject  //trid target
+		  tridDrop.DynType = 5
+		  tridDrop.SpecialHandler = AddressOf FileToolHandler
+		  addObject(tridDrop)
+		  
+		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
@@ -815,6 +801,20 @@ Inherits Canvas
 		    addObject(debugWin)
 		    DebugMode = True
 		  End If
+		  Refresh(False)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub ToggleHidden()
+		  For i As Integer = UBound(HiddenProcs) DownTo 0
+		    addObject(HiddenProcs.Pop)
+		  Next
+		  
+		  currentObject = -1
+		  HiddenProcCount = 0
+		  Update()
+		  Arrange(lastSort)
 		  Refresh(False)
 		End Sub
 	#tag EndMethod
@@ -849,11 +849,13 @@ Inherits Canvas
 		      If Objects(i).Process.Hidden Then
 		        sysProcs.Append(Objects(i))
 		        Objects.Remove(i)
+		        HiddenProcCount = HiddenProcCount + 1
 		      End If
 		    Next
 		  Else
 		    While sysProcs.Ubound > -1
 		      addObject(sysProcs.Pop)
+		      HiddenProcCount = HiddenProcCount - 1
 		    Wend
 		  End If
 		  
@@ -890,27 +892,22 @@ Inherits Canvas
 		    Next
 		  Next
 		  
+		  Static dynInited As Boolean
+		  If Not dynInited Then
+		    InitializeDynamics()
+		    dynInited = True
+		  End If
 		  
 		  //Then, add any new processes that we want to show
 		  For Each proc As ProcessInformation In newProcs
-		    If proc.isCritical And HideSystemProcs Then
-		      Continue
-		    Else
-		      Dim no As New dragObject(proc)
-		      addObject(no)
-		    End If
+		    Dim no As New dragObject(proc)
+		    addObject(no)
 		  Next
 		  
 		  //If we added or removed any objects, we should re-sort
 		  If UBound(newProcs) > -1 Or UBound(activeProcessesOld) > -1 Then
-		    'If UpdateMutex.TryEnter Then
 		    Arrange(lastSort)
-		    'UpdateMutex.Leave
-		    'End If
 		  End If
-		  
-		  //Finally, draw the helptext, if any.
-		  drawHelp(Me.MouseX, Me.MouseY)
 		  
 		Exception
 		  Return
@@ -953,9 +950,35 @@ Inherits Canvas
 		Private helptext As Picture
 	#tag EndProperty
 
+	#tag Property, Flags = &h0
+		HiddenProcCount As Integer
+	#tag EndProperty
+
 	#tag Property, Flags = &h21
 		Private HiddenProcs() As dragObject
 	#tag EndProperty
+
+	#tag ComputedProperty, Flags = &h21
+		#tag Getter
+			Get
+			  Dim p As New Picture(Me.Width, Me.Height, 24)
+			  p.Graphics.ForeColor = &ccccccc
+			  p.Graphics.FillRect(0, 0, p.Width, p.Height)
+			  p.Graphics.ForeColor = &c000000
+			  p.Graphics.TextFont = "System"
+			  p.Graphics.TextSize = 75
+			  Dim nm As String = "One Moment Please..."
+			  Dim strWidth, strHeight As Integer
+			  strWidth = p.Graphics.StringWidth(nm)
+			  strHeight = p.Graphics.StringHeight(nm, p.Width)
+			  p.Graphics.DrawString(nm, ((p.Width/2) - (strWidth/2)), ((p.Height/2) + (strHeight/4)))
+			  
+			  
+			  Return p
+			End Get
+		#tag EndGetter
+		Private InitImg As Picture
+	#tag EndComputedProperty
 
 	#tag Property, Flags = &h0
 		lastSort As Integer = -1
@@ -979,6 +1002,10 @@ Inherits Canvas
 		Private menuUp As Boolean
 	#tag EndProperty
 
+	#tag Property, Flags = &h21
+		Private mInitImg As Picture
+	#tag EndProperty
+
 	#tag Property, Flags = &h0
 		#tag Note
 			The heart of this whole operation: an array of dragObjects. Each dragObject corresponds to a "window" drawn on the Parent dragContainer
@@ -992,10 +1019,6 @@ Inherits Canvas
 
 	#tag Property, Flags = &h0
 		sysProcs() As dragObject
-	#tag EndProperty
-
-	#tag Property, Flags = &h21
-		Private UpdateMutex As Mutex
 	#tag EndProperty
 
 
@@ -1097,6 +1120,11 @@ Inherits Canvas
 			Type="String"
 			EditorType="MultiLineEditor"
 			InheritedFrom="Canvas"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="HiddenProcCount"
+			Group="Behavior"
+			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Index"

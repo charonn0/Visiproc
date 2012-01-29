@@ -20,8 +20,9 @@ Protected Class dragObject
 		  y = Rand.InRange(0, Window1.dragContainer1.Height)
 		  
 		  flashTimer = New Timer
-		  If FirstRun Then
+		  If Not first Then
 		    flashTimer.Period = 10
+		    first = True
 		  Else
 		    flashTimer.Period = 1700
 		  End If
@@ -45,6 +46,7 @@ Protected Class dragObject
 		  #pragma BreakOnExceptions Off
 		  buffer.Graphics.TextFont = gTextFont
 		  buffer.Graphics.TextSize = gTextSize
+		  buffer.Graphics.ForeColor = StringColor
 		  Dim nm As String
 		  nm = Process.Name
 		  Dim strWidth, strHeight As Integer
@@ -66,7 +68,7 @@ Protected Class dragObject
 		              buffer.Graphics.ForeColor = SystemProcColor
 		              Exit For i
 		            ElseIf Process.path.SystemFile Then
-		              buffer.Graphics.ForeColor = &c00FFFF
+		              buffer.Graphics.ForeColor= StringColor
 		              Exit For i
 		            Else
 		              buffer.Graphics.ForeColor = InvalidSystemProcColor
@@ -77,20 +79,20 @@ Protected Class dragObject
 		        Next
 		      Else
 		        If Process.ProcessID = 0 Or Process.ProcessID = 4 Then
-		          buffer.Graphics.ForeColor = &c00A8F9
+		          buffer.Graphics.ForeColor = SystemProcColor
 		        Else
-		          buffer.Graphics.ForeColor = &cFFFFFE
+		          buffer.Graphics.ForeColor = NormalProcColor
 		        End If
 		      End If
 		      
 		    Else
-		      buffer.Graphics.ForeColor = &cFFFFFE
+		      buffer.Graphics.ForeColor = NormalProcColor
 		    End If
 		  Catch NilObjectException
-		    buffer.Graphics.ForeColor = &cFFFFFE
+		    buffer.Graphics.ForeColor = NormalProcColor
 		  End Try
 		  buffer.Graphics.FillRect(0, 0, buffer.Width, buffer.Height)
-		  buffer.Graphics.ForeColor = &c000000
+		  buffer.Graphics.ForeColor= StringColor
 		  buffer.Graphics.DrawString(nm, buffer.Width - strWidth - 10, ((buffer.Height/2) + (strHeight/3)))
 		End Sub
 	#tag EndMethod
@@ -190,6 +192,10 @@ Protected Class dragObject
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
+		Private first As Boolean
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
 		Private flashTimer As Timer
 	#tag EndProperty
 
@@ -201,10 +207,6 @@ Protected Class dragObject
 		#tag EndGetter
 		height As Integer
 	#tag EndComputedProperty
-
-	#tag Property, Flags = &h0
-		Hidden As Boolean = False
-	#tag EndProperty
 
 	#tag Property, Flags = &h0
 		history() As Integer
@@ -233,7 +235,7 @@ Protected Class dragObject
 			    Case 3
 			      Ret = magImage
 			    Case 4
-			      If Photo = Nil Then Photo = Alfred20E20Neuman20milk
+			      If Photo = Nil Then Photo = Untitled
 			      Ret = Photo
 			    Case 5
 			      If DropTarget = Nil Then DropTarget = target1751
@@ -256,7 +258,11 @@ Protected Class dragObject
 			    End Select
 			  End If
 			  
-			  Return Resize(ret)
+			  If ResizeTo <> 100 Then
+			    Return Resize(ret)
+			  Else
+			    Return ret
+			  End If
 			  
 			  
 			End Get
@@ -270,6 +276,10 @@ Protected Class dragObject
 
 	#tag Property, Flags = &h21
 		Private mwidth As Integer
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		Name As String
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -327,12 +337,6 @@ Protected Class dragObject
 			Name="height"
 			Group="Behavior"
 			Type="Integer"
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="Hidden"
-			Group="Behavior"
-			InitialValue="False"
-			Type="Boolean"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="image"

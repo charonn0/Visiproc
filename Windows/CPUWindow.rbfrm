@@ -240,7 +240,9 @@ Begin Window CPUWindow
       Mode            =   2
       Period          =   1250
       Scope           =   0
+      TabIndex        =   5
       TabPanelIndex   =   0
+      TabStop         =   True
       Top             =   85
       Width           =   32
    End

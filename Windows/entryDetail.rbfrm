@@ -46,7 +46,6 @@ Begin Window entryDetail
       Selectable      =   False
       TabIndex        =   1
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Path:"
       TextAlign       =   2
       TextColor       =   6053820
@@ -165,7 +164,6 @@ Begin Window entryDetail
       Selectable      =   False
       TabIndex        =   4
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Process ID:"
       TextAlign       =   2
       TextColor       =   0
@@ -242,7 +240,6 @@ Begin Window entryDetail
       Selectable      =   False
       TabIndex        =   6
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Parent Process:"
       TextAlign       =   2
       TextColor       =   0
@@ -319,7 +316,6 @@ Begin Window entryDetail
       Selectable      =   False
       TabIndex        =   8
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Priority:"
       TextAlign       =   2
       TextColor       =   0
@@ -396,7 +392,6 @@ Begin Window entryDetail
       Selectable      =   False
       TabIndex        =   10
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Thread Count:"
       TextAlign       =   2
       TextColor       =   0
@@ -462,7 +457,6 @@ Begin Window entryDetail
       Selectable      =   False
       TabIndex        =   13
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Description:"
       TextAlign       =   2
       TextColor       =   0
@@ -540,7 +534,6 @@ Begin Window entryDetail
       Selectable      =   False
       TabIndex        =   15
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "File Version:"
       TextAlign       =   2
       TextColor       =   0
@@ -618,7 +611,6 @@ Begin Window entryDetail
       Selectable      =   False
       TabIndex        =   17
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Company:"
       TextAlign       =   2
       TextColor       =   0
@@ -696,7 +688,6 @@ Begin Window entryDetail
       Selectable      =   False
       TabIndex        =   19
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Copyright:"
       TextAlign       =   2
       TextColor       =   0
@@ -774,7 +765,6 @@ Begin Window entryDetail
       Selectable      =   False
       TabIndex        =   21
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Trademark:"
       TextAlign       =   2
       TextColor       =   0
@@ -852,7 +842,6 @@ Begin Window entryDetail
       Selectable      =   False
       TabIndex        =   23
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Name:"
       TextAlign       =   2
       TextColor       =   0
@@ -957,7 +946,6 @@ Begin Window entryDetail
       Selectable      =   False
       TabIndex        =   26
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Command Line:"
       TextAlign       =   2
       TextColor       =   0
@@ -1100,9 +1088,7 @@ Begin Window entryDetail
       Mode            =   2
       Period          =   1000
       Scope           =   0
-      TabIndex        =   28
       TabPanelIndex   =   0
-      TabStop         =   True
       Top             =   -34
       Width           =   32
    End
@@ -1178,10 +1164,24 @@ End
 		    Call GetWindowListForProcess(process)
 		    If process.Windows.Ubound > -1 Then
 		      Self.Width = 736
+		      Dim visiWins(), invisiWins() As ProcWindow
 		      For Each win As ProcWindow In process.Windows
-		        Listbox1.AddRow(win.Title)
-		        Listbox1.RowTag(Listbox1.LastIndex) = win
+		        If win.Visible Then
+		          visiWins.Append(win)
+		        Else
+		          invisiWins.Append(win)
+		        End If
 		      Next
+		      For i As Integer = 0 To UBound(visiWins)
+		        Listbox1.AddRow(visiWins(i).Title)
+		        Listbox1.RowTag(Listbox1.LastIndex) = visiWins(i)
+		      Next
+		      
+		      For i As Integer = 0 To UBound(invisiWins)
+		        Listbox1.AddRow(invisiWins(i).Title + " (Invisible)")
+		        Listbox1.RowTag(Listbox1.LastIndex) = invisiWins(i)
+		      Next
+		      
 		    Else
 		      Self.Width = 394
 		    End If
@@ -1354,6 +1354,19 @@ End
 		    End If
 		  End Select
 		  
+		End Function
+	#tag EndEvent
+	#tag Event
+		Function CellBackgroundPaint(g As Graphics, row As Integer, column As Integer) As Boolean
+		  If row > Me.LastIndex Then Return False
+		  Dim procWin As ProcWindow
+		  procWin = Me.RowTag(row)
+		  If procWin <> Nil Then
+		    If Not procWin.Visible Then
+		      g.ForeColor = &cCCCCCC
+		      g.FillRect(0, 0, g.Width, g.Height)
+		    End If
+		  End If
 		End Function
 	#tag EndEvent
 #tag EndEvents

@@ -206,7 +206,8 @@ Protected Module StdLib
 		  
 		  Declare Function SendMessageW Lib "User32" ( hwnd as Integer, msg as Integer, wParam as Integer, lParam as Ptr ) As Integer
 		  
-		  dim ret as Integer = SendMessageW(w.Handle, WM_SETICON, ICON_SMALL, newIcon.CopyOSHandle(Picture.HandleType.WindowsICON))
+		  //dim ret as Integer =
+		  Call  SendMessageW(w.Handle, WM_SETICON, ICON_SMALL, newIcon.CopyOSHandle(Picture.HandleType.WindowsICON))
 		  Return
 		  
 		End Sub

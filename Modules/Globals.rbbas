@@ -1,5 +1,34 @@
 #tag Module
 Protected Module Globals
+	#tag Method, Flags = &h0
+		Function ColorToHex(Extends c As Color) As String
+		  //Converts a Color to a hex string.
+		  //This function should be cross-platform safe.
+		  
+		  Dim ret As String
+		  
+		  If Hex(c.red).len = 1 Then
+		    ret = ret + "0" + Hex(c.red)
+		  Else
+		    ret = ret + Hex(c.red)
+		  End If
+		  
+		  If Hex(c.green).len = 1 Then
+		    ret = ret + "0" + Hex(c.green)
+		  Else
+		    ret = ret + Hex(c.green)
+		  End If
+		  
+		  If Hex(c.blue).len = 1 Then
+		    ret = ret + "0" + Hex(c.blue)
+		  Else
+		    ret = ret + Hex(c.blue)
+		  End If
+		  
+		  Return ret
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h21
 		Private Sub drawBack(ByRef Buffer As Picture)
 		  Buffer.Graphics.ForeColor = &c000000
@@ -155,7 +184,8 @@ Protected Module Globals
 		  lastCPU(0) = times(0)
 		  lastCPU(1) = times(1)
 		  lines.Append(LastMem)
-		  Static history(), history1(), history2() As Integer
+		  lines.Append(LastPF)
+		  Static history(), history1(), history2(), history3() As Integer
 		  
 		  
 		  CPUBuffer = New Picture(250, 100, 24)
@@ -165,9 +195,9 @@ Protected Module Globals
 		    history.Remove(0)
 		    history1.Remove(0)
 		    history2.Remove(0)
+		    history3.Remove(0)
 		  End If
 		  
-		  CPUBuffer.Graphics.ForeColor = &c00FF00
 		  if lines(0) = 0 Then lines(0) = 1
 		  history.Append(lines(0))
 		  lastCPU = times
@@ -179,7 +209,7 @@ Protected Module Globals
 		    End Try
 		  Next
 		  
-		  CPUBuffer.Graphics.ForeColor = &cF47A00
+		  CPUBuffer.Graphics.ForeColor = &cFF000000 //&cF47A00
 		  if lines(1) = 0 Then lines(1) = 1
 		  history1.Append(lines(1))
 		  
@@ -202,6 +232,27 @@ Protected Module Globals
 		      CPUBuffer.Graphics.DrawLine(0, 100 - history2(i), 10, 100 - history2(i))
 		    End Try
 		  Next
+		  
+		  
+		  CPUBuffer.Graphics.ForeColor = &cFF8000
+		  if lines(3) = 0 Then lines(3) = 1
+		  history3.Append(lines(3))
+		  
+		  For i As Integer = 0 To UBound(history3)
+		    Try
+		      CPUBuffer.Graphics.DrawLine(i * 10, 100 - history3(i - 1), i * 10 + 10, 100 - history3(i))
+		    Catch OutOfBoundsException
+		      CPUBuffer.Graphics.DrawLine(0, 100 - history3(i), 10, 100 - history3(i))
+		    End Try
+		  Next
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
 		  
 		  
 		End Sub
@@ -394,6 +445,10 @@ Protected Module Globals
 
 
 	#tag Property, Flags = &h0
+		BackDrop As FolderItem
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		CPUBuffer As Picture
 	#tag EndProperty
 
@@ -430,10 +485,6 @@ Protected Module Globals
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		FirstRun As Boolean = True
-	#tag EndProperty
-
-	#tag Property, Flags = &h0
 		FrameCount As UInt64
 	#tag EndProperty
 
@@ -450,7 +501,7 @@ Protected Module Globals
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		GUIThread As UpdGUIThread
+		HelpColor As Color = &cFFFF80
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -463,6 +514,10 @@ Protected Module Globals
 
 	#tag Property, Flags = &h0
 		HilightOn As Boolean = True
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		Init As Boolean = True
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -487,6 +542,18 @@ Protected Module Globals
 			End Get
 		#tag EndGetter
 		LastMem As Double
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  Dim x, y As UInt64
+			  x = Platform.TotalPageFile
+			  y = Platform.AvailablePageFile
+			  Return 100 - (y * 100 / x)
+			End Get
+		#tag EndGetter
+		LastPF As Double
 	#tag EndComputedProperty
 
 	#tag ComputedProperty, Flags = &h0
@@ -521,7 +588,15 @@ Protected Module Globals
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		NormalProcColor As Color = &cFFFFFE
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		Photo As Picture
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		StringColor As Color
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -533,7 +608,7 @@ Protected Module Globals
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		Version As Double = 0.04
+		Version As Double = 0.05
 	#tag EndProperty
 
 	#tag ComputedProperty, Flags = &h0
@@ -632,12 +707,6 @@ Protected Module Globals
 			Type="Picture"
 		#tag EndViewProperty
 		#tag ViewProperty
-			Name="FirstRun"
-			Group="Behavior"
-			InitialValue="True"
-			Type="Boolean"
-		#tag EndViewProperty
-		#tag ViewProperty
 			Name="GLOBALPAUSE"
 			Group="Behavior"
 			Type="Boolean"
@@ -654,6 +723,12 @@ Protected Module Globals
 			Group="Behavior"
 			InitialValue="12"
 			Type="Integer"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="HelpColor"
+			Group="Behavior"
+			InitialValue="&cFFFF80"
+			Type="Color"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="HideDynamics"
@@ -680,6 +755,12 @@ Protected Module Globals
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
+			Name="Init"
+			Group="Behavior"
+			InitialValue="True"
+			Type="Boolean"
+		#tag EndViewProperty
+		#tag ViewProperty
 			Name="InvalidSystemProcColor"
 			Group="Behavior"
 			InitialValue="&cF5772C"
@@ -692,6 +773,11 @@ Protected Module Globals
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="LastMem"
+			Group="Behavior"
+			Type="Double"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="LastPF"
 			Group="Behavior"
 			Type="Double"
 		#tag EndViewProperty
@@ -720,9 +806,21 @@ Protected Module Globals
 			Type="Color"
 		#tag EndViewProperty
 		#tag ViewProperty
+			Name="NormalProcColor"
+			Group="Behavior"
+			InitialValue="&cFFFFFE"
+			Type="Color"
+		#tag EndViewProperty
+		#tag ViewProperty
 			Name="Photo"
 			Group="Behavior"
 			Type="Picture"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="StringColor"
+			Group="Behavior"
+			InitialValue="&c000000"
+			Type="Color"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"

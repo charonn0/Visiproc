@@ -90,7 +90,7 @@ Inherits Canvas
 		  drawingBuffer.Graphics.Italic = italic
 		  drawingBuffer.Graphics.Underline = underline
 		  drawingBuffer.Graphics.TextFont = textFont
-		  drawingBuffer.Graphics.ForeColor = textColor
+		  drawingBuffer.Graphics.ForeColor= StringColor
 		  drawingBuffer.Graphics.TextSize = textSize
 		  Dim strWidth, strHeight As Integer
 		  strWidth = drawingBuffer.Graphics.StringWidth(percStr)

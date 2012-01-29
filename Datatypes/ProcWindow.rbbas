@@ -236,6 +236,16 @@ Protected Class ProcWindow
 		Title As String
 	#tag EndComputedProperty
 
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  Declare Function IsWindowVisible Lib "User32" (HWND As Integer) As Boolean
+			  Return IsWindowVisible(Handle)
+			End Get
+		#tag EndGetter
+		Visible As Boolean
+	#tag EndComputedProperty
+
 
 	#tag Structure, Name = LOGFONT, Flags = &h0
 		Height As Integer
@@ -301,6 +311,11 @@ Protected Class ProcWindow
 			Group="Position"
 			InitialValue="0"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Visible"
+			Group="Behavior"
+			Type="Boolean"
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Class

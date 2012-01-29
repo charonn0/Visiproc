@@ -223,8 +223,9 @@ End
 		      
 		    End Select
 		  Catch OutOfBoundsException
-		    Return True
+		    Return False
 		  End Try
+		  Return True
 		End Function
 	#tag EndEvent
 	#tag Event
