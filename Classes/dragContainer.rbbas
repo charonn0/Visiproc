@@ -177,7 +177,7 @@ Inherits Canvas
 		    Dim f As FolderItem = Obj.FolderItem
 		    Dim p As Picture = Picture.Open(f)
 		    If p <> Nil Then
-		      Me.Background = p
+		      Globals.BackPic = p
 		      Return
 		    End If
 		  End If
@@ -293,55 +293,56 @@ Inherits Canvas
 	#tag Event
 		Sub Paint(g As Graphics)
 		  '#If DebugBuild Then Debug(CurrentMethodName)
-		  If Window1.Visible Then
-		    If Globals.Init Then
-		      g.DrawPicture(InitImg, 0, 0)
-		      buffer = New Picture(Me.Width, Me.Height, 24)
-		      Return
-		    End If
-		    
-		    //First make sure we haven't been resized. If we have then we need to resize the buffer, too.
-		    Static lastWidth, lastHeight As Integer
-		    If lastWidth <> Me.Width Or lastHeight <> Me.Height Then
-		      buffer = New Picture(Me.Width, Me.Height, 24)
-		      lastWidth = Me.Width
-		      lastHeight = Me.Height
-		    End If
-		    If buffer = Nil Then Return
-		    //Then, clean up any prior states
-		    If Background <> Nil Then
-		      buffer.Graphics.DrawPicture(Background, 0, 0, buffer.Width, buffer.Height, 0, 0, Background.Width, Background.Height)
-		    Else
-		      buffer.Graphics.ForeColor = BackColor
-		      buffer.Graphics.FillRect(0, 0, buffer.Width, buffer.Height)
-		    End If
-		    
-		    If DebugMode Then 
-		      DrawVersion()  //draw the version text
-		      DrawFPS()      //Update the FPS text
-		      FPS = FPS + 1
-		    End If
-		    FrameCount = FrameCount + 1
-		    //Draw each dragObject one by one, starting with the bottom-most (Z-Ordering is reverse of the objects array's order)
-		    For i As Integer = 0 To objects.Ubound
-		      drawObject(i)
-		    Next
-		    
-		    If helptext <> Nil Then
-		      buffer.Graphics.DrawPicture(helptext, Me.MouseX + 10, Me.MouseY + 10)
-		    End If
-		    //Draw the buffer to the Canvas
-		    'g.DrawPicture(buffer, 0, 0)
-		    
-		    
-		    Declare Function BitBlt Lib "GDI32" (DCdest As Integer, xDest As Integer, yDest As Integer, nWidth As Integer, nHeight As Integer, _
-		    DCdource As Integer, xSource As Integer, ySource As Integer, rasterOp As Integer) As Boolean
-		    
-		    Call BitBlt(g.Handle(1), 0, 0, g.Width, g.Height, buffer.Graphics.Handle(1), left, top, SRCCOPY Or CAPTUREBLT)
-		  Else
-		    Break
-		    
+		  If Globals.Init Then
+		    g.DrawPicture(InitImg, 0, 0)
+		    buffer = New Picture(Me.Width, Me.Height, 24)
+		    Return
 		  End If
+		  
+		  //First make sure we haven't been resized. If we have then we need to resize the buffer, too.
+		  Static lastWidth, lastHeight As Integer
+		  If lastWidth <> Me.Width Or lastHeight <> Me.Height Then
+		    buffer = New Picture(Me.Width, Me.Height, 24)
+		    lastWidth = Me.Width
+		    lastHeight = Me.Height
+		  End If
+		  If buffer = Nil Then Return
+		  //Then, clean up any prior states
+		  If Globals.BackPic <> Nil Then
+		    Static scaled As Picture
+		    If scaled = Nil Or Scaled.Width <> Me.Width Or Scaled.Height <> Me.Height Then
+		      scaled = New Picture(Me.Width, Me.Height, Globals.BackPic.Depth)
+		      scaled.Graphics.DrawPicture(Globals.BackPic, 0, 0, scaled.Width, scaled.Height, 0, 0, Globals.BackPic.Width, Globals.BackPic.Height)
+		    End If
+		    buffer.Graphics.DrawPicture(scaled, 0, 0)
+		  Else
+		    buffer.Graphics.ForeColor = BackColor
+		    buffer.Graphics.FillRect(0, 0, buffer.Width, buffer.Height)
+		  End If
+		  
+		  If DebugMode Then 
+		    DrawVersion()  //draw the version text
+		    DrawFPS()      //Update the FPS text
+		    FPS = FPS + 1
+		  End If
+		  FrameCount = FrameCount + 1
+		  //Draw each dragObject one by one, starting with the bottom-most (Z-Ordering is reverse of the objects array's order)
+		  For i As Integer = 0 To objects.Ubound
+		    drawObject(i)
+		  Next
+		  
+		  If helptext <> Nil Then
+		    buffer.Graphics.DrawPicture(helptext, Me.MouseX + 10, Me.MouseY + 10)
+		  End If
+		  //Draw the buffer to the Canvas
+		  g.DrawPicture(buffer, 0, 0)
+		  
+		  
+		  'Declare Function BitBlt Lib "GDI32" (DCdest As Integer, xDest As Integer, yDest As Integer, nWidth As Integer, nHeight As Integer, _
+		  'DCdource As Integer, xSource As Integer, ySource As Integer, rasterOp As Integer) As Boolean
+		  '
+		  'Call BitBlt(g.Handle(1), 0, 0, g.Width, g.Height, buffer.Graphics.Handle(1), left, top, SRCCOPY Or CAPTUREBLT)
+		  
 		Exception
 		  Return
 		End Sub
@@ -919,10 +920,6 @@ Inherits Canvas
 		BackColor As Color = &c808080
 	#tag EndProperty
 
-	#tag Property, Flags = &h0
-		Background As Picture
-	#tag EndProperty
-
 	#tag Property, Flags = &h21
 		Private buffer As Picture
 	#tag EndProperty
@@ -1058,11 +1055,6 @@ Inherits Canvas
 			Type="Picture"
 			EditorType="Picture"
 			InheritedFrom="Canvas"
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="Background"
-			Group="Behavior"
-			Type="Picture"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="DoubleBuffer"

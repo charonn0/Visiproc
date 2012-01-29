@@ -96,29 +96,12 @@ Begin Menu MenuBar1
          MenuModifier = True
          AutoEnable = True
       End
-      Begin MenuItem SetBackdrop
-         SpecialMenu = 0
-         Text = "Set Background Image"
-         Index = -2147483648
-         ShortcutKey = "I"
-         Shortcut = "Cmd+I"
-         MenuModifier = True
-         AutoEnable = True
-      End
-      Begin MenuItem SetBackColor
-         SpecialMenu = 0
-         Text = "Set Background Color"
-         Index = -2147483648
-         ShortcutKey = "C"
-         Shortcut = "Cmd+Shift+C"
-         MenuModifier = True
-         AltMenuModifier = True
-         AutoEnable = True
-      End
       Begin MenuItem setts
          SpecialMenu = 0
-         Text = "Settings..."
+         Text = "Settings"
          Index = -2147483648
+         ShortcutKey = "W"
+         Shortcut = "Cmd+W"
          MenuModifier = True
          AutoEnable = True
       End

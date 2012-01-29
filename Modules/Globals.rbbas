@@ -96,22 +96,13 @@ Protected Module Globals
 		      Else
 		        Photo = p
 		      End If
+		      PhotoFile = f
+		      App.WriteConf
 		    End If
 		  End If
 		  
 		  Return True
 		  
-		  
-		  'Window1.VLCPlayer.playlist.clear
-		  'Call Window1.VLCPlayer.playlist.Add(data.StringValue(0, data.Size))
-		  'Window1.VLCPlayer.playlist.playItem(Window1.VLCPlayer.playlist.itemCount - 1)
-		  'Window1.VLCPlayer.input.Time = 0
-		  '
-		  'Exception Err
-		  'If Err IsA COM.COMException Then
-		  'Return False
-		  'End If
-		  'Return True
 		End Function
 	#tag EndMethod
 
@@ -448,6 +439,23 @@ Protected Module Globals
 		BackDrop As FolderItem
 	#tag EndProperty
 
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  If mBackPic = Nil And BackDrop <> Nil Then
+			    mBackPic = mBackPic.Open(BackDrop)
+			  End If
+			  return mBackPic
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  mBackPic = value
+			End Set
+		#tag EndSetter
+		BackPic As Picture
+	#tag EndComputedProperty
+
 	#tag Property, Flags = &h0
 		CPUBuffer As Picture
 	#tag EndProperty
@@ -493,7 +501,7 @@ Protected Module Globals
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		gTextFont As String = "System"
+		gTextFont As String = "Arial"
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -576,6 +584,10 @@ Protected Module Globals
 	#tag EndComputedProperty
 
 	#tag Property, Flags = &h21
+		Private mBackPic As Picture
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
 		Private mmagImage As Picture
 	#tag EndProperty
 
@@ -593,6 +605,10 @@ Protected Module Globals
 
 	#tag Property, Flags = &h0
 		Photo As Picture
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		PhotoFile As FolderItem
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -675,6 +691,11 @@ Protected Module Globals
 
 
 	#tag ViewBehavior
+		#tag ViewProperty
+			Name="BackPic"
+			Group="Behavior"
+			Type="Picture"
+		#tag EndViewProperty
 		#tag ViewProperty
 			Name="CPUBuffer"
 			Group="Behavior"

@@ -87,25 +87,64 @@ Inherits Application
 
 	#tag Method, Flags = &h0
 		Sub LoadConf()
-		  Dim tis As TextInputStream
 		  Dim f As FolderItem = App.ExecutableFile.Parent.Child("visiproc.conf")
 		  If f.Exists Then
+		    Dim linesFromFile() As String
+		    Dim tis As TextInputStream
 		    tis = tis.Open(f)
-		    Dim js As New JSONItem(tis.ReadAll)
-		    
+		    While Not tis.EOF
+		      linesFromFile.Append(tis.ReadLine)
+		    Wend
 		    tis.Close
-		    NewProcColor = Val("&h" + js.Value("NewProcColor").StringValue).IntToColor
-		    SystemProcColor = Val("&h" + js.Value("SystemProcColor").StringValue).IntToColor
-		    InvalidSystemProcColor = Val("&h" + js.Value("InvalidSystemProcColor").StringValue).IntToColor
-		    StringColor = Val("&h" + js.Value("StringColor").StringValue).IntToColor
-		    Globals.gTextFont = js.Value("TextFont").StringValue
-		    If js.HasName("Backdrop") Then Globals.BackDrop = GetFolderItem(js.Value("Backdrop").StringValue)
+		    For i As Integer = 0 To UBound(linesFromFile)
+		      Dim settName As String = NthField(linesFromFile(i), "=", 1).Uppercase
+		      Dim settVal As Variant = NthField(linesFromFile(i), "=", 2)
+		      
+		      Select Case settName
+		      Case "NewProcColor"
+		        NewProcColor = settVal
+		      Case "SystemProcColor"
+		        SystemProcColor = settVal
+		      Case "InvalidSystemProcColor"
+		        InvalidSystemProcColor = settVal
+		      Case "StringColor"
+		        StringColor = settVal
+		      Case "TextFont"
+		        Globals.gTextFont = settVal
+		      Case "Backdrop"
+		        Globals.BackDrop = GetFolderItem(settVal)
+		      Case "HelpColor"
+		        Globals.HelpColor = settVal
+		      Case "NormalProcColor"
+		        Globals.NormalProcColor = settVal
+		      Case "Photo"
+		        
+		        Globals.PhotoFile = GetFolderItem(settVal)
+		        
+		      End Select
+		    Next
+		    
 		  End If
-		  'js.Value("NormalProcColor") = Hex(NormalProcColor)
-		  'js.Value("SystemProcColor") = Hex(SystemProcColor)
-		  'js.Value("InvalidSystemProcColor") = Hex(InvalidSystemProcColor)
-		  'js.Value("StringColor") = Hex(StringColor)
-		  'js.Value("TextFont") = Globals.gTextFont
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub WriteConf()
+		  Dim f As FolderItem = App.ExecutableFile.Parent.Child("visiproc.conf")
+		  Dim tos As TextOutputStream
+		  tos = tos.Create(f)
+		  
+		  If Globals.BackDrop <> Nil Then tos.WriteLine("Backdrop=" + Globals.BackDrop.AbsolutePath)
+		  tos.WriteLine("NewProcColor=" + Str(NewProcColor))
+		  tos.WriteLine("NormalProcColor=" + Str(NormalProcColor))
+		  tos.WriteLine("SystemProcColor=" + Str(SystemProcColor))
+		  tos.WriteLine("InvalidSystemProcColor=" + Str(InvalidSystemProcColor))
+		  tos.WriteLine("StringColor=" + Str(StringColor))
+		  tos.WriteLine("TextFont=" + Globals.gTextFont)
+		  tos.WriteLine("HelpColor=" + Str(Globals.HelpColor))
+		  If PhotoFile <> Nil Then tos.WriteLine("Photo=" + Globals.PhotoFile.AbsolutePath)
+		  tos.Close
+		  
 		End Sub
 	#tag EndMethod
 

@@ -43,7 +43,6 @@ Begin Window setswin
       Scope           =   0
       TabIndex        =   0
       TabPanelIndex   =   0
-      TabStop         =   True
       Top             =   4
       Visible         =   True
       Width           =   27
@@ -70,7 +69,6 @@ Begin Window setswin
       Selectable      =   False
       TabIndex        =   1
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "New Process"
       TextAlign       =   0
       TextColor       =   0
@@ -102,7 +100,6 @@ Begin Window setswin
       Scope           =   0
       TabIndex        =   2
       TabPanelIndex   =   0
-      TabStop         =   True
       Top             =   38
       Visible         =   True
       Width           =   27
@@ -129,7 +126,6 @@ Begin Window setswin
       Selectable      =   False
       TabIndex        =   3
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Normal Process"
       TextAlign       =   0
       TextColor       =   0
@@ -161,7 +157,6 @@ Begin Window setswin
       Scope           =   0
       TabIndex        =   4
       TabPanelIndex   =   0
-      TabStop         =   True
       Top             =   72
       Visible         =   True
       Width           =   27
@@ -188,7 +183,6 @@ Begin Window setswin
       Selectable      =   False
       TabIndex        =   5
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "System Process"
       TextAlign       =   0
       TextColor       =   0
@@ -220,7 +214,6 @@ Begin Window setswin
       Scope           =   0
       TabIndex        =   6
       TabPanelIndex   =   0
-      TabStop         =   True
       Top             =   4
       Visible         =   True
       Width           =   27
@@ -247,7 +240,6 @@ Begin Window setswin
       Selectable      =   False
       TabIndex        =   7
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Bad System Process"
       TextAlign       =   0
       TextColor       =   0
@@ -282,7 +274,6 @@ Begin Window setswin
       Selectable      =   False
       TabIndex        =   8
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Text Font:"
       TextAlign       =   2
       TextColor       =   0
@@ -379,7 +370,6 @@ Begin Window setswin
       Selectable      =   False
       TabIndex        =   11
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Text Color:"
       TextAlign       =   2
       TextColor       =   0
@@ -411,7 +401,6 @@ Begin Window setswin
       Scope           =   0
       TabIndex        =   12
       TabPanelIndex   =   0
-      TabStop         =   True
       Top             =   120
       Visible         =   True
       Width           =   27
@@ -435,7 +424,6 @@ Begin Window setswin
       Scope           =   0
       TabIndex        =   13
       TabPanelIndex   =   0
-      TabStop         =   True
       Top             =   70
       Visible         =   True
       Width           =   27
@@ -462,7 +450,6 @@ Begin Window setswin
       Selectable      =   False
       TabIndex        =   14
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Background Color"
       TextAlign       =   0
       TextColor       =   0
@@ -556,7 +543,6 @@ Begin Window setswin
       Scope           =   0
       TabIndex        =   17
       TabPanelIndex   =   0
-      TabStop         =   True
       Top             =   36
       Visible         =   True
       Width           =   27
@@ -583,7 +569,6 @@ Begin Window setswin
       Selectable      =   False
       TabIndex        =   18
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Tooltip Color"
       TextAlign       =   0
       TextColor       =   0
@@ -759,7 +744,7 @@ End
 #tag Events PushButton1
 	#tag Event
 		Sub Action()
-		  Window1.dragContainer1.Background = Nil
+		  Globals.BackPic = Nil
 		  Window1.dragContainer1.Refresh(true)
 		End Sub
 	#tag EndEvent
@@ -777,22 +762,7 @@ End
 		  If newBackdrop <> Nil Then Globals.BackDrop = newBackdrop
 		  Window1.dragContainer1.Empty
 		  Window1.dragContainer1.Update
-		  Dim f As FolderItem = App.ExecutableFile.Parent.Child("visiproc.conf")
-		  Dim tos As TextOutputStream
-		  tos = tos.Create(f)
-		  Dim js As New Dictionary
-		  If Globals.BackDrop <> Nil Then js.Value("Backdrop") = Globals.BackDrop.AbsolutePath
-		  js.Value("NewProcColor") = Str(NewProcColor)
-		  js.Value("NormalProcColor") = Str(NormalProcColor)
-		  js.Value("SystemProcColor") = Str(SystemProcColor)
-		  js.Value("InvalidSystemProcColor") = Str(InvalidSystemProcColor)
-		  js.Value("StringColor") = Str(StringColor)
-		  js.Value("TextFont") = Globals.gTextFont
-		  Dim js1 As New JSONItem
-		  js1 = js
-		  Dim s As String = js1.Serialize(js1)
-		  tos.Write(s)
-		  tos.Close
+		  App.WriteConf()
 		  Self.Close
 		End Sub
 	#tag EndEvent
@@ -800,15 +770,7 @@ End
 #tag Events PushButton4
 	#tag Event
 		Sub Action()
-		  NewProcColor = newproc.FillColor
-		  NormalProcColor = proc.FillColor
-		  SystemProcColor = sysproc.FillColor
-		  InvalidSystemProcColor = sysproc1.FillColor
-		  StringColor = txtColor.FillColor
-		  Globals.gTextFont = Self.textFont.Text
-		  HelpColor = help.FillColor
-		  Window1.dragContainer1.Empty
-		  Window1.dragContainer1.Update
+		  Self.Close
 		End Sub
 	#tag EndEvent
 #tag EndEvents

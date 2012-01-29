@@ -235,8 +235,41 @@ Protected Class dragObject
 			    Case 3
 			      Ret = magImage
 			    Case 4
-			      If Photo = Nil Then Photo = Untitled
-			      Ret = Photo
+			      If PhotoFile <> Nil Then
+			        If PhotoFile.Exists Then
+			          Photo = Photo.Open(PhotoFile)
+			          ret = Photo
+			          Me.Name = PhotoFile.Name
+			        Else
+			          If Photo = Nil Then
+			            Dim p As New Picture (250, 150, 24)
+			            p.Graphics.ForeColor = &c000000
+			            p.Graphics.TextFont = "Arial"
+			            p.Graphics.TextSize = 15
+			            Dim nm As String = "Drop a photo here."
+			            Dim strWidth, strHeight As Integer
+			            strWidth = p.Graphics.StringWidth(nm)
+			            strHeight = p.Graphics.StringHeight(nm, p.Width)
+			            p.Graphics.DrawString(nm, ((p.Width/2) - (strWidth/2)), ((p.Height/2) + (strHeight/4)))
+			            Photo = p
+			          End If
+			        End If
+			      Else
+			        If Photo = Nil Then
+			          Dim p As New Picture (250, 150, 24)
+			          p.Graphics.ForeColor = &c000000
+			          p.Graphics.TextFont = "Arial"
+			          p.Graphics.TextSize = 15
+			          Dim nm As String = "Drop a photo here."
+			          Dim strWidth, strHeight As Integer
+			          strWidth = p.Graphics.StringWidth(nm)
+			          strHeight = p.Graphics.StringHeight(nm, p.Width)
+			          p.Graphics.DrawString(nm, ((p.Width/2) - (strWidth/2)), ((p.Height/2) + (strHeight/4)))
+			          Photo = p
+			        End If
+			      End If
+			      ret = Photo
+			      
 			    Case 5
 			      If DropTarget = Nil Then DropTarget = target1751
 			      If Working Then

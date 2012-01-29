@@ -79,6 +79,7 @@ Begin Window Window1
       Selectable      =   False
       TabIndex        =   1
       TabPanelIndex   =   0
+      TabStop         =   True
       Text            =   ""
       TextAlign       =   0
       TextColor       =   0
@@ -113,6 +114,7 @@ Begin Window Window1
       Selectable      =   False
       TabIndex        =   2
       TabPanelIndex   =   0
+      TabStop         =   True
       Text            =   ""
       TextAlign       =   2
       TextColor       =   0
@@ -133,7 +135,9 @@ Begin Window Window1
       Mode            =   2
       Period          =   1
       Scope           =   0
+      TabIndex        =   3
       TabPanelIndex   =   0
+      TabStop         =   True
       Top             =   -8
       Width           =   32
    End
@@ -236,30 +240,6 @@ End
 	#tag MenuHandler
 		Function procIDSortMenu() As Boolean Handles procIDSortMenu.Action
 			dragContainer1.Arrange(2)
-			Return True
-			
-		End Function
-	#tag EndMenuHandler
-
-	#tag MenuHandler
-		Function SetBackColor() As Boolean Handles SetBackColor.Action
-			Dim c As Color
-			If SelectColor(c, "Choose a Color") Then
-			dragContainer1.BackColor = c
-			dragContainer1.Refresh(False)
-			End If
-			Return True
-			
-		End Function
-	#tag EndMenuHandler
-
-	#tag MenuHandler
-		Function SetBackdrop() As Boolean Handles SetBackdrop.Action
-			Dim f As FolderItem = GetOpenFolderItem(FileTypes1.ImageFile)
-			If f <> Nil Then
-			dragContainer1.Background = Picture.Open(f)
-			dragContainer1.Refresh(False)
-			End If
 			Return True
 			
 		End Function
