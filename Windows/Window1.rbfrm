@@ -189,7 +189,7 @@ End
 		  perc.Append(New PercentMenu("80%"))
 		  perc.Append(New PercentMenu("90%"))
 		  Dim onehundred As New PercentMenu("100%")
-		  onehundred.Checked = True 
+		  onehundred.Checked = True
 		  perc.Append(onehundred)
 		  'perc.Append(New PercentMenu("110%"))
 		  'perc.Append(New PercentMenu("120%"))
@@ -335,7 +335,7 @@ End
 		  Window1.Status1.Text = d.LongDate + " " + d.LongTime + "   "
 		  Window1.Status.Text = "Showing: " + Str((UBound(activeProcesses) + 1) - (Window1.dragContainer1.HiddenProcCount)) + " of " + Str(UBound(activeProcesses) + 1) + " running processes."
 		  Init = False
-		  Me.Period = 1000
+		  Me.Period = 250
 		End Sub
 	#tag EndEvent
 #tag EndEvents

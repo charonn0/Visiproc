@@ -272,7 +272,7 @@ Protected Class ProcessInformation
 			  Else
 			    'Debug("Use Cached Command Line For ProcID: " + Str(ProcessID))
 			  End If
-			   Return mCommandLine
+			  Return mCommandLine
 			End Get
 		#tag EndGetter
 		CommandLine As String

@@ -44,17 +44,8 @@ Protected Class dragObject
 	#tag Method, Flags = &h21
 		Private Sub drawText(ByRef buffer As Picture, newproc As Boolean = False)
 		  #pragma BreakOnExceptions Off
-		  buffer.Graphics.TextFont = gTextFont
-		  buffer.Graphics.TextSize = gTextSize
-		  buffer.Graphics.ForeColor = StringColor
-		  Dim nm As String
-		  nm = Process.Name
-		  Dim strWidth, strHeight As Integer
-		  strWidth = buffer.Graphics.StringWidth(nm)
-		  strHeight = buffer.Graphics.StringHeight(nm, buffer.Width)
-		  buffer = New Picture(strWidth + 64, 32, 32)
-		  strWidth = buffer.Graphics.StringWidth(nm)
-		  strHeight = buffer.Graphics.StringHeight(nm, buffer.Width)
+		  Dim nm As Picture = TextToPicture(Process.Name, gTextFont,gTextSize, False, False, False, StringColor)
+		  buffer = New Picture(nm.Width + 64, 32, 32)
 		  Try
 		    If newproc And HilightOn And Not Dynamic Then
 		      buffer.Graphics.ForeColor = NewProcColor
@@ -92,8 +83,10 @@ Protected Class dragObject
 		    buffer.Graphics.ForeColor = NormalProcColor
 		  End Try
 		  buffer.Graphics.FillRect(0, 0, buffer.Width, buffer.Height)
-		  buffer.Graphics.ForeColor= StringColor
-		  buffer.Graphics.DrawString(nm, buffer.Width - strWidth - 10, ((buffer.Height/2) + (strHeight/3)))
+		  nm = TextToPicture(Process.Name, gTextFont,gTextSize, False, False, False, StringColor, buffer.Graphics.ForeColor)
+		  buffer.Graphics.DrawPicture(nm, 32, 0)
+		  
+		  'buffer.Graphics.DrawString(nm, buffer.Width - strWidth - 10, ((buffer.Height/2) + (strHeight/3)))
 		End Sub
 	#tag EndMethod
 
@@ -127,6 +120,9 @@ Protected Class dragObject
 		      p = dynpic
 		    Case 4
 		      dynpic = photo
+		      p = dynpic
+		    Case 6
+		      dynpic = Clock.ShowTime(New Date)
 		      p = dynpic
 		    End Select
 		  End If
@@ -241,7 +237,7 @@ Protected Class dragObject
 			          If Photo = Nil Then
 			            Dim p As New Picture (250, 150, 24)
 			            p.Graphics.ForeColor = &c000000
-			            p.Graphics.TextFont = "Arial"
+			            p.Graphics.TextFont = gTextFont
 			            p.Graphics.TextSize = 15
 			            Dim nm As String = "Drop a photo here."
 			            Dim strWidth, strHeight As Integer
@@ -255,7 +251,7 @@ Protected Class dragObject
 			        If Photo = Nil Then
 			          Dim p As New Picture (250, 150, 24)
 			          p.Graphics.ForeColor = &c000000
-			          p.Graphics.TextFont = "Arial"
+			          p.Graphics.TextFont = gTextFont
 			          p.Graphics.TextSize = 15
 			          Dim nm As String = "Drop a photo here."
 			          Dim strWidth, strHeight As Integer
@@ -285,7 +281,10 @@ Protected Class dragObject
 			      Else
 			        Ret = DropTarget
 			      End If
+			    Case 6  //Clock
+			      Return Clock.ShowTime(New Date)
 			    End Select
+			    
 			  End If
 			  
 			  If ResizeTo <> 100 Then

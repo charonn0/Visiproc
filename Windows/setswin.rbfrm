@@ -338,7 +338,7 @@ Begin Window setswin
       InitialParent   =   ""
       InitialValue    =   ""
       Italic          =   ""
-      Left            =   380
+      Left            =   208
       ListIndex       =   0
       LockBottom      =   ""
       LockedInPosition=   False
@@ -352,7 +352,7 @@ Begin Window setswin
       TextFont        =   "System"
       TextSize        =   11
       TextUnit        =   0
-      Top             =   -53
+      Top             =   122
       Underline       =   ""
       Visible         =   True
       Width           =   46
@@ -368,7 +368,7 @@ Begin Window setswin
       Index           =   -2147483648
       InitialParent   =   ""
       Italic          =   ""
-      Left            =   218
+      Left            =   279
       LockBottom      =   ""
       LockedInPosition=   False
       LockLeft        =   True
@@ -386,7 +386,7 @@ Begin Window setswin
       TextFont        =   "System"
       TextSize        =   11
       TextUnit        =   0
-      Top             =   123
+      Top             =   125
       Transparent     =   True
       Underline       =   ""
       Visible         =   True
@@ -402,7 +402,7 @@ Begin Window setswin
       HelpTag         =   ""
       Index           =   -2147483648
       InitialParent   =   ""
-      Left            =   279
+      Left            =   340
       LockBottom      =   ""
       LockedInPosition=   False
       LockLeft        =   True
@@ -412,7 +412,7 @@ Begin Window setswin
       TabIndex        =   12
       TabPanelIndex   =   0
       TabStop         =   True
-      Top             =   120
+      Top             =   122
       Visible         =   True
       Width           =   27
    End
@@ -746,7 +746,7 @@ End
 		Sub Open()
 		  For i As Integer = 1 to 50
 		    me.AddRow(Str(i))
-		    'If UIControl.fontSize = i Then Me.ListIndex = i - 1
+		    If gTextSize = i Then Me.ListIndex = i - 1
 		  Next
 		End Sub
 	#tag EndEvent
@@ -773,6 +773,7 @@ End
 		  InvalidSystemProcColor = sysproc1.FillColor
 		  StringColor = txtColor.FillColor
 		  Globals.gTextFont = Self.textFont.Text
+		  Globals.gTextSize = Val(textSize.Text)
 		  HelpColor = help.FillColor
 		  If newBackdrop <> Nil Then Globals.BackDrop = newBackdrop
 		  Window1.dragContainer1.Empty

@@ -117,6 +117,8 @@ Inherits Application
 		        Globals.HelpColor = settVal
 		      Case "NormalProcColor"
 		        Globals.NormalProcColor = settVal
+		      Case "TextSize"
+		        Globals.gTextSize = settVal.IntegerValue
 		      Case "Photo"
 		        
 		        Globals.PhotoFile = GetFolderItem(settVal)
@@ -142,6 +144,7 @@ Inherits Application
 		  tos.WriteLine("StringColor=" + Str(StringColor))
 		  tos.WriteLine("TextFont=" + Globals.gTextFont)
 		  tos.WriteLine("HelpColor=" + Str(Globals.HelpColor))
+		  tos.WriteLine("TextSize=" + Str(Globals.gTextSize))
 		  If PhotoFile <> Nil Then tos.WriteLine("Photo=" + Globals.PhotoFile.AbsolutePath)
 		  tos.Close
 		  

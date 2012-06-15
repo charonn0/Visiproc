@@ -3,7 +3,7 @@ Protected Module StdLib
 	#tag Method, Flags = &h0
 		Function CaptureScreen() As Picture
 		  //Calls GetPartialScreenShot with a rectangle comprising all of the main screen (screen 0). Returns a Picture
-		   
+		  
 		  Declare Function GetSystemMetrics Lib "User32"  (nIndex As Integer) As integer
 		  Return GetPartialScreenShot(0, GetSystemMetrics(0), 0, GetSystemMetrics(1))
 		End Function
@@ -129,7 +129,7 @@ Protected Module StdLib
 
 	#tag Method, Flags = &h0
 		Function FileFromProcessID(processID As Integer) As FolderItem
-		  //Given a processID number of an active process, tries to resolve the executable file for the program. Raises an exception with 
+		  //Given a processID number of an active process, tries to resolve the executable file for the program. Raises an exception with
 		  //ErrorNumber = LastWin32Error if it cannot resolve the file. Most likely this would be due to insufficient access rights
 		  
 		  Declare Function GetModuleFileNameExW Lib "psapi.dll" (ByVal hProcess As Integer, ByVal hModule As Integer, ModuleName As Ptr, ByVal nSize _

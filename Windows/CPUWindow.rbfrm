@@ -233,6 +233,7 @@ Begin Window CPUWindow
       Width           =   354
    End
    Begin Timer Timer1
+      Enabled         =   True
       Height          =   32
       Index           =   -2147483648
       Left            =   486
@@ -244,6 +245,7 @@ Begin Window CPUWindow
       TabPanelIndex   =   0
       TabStop         =   True
       Top             =   85
+      Visible         =   True
       Width           =   32
    End
    Begin PushButton PushButton1

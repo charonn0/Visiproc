@@ -4,22 +4,15 @@ Inherits Thread
 	#tag Event
 		Sub Run()
 		  While True
-		    doit()
-		    'If GUIThread.State = 4 Then 
-		    'Break
-		    'GUIThread.Run
-		    'End If
-		    Me.Sleep(1000)
+		    PollCPU()
+		    #If DebugBuild Then 
+		      Return
+		    #Else
+		      Me.Sleep(1000)
+		    #endif
 		  Wend
 		End Sub
 	#tag EndEvent
-
-
-	#tag Method, Flags = &h21
-		Private Sub doit()
-		  PollCPU
-		End Sub
-	#tag EndMethod
 
 
 	#tag ViewBehavior

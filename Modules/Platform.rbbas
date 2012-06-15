@@ -81,7 +81,7 @@ Protected Module Platform
 
 	#tag Method, Flags = &h1
 		Protected Sub Beep(freq As Integer, duration As Integer)
-		  //This function differs from the built-in Beep method in that both the frequency and duration of the beep can (must) be specified. 
+		  //This function differs from the built-in Beep method in that both the frequency and duration of the beep must be specified.
 		  //Windows Vista and XP64 omit this function.
 		  
 		  If System.IsFunctionAvailable("Beep", "Kernel32") Then
@@ -359,7 +359,7 @@ Protected Module Platform
 		  //This function attempts to disable the privilege designated by PrivilegeName in the process' security token.
 		  //Privilege names are documented here: http://msdn.microsoft.com/en-us/library/windows/desktop/bb530716%28v=vs.85%29.aspx
 		  //This function will fail and return False if the processes security token did not already posess the requested privilege, if the privilege
-		  //requested does not exist, if the process does not have TOKEN_ADJUST_PRIVILEGES and TOKEN_QUERY access to itself, or if the Privilege was not 
+		  //requested does not exist, if the process does not have TOKEN_ADJUST_PRIVILEGES and TOKEN_QUERY access to itself, or if the Privilege was not
 		  //already enabled.
 		  
 		  If AdjustPrivilegeToken(PrivilegeName, 0) = 0 Then
@@ -683,7 +683,7 @@ Protected Module Platform
 
 	#tag Method, Flags = &h1
 		Protected Function IsShuttingDown() As Boolean
-		  //True if the user requires an application to present information visually in situations where it would otherwise 
+		  //True if the user requires an application to present information visually in situations where it would otherwise
 		  //present the information only in audible form. i.e. for deaf users.
 		  Return GetMetric(&h2000) <> 0
 		End Function
@@ -700,7 +700,7 @@ Protected Module Platform
 
 	#tag Method, Flags = &h1
 		Protected Function LeftHandedMouse() As Boolean
-		  //True if the user requires an application to present information visually in situations where it would otherwise 
+		  //True if the user requires an application to present information visually in situations where it would otherwise
 		  //present the information only in audible form. i.e. for deaf users.
 		  Return GetMetric(23) <> 0
 		End Function
@@ -718,7 +718,7 @@ Protected Module Platform
 	#tag Method, Flags = &h1
 		Protected Function MemoryUse() As Integer
 		  //Returns an Integer representing the percent of system memory currently in use.
-		   
+		  
 		  Declare Function GlobalMemoryStatusEx Lib "Kernel32" (ByRef MemStatus As MEMORYSTATUSEX) As Boolean
 		  
 		  Dim MemStatus As MEMORYSTATUSEX
@@ -901,7 +901,7 @@ Protected Module Platform
 
 	#tag Method, Flags = &h1
 		Protected Function ShowSounds() As Boolean
-		  //True if the user requires an application to present information visually in situations where it would otherwise 
+		  //True if the user requires an application to present information visually in situations where it would otherwise
 		  //present the information only in audible form. i.e. for deaf users.
 		  Return GetMetric(70) <> 0
 		End Function

@@ -74,6 +74,7 @@ Begin Window debugdetail
       _ScrollWidth    =   -1
    End
    Begin Timer Timer1
+      Enabled         =   True
       Height          =   32
       Index           =   -2147483648
       Left            =   468
@@ -85,6 +86,7 @@ Begin Window debugdetail
       TabPanelIndex   =   0
       TabStop         =   True
       Top             =   0
+      Visible         =   True
       Width           =   32
    End
    Begin PushButton PushButton1

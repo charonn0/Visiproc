@@ -33,7 +33,7 @@ Protected Module Globals
 		Private Sub drawBack(ByRef Buffer As Picture)
 		  Buffer.Graphics.ForeColor = &c000000
 		  Buffer.Graphics.FillRect(0, 0, Buffer.Width, Buffer.Height)
-		  Buffer.Graphics.ForeColor = &c008000
+		  Buffer.Graphics.ForeColor = &c3F3F3F00
 		  For i As Integer = 0 To Buffer.Width Step 10
 		    Buffer.Graphics.DrawLine(i, 0, i, Buffer.Height)
 		  Next
@@ -192,9 +192,12 @@ Protected Module Globals
 		  if lines(0) = 0 Then lines(0) = 1
 		  history.Append(lines(0))
 		  lastCPU = times
+		  Dim x, y As Integer
 		  For i As Integer = 0 To UBound(history)
 		    Try
-		      CPUBuffer.Graphics.DrawLine(i * 10, 100 - history(i - 1), i * 10 + 10, 100 - history(i))
+		      x = i * 10
+		      y = 100 - history(i - 1)
+		      CPUBuffer.Graphics.DrawLine(x, y, x + 10, 100 - history(i))
 		    Catch OutOfBoundsException
 		      CPUBuffer.Graphics.DrawLine(0, 100 - history(i), 10, 100 - history(i))
 		    End Try
@@ -313,7 +316,7 @@ Protected Module Globals
 		      Dim p As New Picture(250, 15, 24)
 		      p.Graphics.ForeColor = &ccccccc
 		      p.Graphics.FillRect(0, 0, p.Width, p.Height)
-		      If f.Filesystem = "CDFS" Then
+		      If f.Filesystem = "CDFS" Or f.Filesystem = "UDF" Then
 		        DrawBar(p, (100 - perc) * p.Width / 100, 1)
 		      Else
 		        DrawBar(p, (100 - perc) * p.Width / 100)
@@ -328,7 +331,7 @@ Protected Module Globals
 		      strHeight = p.Graphics.StringHeight(nm, p.Width)
 		      p.Graphics.DrawString(nm, p.Width - strWidth - 10, ((p.Height/2) + (strHeight/4)))
 		      nm = f.Name
-		      If nm = "" Then 
+		      If nm = "" Then
 		        nm = "(No Name)"
 		      End If
 		      strWidth = p.Graphics.StringWidth(nm)
@@ -375,6 +378,58 @@ Protected Module Globals
 		  
 		Exception
 		  Return Source
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function TextToPicture(Text As String, Font As String = "System", FontSize As Integer = 11, Bold As Boolean = False, Underline As Boolean = False, Italic As Boolean = False, forecolor As Color = &c000000, BackColor As Color = &cFFFFFF) As Picture
+		  //Given any String, returns a picture of that string. Line breaks are honored.
+		  //The optional parameters ought to be self-explanitory.
+		  
+		  If Text = "" Then
+		    Return New Picture(1, 1, 32)
+		  End If
+		  Dim lines() As Picture
+		  Dim requiredHeight, requiredWidth As Integer
+		  Dim tlines() As String = Split(Text, EndOfLine)
+		  
+		  For i As Integer = 0 To UBound(tlines)
+		    If tlines(i) = "" Then tlines(i) = " "
+		    Dim p As New Picture(250, 250, 24)
+		    p.Graphics.TextFont = Font
+		    p.Graphics.TextSize = FontSize
+		    p.Graphics.Bold = Bold
+		    p.Graphics.Italic = Italic
+		    p.Graphics.Underline = Underline
+		    Dim nm As String = tlines(i)
+		    Dim strWidth, strHeight As Integer
+		    strWidth = p.Graphics.StringWidth(nm) + 5
+		    strHeight = p.Graphics.StringHeight(nm, strWidth)
+		    p = New Picture(strWidth, strHeight, 32)
+		    p.Graphics.ForeColor = BackColor
+		    p.Graphics.FillRect(0, 0, p.Width, p.Height)
+		    p.Graphics.AntiAlias = True
+		    p.Graphics.ForeColor = forecolor
+		    p.Graphics.TextFont = Font
+		    p.Graphics.TextSize = FontSize
+		    p.Graphics.Bold = Bold
+		    p.Graphics.Italic = Italic
+		    p.Graphics.Underline = Underline
+		    p.Graphics.DrawString(nm, 1, ((p.Height/2) + (strHeight/4)))
+		    lines.Append(p)
+		    requiredHeight = requiredHeight + p.Height
+		    If p.Width > requiredWidth Then requiredWidth = p.Width
+		  Next
+		  Dim txtBuffer As Picture
+		  txtBuffer = New Picture(requiredWidth, requiredHeight, 24)
+		  Dim x, y As Integer
+		  txtbuffer.Graphics.AntiAlias = False
+		  For i As Integer = 0 To UBound(lines)
+		    txtBuffer.Graphics.DrawPicture(lines(i), x, y)
+		    y = y + lines(i).Height
+		  Next
+		  txtBuffer.Transparent = 1
+		  Return txtBuffer
 		End Function
 	#tag EndMethod
 
@@ -501,11 +556,11 @@ Protected Module Globals
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		gTextFont As String = "Arial"
+		gTextFont As String = "MS Reference Sans Serif"
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		gTextSize As Integer = 12
+		gTextSize As Integer = 10
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -624,7 +679,7 @@ Protected Module Globals
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		Version As Double = 0.05
+		Version As Double = 0.07
 	#tag EndProperty
 
 	#tag ComputedProperty, Flags = &h0

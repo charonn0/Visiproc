@@ -114,6 +114,9 @@ End
 		    Dim free, total As UInt64
 		    Dim dr As New VolumeInformation(Volume(i).AbsolutePath)
 		    Listbox1.AddRow(dr.Path, dr.Name, dr.Filesystem, prettifyBytes(dr.Totalbytes), prettifyBytes(dr.FreeBytes))
+		    Listbox1.CellTag(Listbox1.LastIndex, 3) = dr.Totalbytes
+		    Listbox1.CellTag(Listbox1.LastIndex, 4) = dr.FreeBytes
+		    
 		    total = dr.Totalbytes \ 1000
 		    free = dr.FreeBytes \ 1000
 		    'If total <= 0 Then Listbox1.Cell(Listbox1.LastIndex, 1) = "(No Disk)"
@@ -175,7 +178,7 @@ End
 		        //g.FillRect(0, 0, perc, g.Height)
 		        
 		      End If
-		    Case 2 
+		    Case 2
 		      If perc > 35 Then
 		        perc = perc - 35
 		        perc = perc * 100 \ 10
@@ -244,6 +247,23 @@ End
 		    f.Launch
 		  End If
 		End Sub
+	#tag EndEvent
+	#tag Event
+		Function CompareRows(row1 as Integer, row2 as Integer, column as Integer, ByRef result as Integer) As Boolean
+		  If column = 3 Or column = 4 Then
+		    Dim r1, r2 As UInt64
+		    r1 = Me.CellTag(row1, column)
+		    r2 = Me.CellTag(row2, column)
+		    If r1 > r2 Then
+		      result =  1
+		    ElseIf r2 > r1 Then
+		      result =  -1
+		    Else
+		      result =  0
+		    End If
+		    Return True
+		  End If
+		End Function
 	#tag EndEvent
 #tag EndEvents
 #tag Events PushButton1

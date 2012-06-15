@@ -387,7 +387,7 @@ Protected Module ProcTools
 		      
 		    End If
 		  Next
-		  If ret = proc.Threads.Ubound + 1 Then 
+		  If ret = proc.Threads.Ubound + 1 Then
 		    'Break
 		    Return True
 		  Else

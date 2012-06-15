@@ -3,11 +3,10 @@ Protected Class dragContainer
 Inherits Canvas
 	#tag Event
 		Function ConstructContextualMenu(base as MenuItem, x as Integer, y as Integer) As Boolean
-		  '#If DebugBuild Then Debug(CurrentMethodName)
 		  #pragma Unused x
 		  #pragma Unused y
 		  If currentObject = -1 Then Return False
-		  'If objects(currentObject).Dynamic Then 
+		  'If objects(currentObject).Dynamic Then
 		  base.Append(New MenuItem("Hide"))
 		  Dim resize As New MenuItem("Resize")
 		  resize.Append(New MenuItem("10%"))
@@ -28,7 +27,7 @@ Inherits Canvas
 		  base.Append(resize)
 		  'Return True
 		  'Else
-		  If Not objects(currentObject).Dynamic Then 
+		  If Not objects(currentObject).Dynamic Then
 		    Dim priorityMnu, rt, hi, an, norm, bn, idle, term, affin, find As MenuItem
 		    
 		    priorityMnu = New MenuItem("Change Priority")
@@ -75,6 +74,7 @@ Inherits Canvas
 	#tag Event
 		Function ContextualMenuAction(hitItem as MenuItem) As Boolean
 		  '#If DebugBuild Then Debug(CurrentMethodName)
+		  
 		  If currentObject = -1 Then Return True
 		  
 		  
@@ -132,6 +132,7 @@ Inherits Canvas
 		Sub DoubleClick(X As Integer, Y As Integer)
 		  '#If DebugBuild Then Debug(CurrentMethodName)
 		  //Double click on the background. Opens an "open..." dialog.
+		  
 		  #pragma Unused x
 		  #pragma Unused y
 		  If currentObject > -1 Then
@@ -162,6 +163,7 @@ Inherits Canvas
 	#tag Event
 		Sub DropObject(obj As DragItem, action As Integer)
 		  '#If DebugBuild Then Debug(CurrentMethodName)
+		  
 		  DropIndex = hitpointToObject(Me.MouseX, Me.MouseY)
 		  If DropIndex > -1 Then
 		    If Objects(DropIndex).DynType = 4 Or Objects(DropIndex).DynType = 5 Then
@@ -197,6 +199,7 @@ Inherits Canvas
 		Function MouseDown(X As Integer, Y As Integer) As Boolean
 		  '#If DebugBuild Then Debug(CurrentMethodName)
 		  //First, save the old currentObject
+		  
 		  Dim refreshn As Integer = currentObject
 		  
 		  //Get the new currentobject
@@ -225,43 +228,41 @@ Inherits Canvas
 
 	#tag Event
 		Sub MouseDrag(X As Integer, Y As Integer)
-		  '#If DebugBuild Then Debug(CurrentMethodName)
 		  lastSort = -1
-		  Static doit As Integer
-		  If doit = 5 Or Not Throttle Then  //Performance kludge. Only update every fifth time we're called
-		    doit = 0
-		    If currentObject > -1 Then
-		      //Calculate the new position of the object, update the object, then refresh the control.
-		      If lastX = X And lastY = Y Then Return
-		      Dim objX As Integer = x - lastx
-		      Dim objY As Integer = y - lasty
-		      lastx = x
-		      lasty = y
-		      objects(currentObject).x = objects(currentObject).x + objX
-		      objects(currentObject).y = objects(currentObject).y + objY
-		      Refresh(False)
-		    End If
+		  'Static doit As Integer
+		  'If doit = 5 Or Not Throttle Then  //Performance kludge. Only update every fifth time we're called
+		  'doit = 0
+		  If currentObject > -1 Then
+		    //Calculate the new position of the object, update the object, then refresh the control.
+		    If lastX = X And lastY = Y Then Return
+		    Dim objX As Integer = x - lastx
+		    Dim objY As Integer = y - lasty
+		    lastx = x
+		    lasty = y
+		    objects(currentObject).x = objects(currentObject).x + objX
+		    objects(currentObject).y = objects(currentObject).y + objY
+		    Refresh(False)
 		  End If
-		  doit = doit + 1
+		  'End If
+		  'doit = doit + 1
 		End Sub
 	#tag EndEvent
 
 	#tag Event
 		Sub MouseMove(X As Integer, Y As Integer)
-		  '#If DebugBuild Then Debug(CurrentMethodName)
-		  Static doit As Integer
-		  If doit = 5 Or Not Throttle Then  //Performance kludge. Only update every fifth time we're called
-		    drawHelp(X, Y)
-		    doit = 0
-		  End If
-		  doit = doit + 1
+		  'Static doit As Integer
+		  'If doit = 5 Or Not Throttle Then  //Performance kludge. Only update every fifth time we're called
+		  drawHelp(X, Y)
+		  'doit = 0
+		  'End If
+		  'doit = doit + 1
+		  helpfader.Reset()
 		End Sub
 	#tag EndEvent
 
 	#tag Event
 		Function MouseWheel(X As Integer, Y As Integer, deltaX as Integer, deltaY as Integer) As Boolean
 		  #pragma Unused deltaX
-		  '#If DebugBuild Then Debug(CurrentMethodName)
 		  Static doit As Integer
 		  If doit = 2 Or Not Throttle Then  //Performance kludge. Only update every fifth time we're called
 		    doit = 0
@@ -287,6 +288,10 @@ Inherits Canvas
 		  //Create the dynamic tiles
 		  Me.AcceptFileDrop(FileTypes1.Any)
 		  'InitializeDynamics()
+		  helpfader = New Timer
+		  helpfader.Period = 500
+		  AddHandler helpfader.Action, AddressOf helpfaderhandler
+		  helpfader.Mode = Timer.ModeMultiple
 		End Sub
 	#tag EndEvent
 
@@ -302,7 +307,8 @@ Inherits Canvas
 		  //First make sure we haven't been resized. If we have then we need to resize the buffer, too.
 		  Static lastWidth, lastHeight As Integer
 		  If lastWidth <> Me.Width Or lastHeight <> Me.Height Then
-		    buffer = New Picture(Me.Width, Me.Height, 24)
+		    'buffer = New Picture(Me.Width, Me.Height, 24)
+		    
 		    lastWidth = Me.Width
 		    lastHeight = Me.Height
 		  End If
@@ -320,7 +326,7 @@ Inherits Canvas
 		    buffer.Graphics.FillRect(0, 0, buffer.Width, buffer.Height)
 		  End If
 		  
-		  If DebugMode Then 
+		  If DebugMode Then
 		    DrawVersion()  //draw the version text
 		    DrawFPS()      //Update the FPS text
 		    FPS = FPS + 1
@@ -337,11 +343,6 @@ Inherits Canvas
 		  //Draw the buffer to the Canvas
 		  g.DrawPicture(buffer, 0, 0)
 		  
-		  
-		  'Declare Function BitBlt Lib "GDI32" (DCdest As Integer, xDest As Integer, yDest As Integer, nWidth As Integer, nHeight As Integer, _
-		  'DCdource As Integer, xSource As Integer, ySource As Integer, rasterOp As Integer) As Boolean
-		  '
-		  'Call BitBlt(g.Handle(1), 0, 0, g.Width, g.Height, buffer.Graphics.Handle(1), left, top, SRCCOPY Or CAPTUREBLT)
 		  
 		Exception
 		  Return
@@ -374,7 +375,9 @@ Inherits Canvas
 		  Case 1
 		    Dim s() As String
 		    Dim u() As Integer
-		    For i As Integer = 0 To UBound(objects)
+		    Dim ubOb As Integer = UBound(objects)
+		    
+		    For i As Integer = 0 To ubOb
 		      If objects(i).Dynamic Then
 		        Select Case objects(i).DynType
 		        Case 0
@@ -389,6 +392,8 @@ Inherits Canvas
 		          s.Append("ZZZZZZE")
 		        Case 5
 		          s.Append("ZZZZZZF")
+		        Case 6
+		          s.Append("ZZZZZZG")
 		        End Select
 		      Else
 		        s.Append(objects(i).Process.Name + Str(objects(i).Process.ProcessID))
@@ -398,15 +403,16 @@ Inherits Canvas
 		    s.SortWith(u)
 		    Dim widest As Integer
 		    For i As Integer = 0 To UBound(u)
-		      Objects(u(i)).x = x
-		      Objects(u(i)).y = y
+		      Dim theNum As Integer = u(i)
+		      Objects(theNum).x = x
+		      Objects(theNum).y = y
 		      If Objects.Ubound = i Then Continue
 		      If Objects(u(i + 1)).Image = Nil Then Continue
 		      
-		      If Objects(u(i)).Image.height + 14 + Objects(u(i + 1)).Image.height + 14 + y <= Me.Height Then
-		        y = y + Objects(u(i)).Image.height + 14
-		        If Objects(u(i)).Image.Width > widest Then 
-		          widest = Objects(u(i)).Image.Width
+		      If Objects(theNum).Image.height + 14 + Objects(u(i + 1)).Image.height + 14 + y <= Me.Height Then
+		        y = y + Objects(theNum).Image.height + 14
+		        If Objects(theNum).Image.Width > widest Then
+		          widest = Objects(theNum).Image.Width
 		        End If
 		      Else
 		        y = 14
@@ -422,6 +428,8 @@ Inherits Canvas
 		    For i As Integer = 0 To UBound(objects)
 		      If objects(i).Dynamic Then
 		        Select Case objects(i).DynType
+		        Case 6
+		          s.Append(9999993)
 		        Case 3
 		          s.Append(9999994)
 		        Case 5
@@ -480,7 +488,7 @@ Inherits Canvas
 		    lastSort = 3
 		  Case 4
 		    Dim r As Integer = (0.015625 * Me.Width)
-		    Static up As Boolean
+		    'Static up As Boolean
 		    Objects.Insert(0, objects.Pop)
 		    'If r > 1 And r <= 30 Then
 		    'If up = False Then
@@ -546,6 +554,7 @@ Inherits Canvas
 		  Buffer.Graphics.Bold = True
 		  percStr = Str(lastFPS) + " FPS"
 		  Buffer.Graphics.TextSize = 20.5
+		  Buffer.Graphics.TextFont = gTextFont
 		  Dim strWidth, strHeight As Integer
 		  strWidth = Buffer.Graphics.StringWidth(percStr)
 		  strHeight = Buffer.Graphics.StringHeight(percStr, Buffer.Width)
@@ -582,7 +591,7 @@ Inherits Canvas
 		      Case 0
 		        Dim d() As Double = lastCPU
 		        s = "u: " + Format(d(0), "##0.00\%") + ";   k:" + Format(d(1), "##0.00\%") + EndOfLine + "RAM: " + Format(LastMem, "##0.00\%") + EndOfLine + "Page File: " + Format(LastPF, "##0.00\%")
-		        If s.InStr("J") > 0 Then Break
+		        'If s.InStr("J") > 0 Then Break
 		      Case 1
 		        For Each pp As VolumeInformation In Drives
 		          If Not pp.Mounted Then
@@ -599,6 +608,8 @@ Inherits Canvas
 		        s = "Photo Frame"
 		      Case 5
 		        s = "File Multi-Tool"
+		      Case 6
+		        s = Clock.BackingDate.LongDate + " " + Clock.BackingDate.LongTime
 		      End Select
 		    Else
 		      Try
@@ -611,7 +622,7 @@ Inherits Canvas
 		        s = "Image Not Resolved."
 		      End Try
 		    End If
-		    helptext = New Picture(10, 10, 32)
+		    helptext = New Picture(100, 100, 32)
 		    helptext.Graphics.TextFont = gTextFont
 		    helptext.Graphics.TextSize = gTextSize
 		    Dim strWidth, strHeight As Integer
@@ -630,12 +641,16 @@ Inherits Canvas
 		      strWidth = requiredWidth
 		      strHeight = requiredHeight
 		      helptext = New Picture(strWidth + 8, strHeight + 8, 32)
+		      helptext.Graphics.TextFont = gTextFont
+		      helptext.Graphics.TextSize = gTextSize
 		      helptext.Graphics.ForeColor = HelpColor
 		      helptext.Graphics.FillRect(0, 0, helptext.Width, helptext.Height)
 		      helptext.Graphics.ForeColor = StringColor
 		      helptext.Graphics.DrawString(s, 2, 15)
 		      
 		    Else
+		      helptext.Graphics.TextFont = gTextFont
+		      helptext.Graphics.TextSize = gTextSize
 		      strWidth = helptext.Graphics.StringWidth(s)
 		      strHeight = helptext.Graphics.StringHeight(s, strWidth + 5)
 		      helptext = New Picture(strWidth + 4, strHeight + 4, 32)
@@ -660,31 +675,27 @@ Inherits Canvas
 		Private Sub drawObject(index As Integer)
 		  '#If DebugBuild Then Debug(CurrentMethodName)
 		  //Draws the object onto to buffer
-		  //Objects(index).Update(False)
-		  If (Objects(index).Dynamic And hideDynamics) Then Return
+		  //theObject.Update(False)
+		  Dim theObject As dragObject = Objects(index)
+		  If index > Objects.Ubound Or index < 0 Then Return
+		  If (theObject.Dynamic And hideDynamics) Then Return
 		  
 		  If index = currentObject Then
 		    Dim p As Picture = DrawOutline(Index)
-		    buffer.Graphics.DrawPicture(p, objects(index).x, objects(index).y - (p.Height - objects(index).image.Height))
+		    buffer.Graphics.DrawPicture(p, theObject.x, theObject.y - (p.Height - theObject.image.Height))
 		  End If
-		  'If Objects(index).Process <> Nil Then
-		  'If Objects(index).Process.Suspended Then
-		  'buffer.Graphics.ForeColor = &c808080
-		  'Else
-		  'buffer.Graphics.ForeColor = &c000000
-		  'End If
-		  'Else
+		  
 		  buffer.Graphics.ForeColor = &c000000
-		  'End If
-		  If Objects(index).Dynamic Then
-		    If Objects(index).image <> Nil And Objects(index).DynType <> 4 Then
-		      buffer.Graphics.DrawRect(objects(index).x - 1, objects(index).y - 1, objects(index).image.width + 1, objects(index).image.height + 1)
+		  
+		  If theObject.Dynamic Then
+		    If theObject.image <> Nil And theObject.DynType <> 4  And theObject.DynType <> 6 Then
+		      buffer.Graphics.DrawRect(theObject.x - 1, theObject.y - 1, theObject.image.width + 1, theObject.image.height + 1)
 		    End If
 		  Else
-		    buffer.Graphics.DrawRect(objects(index).x - 1, objects(index).y - 1, objects(index).width + 1, objects(index).height + 1)
+		    buffer.Graphics.DrawRect(theObject.x - 1, theObject.y - 1, theObject.width + 1, theObject.height + 1)
 		  End If
 		  buffer.Graphics.ForeColor = &c808080
-		  If Objects(index).image <> Nil Then buffer.Graphics.DrawPicture(objects(index).image, objects(index).x, objects(index).y)
+		  If theObject.image <> Nil Then buffer.Graphics.DrawPicture(theObject.image, theObject.x, theObject.y)
 		End Sub
 	#tag EndMethod
 
@@ -707,6 +718,8 @@ Inherits Canvas
 		      pid = objects(Index).Name
 		    Case 5
 		      pid = "File Multi-Tool"
+		    Case 6
+		      pid = Clock.BackingDate.LongDate + " " + Clock.BackingDate.LongTime
 		    End Select
 		  End If
 		  buffer.Graphics.TextFont = gTextFont
@@ -716,6 +729,7 @@ Inherits Canvas
 		  strHeight = buffer.Graphics.StringHeight(pid, strWidth)
 		  
 		  p = New Picture(Objects(Index).Image.Width, Objects(Index).Image.Height + strHeight, 32)
+		  p.Graphics.TextFont = gTextFont
 		  p.Graphics.ForeColor = &cCCCCCC
 		  p.Graphics.FillRect(0, 0, p.Width, p.Height)
 		  p.Graphics.ForeColor = &c000000
@@ -748,6 +762,14 @@ Inherits Canvas
 		  ReDim activeProcessesOld(-1)
 		  InitializeDynamics()
 		  Refresh(False)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub helpfaderhandler(Sender As Timer)
+		  #pragma Unused Sender
+		  drawHelp(Me.MouseX, Me.MouseY)
+		  'Refresh(False)
 		End Sub
 	#tag EndMethod
 
@@ -793,7 +815,7 @@ Inherits Canvas
 		    debugWin.DynType = 2
 		    addObject(debugWin)
 		  End If
-		  
+		  '
 		  'Dim mag As New dragObject  //Very slow
 		  'mag.DynType = 3
 		  'addObject(mag)
@@ -810,6 +832,10 @@ Inherits Canvas
 		  tridDrop.SpecialHandler = AddressOf FileToolHandler
 		  addObject(tridDrop)
 		  
+		  
+		  Dim clocktile As New dragObject  //Clock
+		  clocktile.DynType = 6
+		  addObject(clocktile)
 		End Sub
 	#tag EndMethod
 
@@ -905,15 +931,23 @@ Inherits Canvas
 		  activeProcesses = GetActiveProcesses()
 		  Dim newProcs() As ProcessInformation = getNewProcs()
 		  Dim deadProcs() As ProcessInformation = getDeadProcs()
-		  For x As Integer = UBound(deadProcs) DownTo 0
-		    For i As Integer = UBound(Objects) DownTo 0
-		      If Objects(i).Dynamic Then Continue For i
-		      If objects(i).Process.ProcessID = deadProcs(x).ProcessID Then
+		  
+		  Dim x1, i1 As Integer
+		  x1 = UBound(deadProcs)
+		  i1 = UBound(Objects)
+		  
+		  For x As Integer = x1 DownTo 0
+		    Dim theDeadProc As ProcessInformation = deadProcs(x)
+		    For i As Integer = i1 DownTo 0
+		      If i > UBound(Objects) Then Exit For i
+		      Dim theObject As dragObject = Objects(i)
+		      If theObject.Dynamic Then Continue For i
+		      If theObject.Process.ProcessID = theDeadProc.ProcessID Then
 		        //And remove them from the objects array
-		        debug("Process " + Str(Objects(i).Process.ProcessID) + " died")
-		        If objects(i).Alert Then 
+		        debug("Process " + Str(theObject.Process.ProcessID) + " died")
+		        If theObject.Alert Then
 		          FlashWindow(Window1.Handle)
-		          Call MsgBox(Objects(i).Process.Name + " died!", 16, "Process Termination Notice")
+		          Call MsgBox(theObject.Process.Name + " died!", 16, "Process Termination Notice")
 		        End If
 		        Objects.Remove(i)
 		        Exit For i
@@ -969,6 +1003,10 @@ Inherits Canvas
 
 	#tag Property, Flags = &h0
 		FPS As Integer
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private helpfader As Timer
 	#tag EndProperty
 
 	#tag Property, Flags = &h21

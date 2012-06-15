@@ -117,7 +117,7 @@ Protected Module File_Ops
 	#tag Method, Flags = &h0
 		Function CreateShortcut(Extends scTarget as FolderItem, scName as String) As FolderItem
 		  //Creates a shortcut (.lnk file) in the users %TEMP% directory named scName and pointing to scTarget. Returns
-		  //a FolderItem corresponding to the shortcut file. You must move the returned Shortcut file to the desired directory. 
+		  //a FolderItem corresponding to the shortcut file. You must move the returned Shortcut file to the desired directory.
 		  //On error, returns Nil.
 		  
 		  Dim lnkObj As OLEObject
@@ -260,7 +260,7 @@ Protected Module File_Ops
 
 	#tag Method, Flags = &h0
 		Function getChildren(dir As FolderItem) As FolderItem()
-		  //This function recursively builds a FolderItem array consisting of all files beneath a given Directory. 
+		  //This function recursively builds a FolderItem array consisting of all files beneath a given Directory.
 		  //It does not return subfolders, only their contents
 		  //Don't use this function for extremely deep folder hierarchies or hierarchies known to have circular link references or you risk a stack overflow.
 		  
@@ -636,7 +636,7 @@ Protected Module File_Ops
 
 	#tag Method, Flags = &h0
 		Sub Launch(extends f as FolderItem, ParamArray args as String)
-		  //Same as FolderItem.Launch 
+		  //Same as FolderItem.Launch
 		  Declare Sub ShellExecuteW Lib "Shell32"(hwnd as Integer, operation as WString, file as WString, params as WString, _
 		  directory as WString, show as Integer)
 		  
@@ -841,7 +841,7 @@ Protected Module File_Ops
 		Function Stream(Extends target As FolderItem, StreamIndex As Integer) As String
 		  //Accesses the data stream of the target FolderItem at StreamIndex. If target has fewer than StreamIndex data streams, or if the target
 		  //is not on an NTFS volume, an OutOfBoundsException is raised. If the file is not readable, an IOException is Raised
-		  //Otherwise, a String corresponding to the name of the requested data stream is Returned. 
+		  //Otherwise, a String corresponding to the name of the requested data stream is Returned.
 		  //Raises a PlatformNotSupportedException on versions of Windows prior to Windows 2000.
 		  //Call FolderItem.StreamCount to get the number of streams. The main data stream is always at StreamIndex zero does
 		  //not have a name.

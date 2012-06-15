@@ -1,6 +1,6 @@
 #tag Window
 Begin Window filedetail
-   BackColor       =   16777215
+   BackColor       =   &h003F3F3F
    Backdrop        =   ""
    CloseButton     =   True
    Composite       =   False

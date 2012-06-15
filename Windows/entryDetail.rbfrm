@@ -1093,6 +1093,7 @@ Begin Window entryDetail
       Width           =   96
    End
    Begin Timer Timer1
+      Enabled         =   True
       Height          =   32
       Index           =   -2147483648
       Left            =   846
@@ -1104,6 +1105,7 @@ Begin Window entryDetail
       TabPanelIndex   =   0
       TabStop         =   True
       Top             =   -34
+      Visible         =   True
       Width           =   32
    End
    Begin PushButton PushButton3
@@ -1165,7 +1167,7 @@ End
 		  End If
 		  If proc.Name = "svchost.exe" Or proc.Name = "Services.exe" Then
 		    If proc.Modules.Ubound = -1 Then proc.LoadModules
-		    If proc.Modules.Ubound > -1 Then 
+		    If proc.Modules.Ubound > -1 Then
 		      Self.Width = 736
 		      Listbox1.InitialValue = "Modules"
 		      For Each T As ModuleInformation In proc.Modules
@@ -1227,7 +1229,7 @@ End
 		      version.Text = verInfo.FileVersion
 		    End If
 		  End If
-		  procicon = process.largeIcon 
+		  procicon = process.largeIcon
 		  cmdLine.Text = process.CommandLine
 		  
 		  Self.Show
@@ -1265,7 +1267,7 @@ End
 		Sub MouseUp(X As Integer, Y As Integer)
 		  #pragma Unused x
 		  #pragma Unused y
-		  If proc.path <> Nil Then 
+		  If proc.path <> Nil Then
 		    proc.path.ShowInExplorer
 		  End If
 		End Sub
