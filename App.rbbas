@@ -23,7 +23,7 @@ Inherits Application
 		      Exit For
 		    End If
 		  Next
-		  Call registerMBSPlugin("Andrew Lambert", "MBS Win", 201105, 1462922781)
+		  //Requires the Monkeybread Win plugin for WMI
 		  
 		  If Not Platform.IsAdmin Then
 		    MsgBox("This application works best with Administrator rights.")
