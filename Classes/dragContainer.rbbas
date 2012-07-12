@@ -791,8 +791,10 @@ Inherits Canvas
 		    Y2 = Y1
 		    Y1 = Y
 		  End If
-		  buffer.Graphics.ForeColor = RGB(SelectionColor.Red, SelectionColor.Green, SelectionColor.Blue, 190)
-		  buffer.Graphics.FillRect(X, Y, w, h)
+		  #If RBVersion >= 2011.04 Then
+		    buffer.Graphics.ForeColor = RGB(SelectionColor.Red, SelectionColor.Green, SelectionColor.Blue, 190)
+		    buffer.Graphics.FillRect(X, Y, w, h)
+		  #endif
 		  buffer.Graphics.ForeColor = SelectionColor
 		  buffer.Graphics.DrawRect(X, Y, w, h)
 		  ClearSelection()
