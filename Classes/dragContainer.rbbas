@@ -772,8 +772,6 @@ Inherits Canvas
 
 	#tag Method, Flags = &h0
 		Sub DrawSelectionRect(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
-		  buffer.Graphics.ForeColor = RGB(SelectionColor.Red, SelectionColor.Green, SelectionColor.Blue, 190)
-		  
 		  Dim w, h, X, Y As Integer
 		  If X1 < X2 Then
 		    X = X1
@@ -793,6 +791,7 @@ Inherits Canvas
 		    Y2 = Y1
 		    Y1 = Y
 		  End If
+		  buffer.Graphics.ForeColor = RGB(SelectionColor.Red, SelectionColor.Green, SelectionColor.Blue, 190)
 		  buffer.Graphics.FillRect(X, Y, w, h)
 		  buffer.Graphics.ForeColor = SelectionColor
 		  buffer.Graphics.DrawRect(X, Y, w, h)
@@ -1331,6 +1330,12 @@ Inherits Canvas
 			Group="ID"
 			Type="String"
 			InheritedFrom="Canvas"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="SelectionColor"
+			Group="Behavior"
+			InitialValue="&c000000"
+			Type="Color"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="ShowText"
