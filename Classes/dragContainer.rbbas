@@ -198,6 +198,8 @@ Inherits Canvas
 	#tag Event
 		Function MouseDown(X As Integer, Y As Integer) As Boolean
 		  '#If DebugBuild Then Debug(CurrentMethodName)
+		  ClearSelection()
+		  
 		  //First, save the old currentObject
 		  
 		  Dim refreshn As Integer = currentObject
@@ -242,6 +244,10 @@ Inherits Canvas
 		    objects(currentObject).x = objects(currentObject).x + objX
 		    objects(currentObject).y = objects(currentObject).y + objY
 		    Refresh(False)
+		  Else
+		    NextX = X
+		    NextY = Y
+		    Refresh(False)
 		  End If
 		  'End If
 		  'doit = doit + 1
@@ -257,6 +263,13 @@ Inherits Canvas
 		  'End If
 		  'doit = doit + 1
 		  helpfader.Reset()
+		End Sub
+	#tag EndEvent
+
+	#tag Event
+		Sub MouseUp(X As Integer, Y As Integer)
+		  NextX = -1
+		  NextY = -1
 		End Sub
 	#tag EndEvent
 
@@ -292,6 +305,7 @@ Inherits Canvas
 		  helpfader.Period = 500
 		  AddHandler helpfader.Action, AddressOf helpfaderhandler
 		  helpfader.Mode = Timer.ModeMultiple
+		  Me.SelectionColor = &c0080FF00
 		End Sub
 	#tag EndEvent
 
@@ -336,6 +350,10 @@ Inherits Canvas
 		  For i As Integer = 0 To objects.Ubound
 		    drawObject(i)
 		  Next
+		  
+		  If NextX > -1 And NextY > -1 Then
+		    DrawSelectionRect(lastX, lastY, NextX, NextY)
+		  End If
 		  
 		  If helptext <> Nil Then
 		    buffer.Graphics.DrawPicture(helptext, Me.MouseX + 10, Me.MouseY + 10)
@@ -546,6 +564,14 @@ Inherits Canvas
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Sub ClearSelection()
+		  For Each Item As dragObject In Objects
+		    Item.Selected = False
+		  Next
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h21
 		Private Sub DrawFPS()
 		  '#If DebugBuild Then Debug(CurrentMethodName)
@@ -680,7 +706,7 @@ Inherits Canvas
 		  If index > Objects.Ubound Or index < 0 Then Return
 		  If (theObject.Dynamic And hideDynamics) Then Return
 		  
-		  If index = currentObject Then
+		  If index = currentObject Or theObject.Selected Then
 		    Dim p As Picture = DrawOutline(Index)
 		    buffer.Graphics.DrawPicture(p, theObject.x, theObject.y - (p.Height - theObject.image.Height))
 		  End If
@@ -742,6 +768,43 @@ Inherits Canvas
 		  
 		  Return p
 		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub DrawSelectionRect(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
+		  buffer.Graphics.ForeColor = RGB(SelectionColor.Red, SelectionColor.Green, SelectionColor.Blue, 190)
+		  
+		  Dim w, h, X, Y As Integer
+		  If X1 < X2 Then
+		    X = X1
+		    w = X2 - X1
+		  Else
+		    X = X2
+		    w = X1 - X2
+		    X2 = X1
+		    X1 = X
+		  End If
+		  If Y1 < Y2 Then
+		    Y = Y1
+		    h = Y2 - Y1
+		  Else
+		    Y = Y2
+		    h = Y1 - Y2
+		    Y2 = Y1
+		    Y1 = Y
+		  End If
+		  buffer.Graphics.FillRect(X, Y, w, h)
+		  buffer.Graphics.ForeColor = SelectionColor
+		  buffer.Graphics.DrawRect(X, Y, w, h)
+		  ClearSelection()
+		  Dim items() As Integer = SelectionRectToObjects(X, Y, X2, Y2)
+		  If Ubound(items) > -1 Then
+		    For Each item As Integer In items
+		      Objects(item).Selected = True
+		    Next
+		  End If
+		  'Refresh(False)
+		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
@@ -837,6 +900,20 @@ Inherits Canvas
 		  clocktile.DynType = 6
 		  addObject(clocktile)
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function SelectionRectToObjects(x1 As Integer, y1 As Integer, x2 As Integer, y2 As Integer) As Integer()
+		  Dim ret() As Integer
+		  For i As Integer = objects.Ubound DownTo 0
+		    If (objects(i).X < x1) And (x2 < objects(i).X + objects(i).Image.width) And (objects(i).Y < y1) And (y2 < objects(i).Y + objects(i).Image.height) _
+		      Or _
+		      (objects(i).X < x2) And (x1 < objects(i).X + objects(i).Image.width) And (objects(i).Y < y2) And (y1 < objects(i).Y + objects(i).Image.height) Then
+		      Ret.Append(i)
+		    End If
+		  Next
+		  Return ret
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
@@ -1069,11 +1146,23 @@ Inherits Canvas
 		Private mInitImg As Picture
 	#tag EndProperty
 
+	#tag Property, Flags = &h21
+		Private NextX As Integer
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private NextY As Integer
+	#tag EndProperty
+
 	#tag Property, Flags = &h0
 		#tag Note
 			The heart of this whole operation: an array of dragObjects. Each dragObject corresponds to a "window" drawn on the Parent dragContainer
 		#tag EndNote
 		objects() As dragObject
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		SelectionColor As Color
 	#tag EndProperty
 
 	#tag Property, Flags = &h0

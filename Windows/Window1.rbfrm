@@ -79,6 +79,7 @@ Begin Window Window1
       Selectable      =   False
       TabIndex        =   1
       TabPanelIndex   =   0
+      TabStop         =   True
       Text            =   ""
       TextAlign       =   0
       TextColor       =   0
@@ -113,6 +114,7 @@ Begin Window Window1
       Selectable      =   False
       TabIndex        =   2
       TabPanelIndex   =   0
+      TabStop         =   True
       Text            =   ""
       TextAlign       =   2
       TextColor       =   0
@@ -126,6 +128,7 @@ Begin Window Window1
       Width           =   507
    End
    Begin Timer Timer1
+      Enabled         =   True
       Height          =   32
       Index           =   -2147483648
       Left            =   1121
@@ -133,11 +136,15 @@ Begin Window Window1
       Mode            =   2
       Period          =   1
       Scope           =   0
+      TabIndex        =   3
       TabPanelIndex   =   0
+      TabStop         =   True
       Top             =   -8
+      Visible         =   True
       Width           =   32
    End
    Begin Timer WildTimer
+      Enabled         =   True
       Height          =   32
       Index           =   -2147483648
       Left            =   1106
@@ -145,8 +152,11 @@ Begin Window Window1
       Mode            =   0
       Period          =   100
       Scope           =   0
+      TabIndex        =   4
       TabPanelIndex   =   0
+      TabStop         =   True
       Top             =   254
+      Visible         =   True
       Width           =   32
    End
 End

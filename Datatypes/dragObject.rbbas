@@ -320,6 +320,10 @@ Protected Class dragObject
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		Selected As Boolean
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		SpecialHandler As SpecialFuntion
 	#tag EndProperty
 
