@@ -212,7 +212,7 @@ Protected Class dragObject
 		#tag Getter
 			Get
 			  //If Hidden Then Return New Picture(1, 1, 1)
-			  '#If DebugBuild Then Debug(CurrentMethodName)
+			  
 			  Dim ret As Picture
 			  If Not Dynamic Then
 			    ret = mimage
@@ -406,6 +406,11 @@ Protected Class dragObject
 			Group="Behavior"
 			InitialValue="100"
 			Type="Integer"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Selected"
+			Group="Behavior"
+			Type="Boolean"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"

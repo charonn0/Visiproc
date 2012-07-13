@@ -73,49 +73,50 @@ Inherits Canvas
 
 	#tag Event
 		Function ContextualMenuAction(hitItem as MenuItem) As Boolean
-		  '#If DebugBuild Then Debug(CurrentMethodName)
-		  
-		  If currentObject = -1 Then Return True
-		  
-		  
-		  Dim procID As ProcessInformation = Objects(currentObject).Process
-		  
-		  Select Case hitItem.Text
-		  Case "Hide"
-		    Hide(currentObject)
-		    'GLOBALPAUSE = True
-		  Case "Real Time"
-		    procID.priority = PriorityRealTime
-		  Case "High"
-		    procID.priority = PriorityHigh
-		  Case "Above Normal"
-		    procID.priority = priorityAboveNormal
-		  Case "Normal"
-		    procID.priority = PriorityNormal
-		  Case "Below Normal"
-		    procID.priority = priorityBelowNormal
-		  Case "Idle"
-		    procID.priority = PriorityIdle
-		  Case "Terminate Process"
-		    Dim x As Integer = MsgBox("Are you absolutely sure about that?", 52, "Confirm Process Termination")
-		    If x = 6 then
-		      Call procID.terminate()
+		  'If currentObject = -1 Then Return True
+		  'Dim procID As ProcessInformation = Objects(currentObject).Process
+		  Dim ret As Boolean
+		  For i As Integer = 0 To UBound(Objects)
+		    If Objects(i).Selected Then
+		      ret = True
+		      Select Case hitItem.Text
+		      Case "Hide"
+		        Hide(i)
+		        'GLOBALPAUSE = True
+		      Case "Real Time"
+		        Objects(i).Process.priority = PriorityRealTime
+		      Case "High"
+		        Objects(i).Process.priority = PriorityHigh
+		      Case "Above Normal"
+		        Objects(i).Process.priority = priorityAboveNormal
+		      Case "Normal"
+		        Objects(i).Process.priority = PriorityNormal
+		      Case "Below Normal"
+		        Objects(i).Process.priority = priorityBelowNormal
+		      Case "Idle"
+		        Objects(i).Process.priority = PriorityIdle
+		      Case "Terminate Process"
+		        Dim x As Integer = MsgBox("Are you absolutely sure about that?", 52, "Confirm Process Termination")
+		        If x = 6 then
+		          Call Objects(i).Process.terminate()
+		        End If
+		      Case "Find Executable"
+		        Dim imagePath As FolderItem = Objects(i).Process.path
+		        If imagePath = Nil Then
+		          MsgBox("Unable to resolve image path For " + Objects(i).Process.Name)
+		        Else
+		          imagePath.ShowInExplorer()
+		        End If
+		      Case "Set Affinity"
+		        cpuSelect.getAffinity(Objects(i).Process, 0)
+		      Case "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%", "110%", "120%", "130%", "140%", "150%"
+		        Objects(i).ResizeTo = Val(hitItem.Text)
+		      Case "Alert If Process Dies."
+		        Objects(i).Alert = Not Objects(i).Alert
+		      End Select
 		    End If
-		  Case "Find Executable"
-		    Dim imagePath As FolderItem = procID.path
-		    If imagePath = Nil Then
-		      MsgBox("Unable to resolve image path For " + procID.Name)
-		    Else
-		      imagePath.ShowInExplorer()
-		    End If
-		  Case "Set Affinity"
-		    cpuSelect.getAffinity(procID, 0)
-		  Case "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%", "110%", "120%", "130%", "140%", "150%"
-		    Objects(currentObject).ResizeTo = Val(hitItem.Text)
-		  Case "Alert If Process Dies."
-		    Objects(currentObject).Alert = Not Objects(currentObject).Alert
-		  End Select
-		  //Update
+		    //Update
+		  Next
 		  
 		  menuUp = False
 		  'Refresh(False)
@@ -130,7 +131,7 @@ Inherits Canvas
 
 	#tag Event
 		Sub DoubleClick(X As Integer, Y As Integer)
-		  '#If DebugBuild Then Debug(CurrentMethodName)
+		  
 		  //Double click on the background. Opens an "open..." dialog.
 		  
 		  #pragma Unused x
@@ -162,7 +163,7 @@ Inherits Canvas
 
 	#tag Event
 		Sub DropObject(obj As DragItem, action As Integer)
-		  '#If DebugBuild Then Debug(CurrentMethodName)
+		  
 		  
 		  DropIndex = hitpointToObject(Me.MouseX, Me.MouseY)
 		  If DropIndex > -1 Then
@@ -197,27 +198,18 @@ Inherits Canvas
 
 	#tag Event
 		Function MouseDown(X As Integer, Y As Integer) As Boolean
-		  '#If DebugBuild Then Debug(CurrentMethodName)
-		  ClearSelection()
-		  
-		  //First, save the old currentObject
-		  
+		  If Not IsContextualClick Then ClearSelection()
 		  Dim refreshn As Integer = currentObject
-		  
-		  //Get the new currentobject
 		  currentObject = hitpointToObject(x, y)
-		  
 		  If currentObject > -1 Then
 		    bringToFront(currentObject)
 		    If IsContextualClick Then
-		      //The user wants a menu for the oject
 		      If Not Objects(currentObject).Dynamic Then
 		        menuUp = True
 		      End If
 		    End If
 		    Refresh(False)
 		  ElseIf refreshn > -1 Then
-		    //Clean up the outline if a tile was outlined.
 		    drawObject(refreshn)
 		    Refresh(False)
 		  End If
@@ -230,10 +222,10 @@ Inherits Canvas
 
 	#tag Event
 		Sub MouseDrag(X As Integer, Y As Integer)
+		  FPS = FPS + 1
+		  FrameCount = FrameCount + 1
 		  lastSort = -1
-		  'Static doit As Integer
-		  'If doit = 5 Or Not Throttle Then  //Performance kludge. Only update every fifth time we're called
-		  'doit = 0
+		  Static doit As Integer
 		  If currentObject > -1 Then
 		    //Calculate the new position of the object, update the object, then refresh the control.
 		    If lastX = X And lastY = Y Then Return
@@ -249,19 +241,12 @@ Inherits Canvas
 		    NextY = Y
 		    Refresh(False)
 		  End If
-		  'End If
-		  'doit = doit + 1
 		End Sub
 	#tag EndEvent
 
 	#tag Event
 		Sub MouseMove(X As Integer, Y As Integer)
-		  'Static doit As Integer
-		  'If doit = 5 Or Not Throttle Then  //Performance kludge. Only update every fifth time we're called
 		  drawHelp(X, Y)
-		  'doit = 0
-		  'End If
-		  'doit = doit + 1
 		  helpfader.Reset()
 		End Sub
 	#tag EndEvent
@@ -297,10 +282,7 @@ Inherits Canvas
 
 	#tag Event
 		Sub Open()
-		  '#If DebugBuild Then Debug(CurrentMethodName)
-		  //Create the dynamic tiles
 		  Me.AcceptFileDrop(FileTypes1.Any)
-		  'InitializeDynamics()
 		  helpfader = New Timer
 		  helpfader.Period = 500
 		  AddHandler helpfader.Action, AddressOf helpfaderhandler
@@ -311,7 +293,7 @@ Inherits Canvas
 
 	#tag Event
 		Sub Paint(g As Graphics)
-		  '#If DebugBuild Then Debug(CurrentMethodName)
+		  
 		  If Globals.Init Then
 		    g.DrawPicture(InitImg, 0, 0)
 		    buffer = New Picture(Me.Width, Me.Height, 24)
@@ -370,7 +352,7 @@ Inherits Canvas
 
 	#tag Method, Flags = &h0
 		Sub addObject(no As dragObject)
-		  '#If DebugBuild Then Debug(CurrentMethodName)
+		  
 		  //Adds a new dragObject to the objects array
 		  If no.x > Me.Width Or no.y > Me.Height Then
 		    no.x = no.x - 200
@@ -383,7 +365,7 @@ Inherits Canvas
 
 	#tag Method, Flags = &h0
 		Sub Arrange(Order As Integer = 0)
-		  '#If DebugBuild Then Debug(CurrentMethodName)
+		  
 		  
 		  
 		  Dim x As Integer = 14
@@ -548,7 +530,7 @@ Inherits Canvas
 
 	#tag Method, Flags = &h21
 		Private Sub bringToFront(index As Integer)
-		  '#If DebugBuild Then Debug(CurrentMethodName)
+		  
 		  //Brings the object at Index to the "front" (i.e. moves it to the UBound of the objects array.)
 		  //Objects get drawn from the zeroth element in the objects array, so the "top" object gets drawn last.
 		  
@@ -574,7 +556,7 @@ Inherits Canvas
 
 	#tag Method, Flags = &h21
 		Private Sub DrawFPS()
-		  '#If DebugBuild Then Debug(CurrentMethodName)
+		  
 		  Dim percStr As String
 		  
 		  Buffer.Graphics.Bold = True
@@ -607,7 +589,7 @@ Inherits Canvas
 
 	#tag Method, Flags = &h21
 		Private Sub drawHelp(X As Integer, Y As Integer)
-		  '#If DebugBuild Then Debug(CurrentMethodName)
+		  
 		  Dim i As Integer = hitpointToObject(X, Y)
 		  
 		  If i > -1 And ShowText Then
@@ -699,7 +681,7 @@ Inherits Canvas
 
 	#tag Method, Flags = &h21
 		Private Sub drawObject(index As Integer)
-		  '#If DebugBuild Then Debug(CurrentMethodName)
+		  
 		  //Draws the object onto to buffer
 		  //theObject.Update(False)
 		  Dim theObject As dragObject = Objects(index)
@@ -727,7 +709,7 @@ Inherits Canvas
 
 	#tag Method, Flags = &h21
 		Private Function DrawOutline(Index As Integer) As Picture
-		  '#If DebugBuild Then Debug(CurrentMethodName)
+		  
 		  Dim p As Picture
 		  Dim pid As String
 		  If Objects(Index).Process <> Nil Then
@@ -810,7 +792,7 @@ Inherits Canvas
 
 	#tag Method, Flags = &h21
 		Private Sub DrawVersion()
-		  '#If DebugBuild Then Debug(CurrentMethodName)
+		  
 		  Dim x, y As Integer
 		  x = Me.Width - VersionTile.Width - 10
 		  y = Me.Height - VersionTile.Height - 10
@@ -820,7 +802,7 @@ Inherits Canvas
 
 	#tag Method, Flags = &h0
 		Sub Empty()
-		  '#If DebugBuild Then Debug(CurrentMethodName)
+		  
 		  ReDim objects(-1)
 		  ReDim activeProcesses(-1)
 		  ReDim activeProcessesOld(-1)
@@ -839,7 +821,7 @@ Inherits Canvas
 
 	#tag Method, Flags = &h21
 		Private Sub Hide(i As Integer)
-		  '#If DebugBuild Then Debug(CurrentMethodName)
+		  
 		  If Not Objects(i).Dynamic Then HiddenProcCount = HiddenProcCount + 1
 		  currentObject = -1
 		  HiddenProcs.Append(Objects(i))
@@ -850,7 +832,7 @@ Inherits Canvas
 
 	#tag Method, Flags = &h21
 		Private Function hitpointToObject(x As Integer, y As Integer) As Integer
-		  '#If DebugBuild Then Debug(CurrentMethodName)
+		  
 		  //Given an (x,y) coordinate returns the index (in the objects array) of the topmost object occupying those coordinates, if any.
 		  #pragma BreakOnExceptions Off
 		  For i As Integer = objects.Ubound DownTo 0
@@ -919,7 +901,7 @@ Inherits Canvas
 
 	#tag Method, Flags = &h0
 		Sub ToggleDebug()
-		  '#If DebugBuild Then Debug(CurrentMethodName)
+		  
 		  If DebugMode Then
 		    For i As Integer = 0 To UBound(objects)
 		      If objects(i).DynType = 2 Then
@@ -954,7 +936,7 @@ Inherits Canvas
 
 	#tag Method, Flags = &h0
 		Sub ToggleHilight()
-		  '#If DebugBuild Then Debug(CurrentMethodName)
+		  
 		  HilightOn = Not HilightOn
 		  For i As Integer = 0 To UBound(objects)
 		    If Not objects(i).Dynamic Then
@@ -967,7 +949,7 @@ Inherits Canvas
 
 	#tag Method, Flags = &h0
 		Sub ToggleSystem()
-		  '#If DebugBuild Then Debug(CurrentMethodName)
+		  
 		  'If HideSystemProcs Then
 		  'For i As Integer = UBound(objects) DownTo 0
 		  'If Objects(i).Dynamic Then Continue
@@ -1003,7 +985,7 @@ Inherits Canvas
 
 	#tag Method, Flags = &h0
 		Sub Update()
-		  '#If DebugBuild Then Debug(CurrentMethodName)
+		  
 		  //First, find which processes have died
 		  activeProcessesOld = activeProcesses
 		  activeProcesses = GetActiveProcesses()

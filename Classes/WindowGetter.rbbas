@@ -3,7 +3,7 @@ Protected Class WindowGetter
 Inherits Thread
 	#tag Event
 		Sub Run()
-		  '#If DebugBuild Then Debug(CurrentMethodName)
+		  
 		  Declare Function FindWindowW Lib "user32.dll" ( lpClassName As integer, lpWindowName As integer ) as integer
 		  Declare Function GetWindow Lib "user32" ( hWnd As integer, wCmd As integer ) As integer
 		  

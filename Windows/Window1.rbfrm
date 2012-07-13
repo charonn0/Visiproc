@@ -334,7 +334,7 @@ End
 #tag Events Timer1
 	#tag Event
 		Sub Action()
-		  '#If DebugBuild Then Debug(CurrentMethodName)
+		  
 		  If Window1.count Mod 25 = 0 Then PollDisks()
 		  If DebugMode Then PollDebug()
 		  Window1.dragContainer1.Update()
