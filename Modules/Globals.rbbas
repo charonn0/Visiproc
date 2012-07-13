@@ -679,7 +679,7 @@ Protected Module Globals
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		Version As Double = 0.07
+		Version As Double = 0.08
 	#tag EndProperty
 
 	#tag ComputedProperty, Flags = &h0
