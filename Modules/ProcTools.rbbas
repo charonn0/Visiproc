@@ -62,9 +62,9 @@ Protected Module ProcTools
 	#tag Method, Flags = &h0
 		Function GetActiveProcesses() As ProcessInformation()
 		  
-		  Static cc As Integer
-		  If cc Mod 10 = 0 Then Debug("Query Process List")
-		  cc = cc + 1
+		  'Static cc As Integer
+		  'If cc Mod 10 = 0 Then Debug("Query Process List")
+		  'cc = cc + 1
 		  Declare Function CreateToolhelp32Snapshot Lib "Kernel32" (flags As Integer, id As Integer) As Integer
 		  Declare Sub CloseHandle Lib "Kernel32" (handle As Integer)
 		  Declare Sub Process32FirstW Lib "Kernel32" (handle As Integer, entry As Ptr)

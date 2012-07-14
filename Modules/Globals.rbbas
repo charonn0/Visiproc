@@ -264,19 +264,7 @@ Protected Module Globals
 		  End If
 		  For i As Integer = startat To DebugLog.Ubound
 		    Try
-		      Dim p As New Picture(250, 15)
-		      p.Graphics.ForeColor = RGB(&hcc, &hcc, &hcc, Globals.Transparency)
-		      p.Graphics.FillRect(0, 0, p.Width, p.Height)
-		      p.Graphics.ForeColor = RGB(0, 0, &hFF, Globals.Transparency)
-		      p.Graphics.TextFont = gTextFont
-		      p.Graphics.TextSize = 10
-		      Dim nm As String = Str(i) + ": " + DebugLog(i)
-		      Dim strWidth, strHeight As Integer
-		      strWidth = p.Graphics.StringWidth(nm)
-		      strHeight = p.Graphics.StringHeight(nm, p.Width)
-		      p.Graphics.DrawString(nm, 10, ((p.Height/2) + (strHeight/4)))
-		      p.Graphics.ForeColor = RGB(&hFF, &hFF, &hFF, Globals.Transparency)
-		      p.Graphics.DrawRect(1, 1, p.Width - 1, p.Height - 1)
+		      Dim p As Picture = TextToPicture(Str(i) + ": " + DebugLog(i), gTextFont, gTextSize, False, False, False, RGB(0, 0, &hFF, Globals.Transparency), RGB(&hcc, &hcc, &hcc, Globals.Transparency))
 		      drvs.Append(p)
 		      requiredHeight = requiredHeight + p.Height
 		      If p.Width > requiredWidth Then requiredWidth = p.Width
@@ -286,6 +274,8 @@ Protected Module Globals
 		  Next
 		  
 		  debugBuffer = New Picture(requiredWidth, requiredHeight)', 24)
+		  debugBuffer.Graphics.ForeColor = RGB(&hcc, &hcc, &hcc, Globals.Transparency)
+		  debugBuffer.Graphics.FillRect(0, 0, debugBuffer.Width, debugBuffer.Height)
 		  Dim x, y As Integer
 		  For i As Integer = 0 To UBound(drvs)
 		    debugBuffer.Graphics.DrawPicture(drvs(i), x, y)
