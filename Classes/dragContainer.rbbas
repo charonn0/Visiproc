@@ -198,11 +198,12 @@ Inherits Canvas
 
 	#tag Event
 		Function MouseDown(X As Integer, Y As Integer) As Boolean
-		  If Not IsContextualClick Then ClearSelection()
+		  'If Not IsContextualClick Then ClearSelection()
 		  Dim refreshn As Integer = currentObject
 		  currentObject = hitpointToObject(x, y)
 		  If currentObject > -1 Then
 		    bringToFront(currentObject)
+		    Objects(currentObject).Selected = True
 		    If IsContextualClick Then
 		      If Not Objects(currentObject).Dynamic Then
 		        menuUp = True
@@ -216,6 +217,7 @@ Inherits Canvas
 		  
 		  lastX = X
 		  lastY = Y
+		  
 		  Return True
 		End Function
 	#tag EndEvent
@@ -225,22 +227,27 @@ Inherits Canvas
 		  FPS = FPS + 1
 		  FrameCount = FrameCount + 1
 		  lastSort = -1
-		  Static doit As Integer
 		  If currentObject > -1 Then
-		    //Calculate the new position of the object, update the object, then refresh the control.
 		    If lastX = X And lastY = Y Then Return
+		    //Calculate the new position of the object, update the object, then refresh the control.
 		    Dim objX As Integer = x - lastx
 		    Dim objY As Integer = y - lasty
 		    lastx = x
 		    lasty = y
-		    objects(currentObject).x = objects(currentObject).x + objX
-		    objects(currentObject).y = objects(currentObject).y + objY
-		    Refresh(False)
+		    
+		    For i As Integer = 0 To UBound(Objects)
+		      If Not Objects(i).Selected Then Continue For i
+		      objects(i).x = objects(i).x + objX
+		      objects(i).y = objects(i).y + objY
+		    Next
+		    
+		    
 		  Else
 		    NextX = X
 		    NextY = Y
-		    Refresh(False)
 		  End If
+		  
+		  Refresh(False)
 		End Sub
 	#tag EndEvent
 
