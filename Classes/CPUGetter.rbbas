@@ -3,14 +3,14 @@ Protected Class CPUGetter
 Inherits Thread
 	#tag Event
 		Sub Run()
-		  'While True
-		  PollCPU()
-		  '#If DebugBuild Then
-		  'Return
-		  '#Else
-		  Me.Sleep(1000)
-		  '#endif
-		  'Wend
+		  While True
+		    PollCPU()
+		    '#If DebugBuild Then
+		    'Return
+		    '#Else
+		    Me.Sleep(1000)
+		    '#endif
+		  Wend
 		End Sub
 	#tag EndEvent
 
