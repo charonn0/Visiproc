@@ -387,7 +387,7 @@ Protected Module Globals
 		  //The optional parameters ought to be self-explanitory.
 		  
 		  If Text = "" Then
-		    Return New Picture(1, 1, 32)
+		    Return New Picture(1, 1)', 32)
 		  End If
 		  Dim lines() As Picture
 		  Dim requiredHeight, requiredWidth As Integer
@@ -395,7 +395,7 @@ Protected Module Globals
 		  
 		  For i As Integer = 0 To UBound(tlines)
 		    If tlines(i) = "" Then tlines(i) = " "
-		    Dim p As New Picture(250, 250, 24)
+		    Dim p As New Picture(250, 250)', 32)
 		    p.Graphics.TextFont = Font
 		    p.Graphics.TextSize = FontSize
 		    p.Graphics.Bold = Bold
@@ -405,7 +405,7 @@ Protected Module Globals
 		    Dim strWidth, strHeight As Integer
 		    strWidth = p.Graphics.StringWidth(nm) + 5
 		    strHeight = p.Graphics.StringHeight(nm, strWidth)
-		    p = New Picture(strWidth, strHeight, 32)
+		    p = New Picture(strWidth, strHeight)
 		    p.Graphics.ForeColor = BackColor
 		    p.Graphics.FillRect(0, 0, p.Width, p.Height)
 		    p.Graphics.AntiAlias = True
@@ -421,14 +421,14 @@ Protected Module Globals
 		    If p.Width > requiredWidth Then requiredWidth = p.Width
 		  Next
 		  Dim txtBuffer As Picture
-		  txtBuffer = New Picture(requiredWidth, requiredHeight, 24)
+		  txtBuffer = New Picture(requiredWidth, requiredHeight)', 32)
 		  Dim x, y As Integer
 		  txtbuffer.Graphics.AntiAlias = False
 		  For i As Integer = 0 To UBound(lines)
 		    txtBuffer.Graphics.DrawPicture(lines(i), x, y)
 		    y = y + lines(i).Height
 		  Next
-		  txtBuffer.Transparent = 1
+		  'txtBuffer.Transparent = 1
 		  Return txtBuffer
 		End Function
 	#tag EndMethod
@@ -676,6 +676,10 @@ Protected Module Globals
 
 	#tag Property, Flags = &h0
 		Throttle As Boolean = True
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		Transparency As Integer = 190
 	#tag EndProperty
 
 	#tag Property, Flags = &h0

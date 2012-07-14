@@ -637,7 +637,7 @@ Inherits Canvas
 		        s = "Image Not Resolved."
 		      End Try
 		    End If
-		    helptext = New Picture(100, 100, 32)
+		    helptext = New Picture(100, 100)
 		    helptext.Graphics.TextFont = gTextFont
 		    helptext.Graphics.TextSize = gTextSize
 		    Dim strWidth, strHeight As Integer
@@ -655,7 +655,7 @@ Inherits Canvas
 		      Next
 		      strWidth = requiredWidth
 		      strHeight = requiredHeight
-		      helptext = New Picture(strWidth + 8, strHeight + 8, 32)
+		      helptext = New Picture(strWidth + 8, strHeight + 8)
 		      helptext.Graphics.TextFont = gTextFont
 		      helptext.Graphics.TextSize = gTextSize
 		      helptext.Graphics.ForeColor = HelpColor
@@ -668,7 +668,7 @@ Inherits Canvas
 		      helptext.Graphics.TextSize = gTextSize
 		      strWidth = helptext.Graphics.StringWidth(s)
 		      strHeight = helptext.Graphics.StringHeight(s, strWidth + 5)
-		      helptext = New Picture(strWidth + 4, strHeight + 4, 32)
+		      helptext = New Picture(strWidth + 4, strHeight + 4)
 		      helptext.Graphics.ForeColor = HelpColor
 		      helptext.Graphics.FillRect(0, 0, helptext.Width, helptext.Height)
 		      helptext.Graphics.ForeColor = StringColor
@@ -743,7 +743,7 @@ Inherits Canvas
 		  strWidth = buffer.Graphics.StringWidth(pid)
 		  strHeight = buffer.Graphics.StringHeight(pid, strWidth)
 		  
-		  p = New Picture(Objects(Index).Image.Width, Objects(Index).Image.Height + strHeight, 32)
+		  p = New Picture(Objects(Index).Image.Width, Objects(Index).Image.Height + strHeight)
 		  p.Graphics.TextFont = gTextFont
 		  p.Graphics.ForeColor = &cCCCCCC
 		  p.Graphics.FillRect(0, 0, p.Width, p.Height)

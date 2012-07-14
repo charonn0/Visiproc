@@ -77,13 +77,13 @@ Protected Module Clock
 
 	#tag Method, Flags = &h21
 		Private Function DrawTitle(scale As Double = 1.0) As Picture
-		  Dim p As New Picture(15 * Scale, 8 * Scale, 32)
+		  Dim p As New Picture(15 * Scale, 8 * Scale)
 		  p.Graphics.TextSize = 5 * Scale
 		  p.Graphics.TextFont = TitleFont
 		  Dim strWidth, strHeight As Integer
 		  strWidth = p.Graphics.StringWidth(Title)
 		  strHeight = p.Graphics.StringHeight(Title, p.Width)
-		  p = New Picture(strWidth, strHeight, 32)
+		  p = New Picture(strWidth, strHeight)
 		  p.Graphics.ForeColor = &cFFFFFE
 		  p.Graphics.FillRect(0, 0, p.Width, p.Height)
 		  p.Graphics.TextSize = 5 * Scale
@@ -94,7 +94,7 @@ Protected Module Clock
 		  
 		Exception err As OutOfBoundsException
 		  //Someone made the clock too small
-		  Return New Picture(1, 1, 32)
+		  Return New Picture(1, 1)
 		End Function
 	#tag EndMethod
 
