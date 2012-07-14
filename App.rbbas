@@ -120,9 +120,10 @@ Inherits Application
 		      Case "TextSize"
 		        Globals.gTextSize = settVal.IntegerValue
 		      Case "Photo"
-		        
 		        Globals.PhotoFile = GetFolderItem(settVal)
 		        
+		      Case "Translucency"
+		        Globals.Transparency = settVal.IntegerValue
 		      End Select
 		    Next
 		    
@@ -145,6 +146,7 @@ Inherits Application
 		  tos.WriteLine("TextFont=" + Globals.gTextFont)
 		  tos.WriteLine("HelpColor=" + Str(Globals.HelpColor))
 		  tos.WriteLine("TextSize=" + Str(Globals.gTextSize))
+		  tos.WriteLine("Translucency=" + Str(Globals.Transparency))
 		  If PhotoFile <> Nil Then tos.WriteLine("Photo=" + Globals.PhotoFile.AbsolutePath)
 		  tos.Close
 		  

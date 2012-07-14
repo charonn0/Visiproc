@@ -235,7 +235,7 @@ Protected Class dragObject
 			      Ret = debugBuffer
 			    Case 3
 			      Ret = magImage
-			    Case 4
+			    Case 4  //Photo tile
 			      If PhotoFile <> Nil Then
 			        If PhotoFile.Exists Then
 			          Photo = Photo.Open(PhotoFile)
@@ -243,8 +243,8 @@ Protected Class dragObject
 			          Me.Name = PhotoFile.Name
 			        Else
 			          If Photo = Nil Then
-			            Dim p As New Picture (250, 150, 24)
-			            p.Graphics.ForeColor = &c000000
+			            Dim p As New Picture (250, 150)', 24)
+			            p.Graphics.ForeColor = &c00000000
 			            p.Graphics.TextFont = gTextFont
 			            p.Graphics.TextSize = 15
 			            Dim nm As String = "Drop a photo here."
@@ -271,12 +271,18 @@ Protected Class dragObject
 			      End If
 			      ret = Photo
 			      
-			    Case 5
-			      If DropTarget = Nil Then DropTarget = target1751
+			    Case 5  //File tool target
+			      If DropTarget = Nil Then 
+			        DropTarget = New Picture(target1751.Width, target1751.Height)
+			        DropTarget.Graphics.ForeColor = &cFFFFFF99
+			        DropTarget.Graphics.FillRect(0, 0, DropTarget.Width, DropTarget.Height)
+			        DropTarget.Graphics.DrawPicture(target1751, 0, 0)
+			      End If
+			      
 			      If Working Then
 			        Dim p As New Picture(DropTarget.Width, DropTarget.Height)', DropTarget.Depth)
-			        'p.Graphics.ForeColor = &cFFFFFF99
-			        'p.Graphics.FillRect(0, 0, p.Width, p.Height)
+			        p.Graphics.ForeColor = &cFFFFFF99
+			        p.Graphics.FillRect(0, 0, p.Width, p.Height)
 			        p.Graphics.DrawPicture(DropTarget, 0, 0)
 			        p.Graphics.ForeColor = &cFF0000//&cFF0000
 			        p.Graphics.TextFont = gTextFont

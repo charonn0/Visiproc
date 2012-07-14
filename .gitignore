@@ -1,3 +1,4 @@
 *.rbuistate
 .gitignore
 Build Automation.rbbas
+Thumbs.db

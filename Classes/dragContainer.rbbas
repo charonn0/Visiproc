@@ -228,7 +228,7 @@ Inherits Canvas
 		  FrameCount = FrameCount + 1
 		  lastSort = -1
 		  If currentObject > -1 Then
-		    If lastX = X And lastY = Y Then Return
+		    If (lastX = X And lastY = Y) Or (NextX = 0 And NextY = 0) Then Return
 		    //Calculate the new position of the object, update the object, then refresh the control.
 		    Dim objX As Integer = x - lastx
 		    Dim objY As Integer = y - lasty
@@ -563,33 +563,37 @@ Inherits Canvas
 
 	#tag Method, Flags = &h21
 		Private Sub DrawFPS()
+		  Dim tmp1 As Picture = TextToPicture(Str(lastFPS) + " FPS", gTextFont, 20, True, False, False, &c000000, &cCCCCCC)
+		  Dim tmp2 As Picture = TextToPicture(Format(FrameCount, "###,###,###,###,###,###,##0")+ " Frames So Far", gTextFont, 10, True, False, False, &c000000, &cCCCCCC)
 		  
-		  Dim percStr As String
-		  
-		  Buffer.Graphics.Bold = True
-		  percStr = Str(lastFPS) + " FPS"
-		  Buffer.Graphics.TextSize = 20.5
-		  Buffer.Graphics.TextFont = gTextFont
-		  Dim strWidth, strHeight As Integer
-		  strWidth = Buffer.Graphics.StringWidth(percStr)
-		  strHeight = Buffer.Graphics.StringHeight(percStr, Buffer.Width)
-		  buffer.Graphics.TextSize = 20.5
-		  buffer.Graphics.ForeColor = &c000000
-		  Buffer.Graphics.DrawString(percStr, (Buffer.Width) - (strWidth) - 10 + 1, strHeight + 10 + 1)
-		  
-		  Buffer.Graphics.TextSize = 20
-		  Buffer.Graphics.ForeColor = &cCCCCCC
-		  Buffer.Graphics.DrawString(percStr, (Buffer.Width) - (strWidth) - 10, strHeight + 10)
-		  
-		  
-		  
-		  
-		  Dim lahe As Integer = strHeight
-		  Buffer.Graphics.TextSize = 10
-		  percStr = Format(FrameCount, "###,###,###,###,###,###,##0")+ " Frames So Far"
-		  strWidth = Buffer.Graphics.StringWidth(percStr)
-		  strHeight = Buffer.Graphics.StringHeight(percStr, Buffer.Width)
-		  Buffer.Graphics.DrawString(percStr, Buffer.Width - (strWidth) - 10, strHeight + 10 + lahe)
+		  'Dim percStr As String
+		  '
+		  'Buffer.Graphics.Bold = True
+		  'percStr = 
+		  'Buffer.Graphics.TextSize = 20.5
+		  'Buffer.Graphics.TextFont = 
+		  'Dim strWidth, strHeight As Integer
+		  'strWidth = Buffer.Graphics.StringWidth(percStr)
+		  'strHeight = Buffer.Graphics.StringHeight(percStr, Buffer.Width)
+		  'buffer.Graphics.TextSize = 20.5
+		  'buffer.Graphics.ForeColor = 
+		  'Buffer.Graphics.DrawString(percStr, (Buffer.Width) - (strWidth) - 10 + 1, strHeight + 10 + 1)
+		  '
+		  'Buffer.Graphics.TextSize = 20
+		  'Buffer.Graphics.ForeColor = 
+		  'Buffer.Graphics.DrawString(percStr, (Buffer.Width) - (strWidth) - 10, strHeight + 10)
+		  '
+		  '
+		  '
+		  '
+		  'Dim lahe As Integer = strHeight
+		  'Buffer.Graphics.TextSize = 10
+		  'percStr = 
+		  'strWidth = Buffer.Graphics.StringWidth(percStr)
+		  'strHeight = Buffer.Graphics.StringHeight(percStr, Buffer.Width)
+		  'Buffer.Graphics.DrawString(percStr, Buffer.Width - (strWidth) - 10, strHeight + 10 + lahe)
+		  buffer.Graphics.DrawPicture(tmp1, buffer.Width - tmp1.Width, 0)
+		  buffer.Graphics.DrawPicture(tmp2, buffer.Width - tmp2.Width, tmp1.Height)
 		  
 		End Sub
 	#tag EndMethod
@@ -610,12 +614,13 @@ Inherits Canvas
 		      Case 1
 		        For Each pp As VolumeInformation In Drives
 		          If Not pp.Mounted Then
-		            s = s + "Drive " + pp.Path + " is not mounted.  " + EndOfLine
+		            s = s + "Drive " + pp.Path + " is not mounted.  "
 		          ElseIf pp.Type <> VolumeInformation.Network Then
-		            s = s + "Drive " + pp.Path + " is " + Format(100 - pp.PercentFull, "##0.00\%") + " Full  " + EndOfLine
+		            s = s + "Drive " + pp.Path + " is " + Format(100 - pp.PercentFull, "##0.00\%") + " Full  "
 		          Else
-		            s = s + "Drive " + pp.Path + " is a network volume.  " + EndOfLine
+		            s = s + "Drive " + pp.Path + " is a network volume.  "
 		          End If
+		          s = s + EndOfLine
 		        Next
 		      Case 2
 		        s = "Debug Messages"
@@ -637,46 +642,53 @@ Inherits Canvas
 		        s = "Image Not Resolved."
 		      End Try
 		    End If
-		    helptext = New Picture(100, 100)
-		    helptext.Graphics.TextFont = gTextFont
-		    helptext.Graphics.TextSize = gTextSize
-		    Dim strWidth, strHeight As Integer
-		    If Instr(s, EndOfLine) > 0 Then
-		      Dim drvs() As String = s.Split(EndOfLine)
-		      Dim requiredHeight, requiredWidth As Integer
-		      For z As Integer = 0 To UBound(drvs)
-		        Dim drv As String = drvs(z).Trim
-		        If drv = "" Then Continue
-		        Dim a, b As Integer
-		        a = helptext.Graphics.StringWidth(drv)
-		        b = helptext.Graphics.StringHeight(drv, a)
-		        If requiredWidth < a Then requiredWidth = a
-		        requiredHeight = requiredHeight + b
-		      Next
-		      strWidth = requiredWidth
-		      strHeight = requiredHeight
-		      helptext = New Picture(strWidth + 8, strHeight + 8)
-		      helptext.Graphics.TextFont = gTextFont
-		      helptext.Graphics.TextSize = gTextSize
-		      helptext.Graphics.ForeColor = HelpColor
-		      helptext.Graphics.FillRect(0, 0, helptext.Width, helptext.Height)
-		      helptext.Graphics.ForeColor = StringColor
-		      helptext.Graphics.DrawString(s, 2, 15)
-		      
-		    Else
-		      helptext.Graphics.TextFont = gTextFont
-		      helptext.Graphics.TextSize = gTextSize
-		      strWidth = helptext.Graphics.StringWidth(s)
-		      strHeight = helptext.Graphics.StringHeight(s, strWidth + 5)
-		      helptext = New Picture(strWidth + 4, strHeight + 4)
-		      helptext.Graphics.ForeColor = HelpColor
-		      helptext.Graphics.FillRect(0, 0, helptext.Width, helptext.Height)
-		      helptext.Graphics.ForeColor = StringColor
-		      helptext.Graphics.DrawString(s, 2, ((helptext.Height/2) + (strHeight/4)))
-		    End If
-		    helptext.Graphics.ForeColor = &c363636
-		    helptext.Graphics.DrawRect(0, 0, helptext.Width, helptext.Height)
+		    
+		    
+		    helptext = TextToPicture(s.Trim, gTextFont, gTextSize, False, False, False, StringColor, RGB(HelpColor.Red, HelpColor.Green, HelpColor.Blue, Globals.Transparency))
+		    helptext.RGBSurface.FloodFill(helptext.Width - 1, helptext.Height - 1, RGB(HelpColor.Red, HelpColor.Green, HelpColor.Blue, Globals.Transparency))
 		    Refresh(False)
+		    Return
+		    '
+		    'helptext = New Picture(100, 100, 32)
+		    'helptext.Graphics.TextFont = gTextFont
+		    'helptext.Graphics.TextSize = gTextSize
+		    'Dim strWidth, strHeight As Integer
+		    'If Instr(s, EndOfLine) > 0 Then
+		    'Dim drvs() As String = s.Split(EndOfLine)
+		    'Dim requiredHeight, requiredWidth As Integer
+		    'For z As Integer = 0 To UBound(drvs)
+		    'Dim drv As String = drvs(z).Trim
+		    'If drv = "" Then Continue
+		    'Dim a, b As Integer
+		    'a = helptext.Graphics.StringWidth(drv)
+		    'b = helptext.Graphics.StringHeight(drv, a)
+		    'If requiredWidth < a Then requiredWidth = a
+		    'requiredHeight = requiredHeight + b
+		    'Next
+		    'strWidth = requiredWidth
+		    'strHeight = requiredHeight
+		    'helptext = New Picture(strWidth + 8, strHeight + 8)
+		    'helptext.Graphics.TextFont = gTextFont
+		    'helptext.Graphics.TextSize = gTextSize
+		    'helptext.Graphics.ForeColor = HelpColor
+		    'helptext.Graphics.FillRect(0, 0, helptext.Width, helptext.Height)
+		    'helptext.Graphics.ForeColor = StringColor
+		    'helptext.Graphics.DrawString(s, 2, 15)
+		    '
+		    'Else
+		    'helptext.Graphics.TextFont = gTextFont
+		    'helptext.Graphics.TextSize = gTextSize
+		    'strWidth = helptext.Graphics.StringWidth(s)
+		    'strHeight = helptext.Graphics.StringHeight(s, strWidth + 5)
+		    'helptext = New Picture(strWidth + 4, strHeight + 4)
+		    'helptext.Graphics.ForeColor = HelpColor
+		    'helptext.Graphics.FillRect(0, 0, helptext.Width, helptext.Height)
+		    'helptext.Graphics.ForeColor = StringColor
+		    'helptext.Graphics.DrawString(s, 2, ((helptext.Height/2) + (strHeight/4)))
+		    'End If
+		    'helptext.Graphics.ForeColor = &c363636
+		    'helptext.Graphics.DrawRect(0, 0, helptext.Width, helptext.Height)
+		    'Refresh(False)
 		  Else
 		    If helptext <> Nil Then
 		      helptext = Nil

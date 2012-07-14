@@ -7,7 +7,7 @@ Begin Window setswin
    Frame           =   3
    FullScreen      =   False
    HasBackColor    =   False
-   Height          =   237
+   Height          =   2.51e+2
    ImplicitInstance=   True
    LiveResize      =   True
    MacProcID       =   0
@@ -23,7 +23,7 @@ Begin Window setswin
    Resizeable      =   False
    Title           =   "Settings"
    Visible         =   True
-   Width           =   370
+   Width           =   3.7e+2
    Begin ColorSelector newproc
       AutoDeactivate  =   True
       BorderColor     =   0
@@ -43,7 +43,6 @@ Begin Window setswin
       Scope           =   0
       TabIndex        =   0
       TabPanelIndex   =   0
-      TabStop         =   True
       Top             =   4
       Visible         =   True
       Width           =   27
@@ -70,7 +69,6 @@ Begin Window setswin
       Selectable      =   False
       TabIndex        =   1
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "New Process"
       TextAlign       =   0
       TextColor       =   0
@@ -102,7 +100,6 @@ Begin Window setswin
       Scope           =   0
       TabIndex        =   2
       TabPanelIndex   =   0
-      TabStop         =   True
       Top             =   38
       Visible         =   True
       Width           =   27
@@ -129,7 +126,6 @@ Begin Window setswin
       Selectable      =   False
       TabIndex        =   3
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Normal Process"
       TextAlign       =   0
       TextColor       =   0
@@ -161,7 +157,6 @@ Begin Window setswin
       Scope           =   0
       TabIndex        =   4
       TabPanelIndex   =   0
-      TabStop         =   True
       Top             =   72
       Visible         =   True
       Width           =   27
@@ -188,7 +183,6 @@ Begin Window setswin
       Selectable      =   False
       TabIndex        =   5
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "System Process"
       TextAlign       =   0
       TextColor       =   0
@@ -220,7 +214,6 @@ Begin Window setswin
       Scope           =   0
       TabIndex        =   6
       TabPanelIndex   =   0
-      TabStop         =   True
       Top             =   4
       Visible         =   True
       Width           =   27
@@ -247,7 +240,6 @@ Begin Window setswin
       Selectable      =   False
       TabIndex        =   7
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Bad System Process"
       TextAlign       =   0
       TextColor       =   0
@@ -282,14 +274,13 @@ Begin Window setswin
       Selectable      =   False
       TabIndex        =   8
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Text Font:"
       TextAlign       =   2
       TextColor       =   0
       TextFont        =   "System"
       TextSize        =   11
       TextUnit        =   0
-      Top             =   122
+      Top             =   143
       Transparent     =   True
       Underline       =   ""
       Visible         =   True
@@ -321,7 +312,7 @@ Begin Window setswin
       TextFont        =   "System"
       TextSize        =   11
       TextUnit        =   0
-      Top             =   122
+      Top             =   143
       Underline       =   ""
       Visible         =   True
       Width           =   128
@@ -352,7 +343,7 @@ Begin Window setswin
       TextFont        =   "System"
       TextSize        =   11
       TextUnit        =   0
-      Top             =   122
+      Top             =   143
       Underline       =   ""
       Visible         =   True
       Width           =   46
@@ -379,14 +370,13 @@ Begin Window setswin
       Selectable      =   False
       TabIndex        =   11
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Text Color:"
       TextAlign       =   2
       TextColor       =   0
       TextFont        =   "System"
       TextSize        =   11
       TextUnit        =   0
-      Top             =   125
+      Top             =   146
       Transparent     =   True
       Underline       =   ""
       Visible         =   True
@@ -411,8 +401,7 @@ Begin Window setswin
       Scope           =   0
       TabIndex        =   12
       TabPanelIndex   =   0
-      TabStop         =   True
-      Top             =   122
+      Top             =   143
       Visible         =   True
       Width           =   27
    End
@@ -435,7 +424,6 @@ Begin Window setswin
       Scope           =   0
       TabIndex        =   13
       TabPanelIndex   =   0
-      TabStop         =   True
       Top             =   70
       Visible         =   True
       Width           =   27
@@ -462,7 +450,6 @@ Begin Window setswin
       Selectable      =   False
       TabIndex        =   14
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Background Color"
       TextAlign       =   0
       TextColor       =   0
@@ -501,7 +488,7 @@ Begin Window setswin
       TextFont        =   "System"
       TextSize        =   0
       TextUnit        =   0
-      Top             =   157
+      Top             =   178
       Underline       =   ""
       Visible         =   True
       Width           =   164
@@ -532,7 +519,7 @@ Begin Window setswin
       TextFont        =   "System"
       TextSize        =   0
       TextUnit        =   0
-      Top             =   202
+      Top             =   223
       Underline       =   ""
       Visible         =   True
       Width           =   80
@@ -556,7 +543,6 @@ Begin Window setswin
       Scope           =   0
       TabIndex        =   17
       TabPanelIndex   =   0
-      TabStop         =   True
       Top             =   36
       Visible         =   True
       Width           =   27
@@ -583,7 +569,6 @@ Begin Window setswin
       Selectable      =   False
       TabIndex        =   18
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "Tooltip Color"
       TextAlign       =   0
       TextColor       =   0
@@ -622,7 +607,7 @@ Begin Window setswin
       TextFont        =   "System"
       TextSize        =   0
       TextUnit        =   0
-      Top             =   202
+      Top             =   223
       Underline       =   ""
       Visible         =   True
       Width           =   80
@@ -653,7 +638,7 @@ Begin Window setswin
       TextFont        =   "System"
       TextSize        =   0
       TextUnit        =   0
-      Top             =   157
+      Top             =   178
       Underline       =   ""
       Visible         =   True
       Width           =   164
@@ -684,10 +669,82 @@ Begin Window setswin
       TextFont        =   "System"
       TextSize        =   0
       TextUnit        =   0
-      Top             =   202
+      Top             =   223
       Underline       =   ""
       Visible         =   True
       Width           =   80
+   End
+   Begin SliderCanvas SliderCanvas1
+      AcceptFocus     =   ""
+      AcceptTabs      =   ""
+      AutoDeactivate  =   True
+      barColor        =   "&c000000"
+      barWell         =   "&cC0C0C0"
+      Border          =   True
+      boxColor        =   "&c000000"
+      DoubleBuffer    =   ""
+      Enabled         =   True
+      EnableSlider    =   True
+      EraseBackground =   ""
+      Gradient        =   True
+      gradientEnd     =   "&c009B4E"
+      Height          =   12
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Left            =   102
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      maximum         =   255
+      Scope           =   0
+      TabIndex        =   24
+      TabPanelIndex   =   0
+      TabStop         =   ""
+      ThumbColor      =   "&c000000"
+      TickColor       =   "&c000000"
+      Ticks           =   True
+      Top             =   109
+      UseFocusRing    =   True
+      value           =   100
+      Visible         =   True
+      Width           =   265
+   End
+   Begin Label Label9
+      AutoDeactivate  =   True
+      Bold            =   ""
+      DataField       =   ""
+      DataSource      =   ""
+      Enabled         =   True
+      Height          =   20
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   ""
+      Left            =   1
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Multiline       =   ""
+      Scope           =   0
+      Selectable      =   False
+      TabIndex        =   25
+      TabPanelIndex   =   0
+      Text            =   "Translucency:"
+      TextAlign       =   2
+      TextColor       =   &h000000
+      TextFont        =   "System"
+      TextSize        =   0
+      TextUnit        =   0
+      Top             =   104
+      Transparent     =   True
+      Underline       =   ""
+      Visible         =   True
+      Width           =   100
    End
 End
 #tag EndWindow
@@ -774,6 +831,7 @@ End
 		  StringColor = txtColor.FillColor
 		  Globals.gTextFont = Self.textFont.Text
 		  Globals.gTextSize = Val(textSize.Text)
+		  Globals.Transparency = SliderCanvas1.Value
 		  HelpColor = help.FillColor
 		  If newBackdrop <> Nil Then Globals.BackDrop = newBackdrop
 		  Window1.dragContainer1.Empty
@@ -809,6 +867,14 @@ End
 		  sysproc1.FillColor = InvalidSystemProcColor
 		  txtColor.FillColor = StringColor
 		  help.FillColor = HelpColor
+		  SliderCanvas1.Value = Globals.Transparency
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events SliderCanvas1
+	#tag Event
+		Sub Open()
+		  Me.Value = Globals.Transparency
 		End Sub
 	#tag EndEvent
 #tag EndEvents

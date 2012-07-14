@@ -71,6 +71,7 @@ Window=filedetail;Windows/filedetail.rbfrm;&h7F918FFF;&h3AB527FF;false
 Class=CPUGetter;Classes/CPUGetter.rbbas;&h4ED627FF;&h76F397FF;false
 Class=PercentMenu;Classes/PercentMenu.rbbas;&h1665AFFF;&h76F397FF;false
 Module=Clock;Classes/Clock.rbbas;&h52274FFF;&h76F397FF;false
+Class=SliderCanvas;Classes/SliderCanvas.rbbas;&h33509FFF;&h76F397FF;false
 DefaultWindow=Window1
 MajorVersion=1
 MinorVersion=0

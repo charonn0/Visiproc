@@ -31,9 +31,9 @@ Protected Module Globals
 
 	#tag Method, Flags = &h21
 		Private Sub drawBack(ByRef Buffer As Picture)
-		  Buffer.Graphics.ForeColor = &c000000
+		  Buffer.Graphics.ForeColor = RGB(0, 0, 0, Globals.Transparency)
 		  Buffer.Graphics.FillRect(0, 0, Buffer.Width, Buffer.Height)
-		  Buffer.Graphics.ForeColor = &c3F3F3F00
+		  Buffer.Graphics.ForeColor = RGB(&h3F, &h3F, &h3F, Globals.Transparency)
 		  For i As Integer = 0 To Buffer.Width Step 10
 		    Buffer.Graphics.DrawLine(i, 0, i, Buffer.Height)
 		  Next
@@ -179,9 +179,9 @@ Protected Module Globals
 		  Static history(), history1(), history2(), history3() As Integer
 		  
 		  
-		  CPUBuffer = New Picture(250, 100, 24)
+		  CPUBuffer = New Picture(250, 100)
 		  drawBack(CPUBuffer)
-		  CPUBuffer.Graphics.ForeColor = &c00FF00
+		  CPUBuffer.Graphics.ForeColor = &c00FF0000
 		  If UBound(history) * 10 >= 250 Then
 		    history.Remove(0)
 		    history1.Remove(0)
@@ -264,10 +264,10 @@ Protected Module Globals
 		  End If
 		  For i As Integer = startat To DebugLog.Ubound
 		    Try
-		      Dim p As New Picture(250, 15, 24)
-		      p.Graphics.ForeColor = &ccccccc
+		      Dim p As New Picture(250, 15)
+		      p.Graphics.ForeColor = RGB(&hcc, &hcc, &hcc, Globals.Transparency)
 		      p.Graphics.FillRect(0, 0, p.Width, p.Height)
-		      p.Graphics.ForeColor = &c0000FF00//&cFF0000
+		      p.Graphics.ForeColor = RGB(0, 0, &hFF, Globals.Transparency)
 		      p.Graphics.TextFont = gTextFont
 		      p.Graphics.TextSize = 10
 		      Dim nm As String = Str(i) + ": " + DebugLog(i)
@@ -275,7 +275,7 @@ Protected Module Globals
 		      strWidth = p.Graphics.StringWidth(nm)
 		      strHeight = p.Graphics.StringHeight(nm, p.Width)
 		      p.Graphics.DrawString(nm, 10, ((p.Height/2) + (strHeight/4)))
-		      p.Graphics.ForeColor = &cFFFFFF
+		      p.Graphics.ForeColor = RGB(&hFF, &hFF, &hFF, Globals.Transparency)
 		      p.Graphics.DrawRect(1, 1, p.Width - 1, p.Height - 1)
 		      drvs.Append(p)
 		      requiredHeight = requiredHeight + p.Height
@@ -285,13 +285,13 @@ Protected Module Globals
 		    End Try
 		  Next
 		  
-		  debugBuffer = New Picture(requiredWidth, requiredHeight, 24)
+		  debugBuffer = New Picture(requiredWidth, requiredHeight)', 24)
 		  Dim x, y As Integer
 		  For i As Integer = 0 To UBound(drvs)
 		    debugBuffer.Graphics.DrawPicture(drvs(i), x, y)
 		    y = y + drvs(i).Height
 		  Next
-		  debugBuffer.Graphics.ForeColor = &cFFFFFF
+		  debugBuffer.Graphics.ForeColor = RGB(&hFF, &hFF, &hFF, Globals.Transparency)
 		  debugBuffer.Graphics.DrawRect(0, 0, debugBuffer.Width - 1, debugBuffer.Height - 1)
 		  
 		  If DebugLog.Ubound >= 1500 Then
@@ -313,8 +313,8 @@ Protected Module Globals
 		      total = f.Totalbytes \ 1000
 		      free = f.FreeBytes \ 1000
 		      Dim perc As Double = f.FreeBytes * 100 / f.Totalbytes
-		      Dim p As New Picture(250, 15, 24)
-		      p.Graphics.ForeColor = &ccccccc
+		      Dim p As New Picture(250, 15)', 24)
+		      p.Graphics.ForeColor = RGB(&hcc, &hcc, &hcc, Globals.Transparency)
 		      p.Graphics.FillRect(0, 0, p.Width, p.Height)
 		      If f.Filesystem = "CDFS" Or f.Filesystem = "UDF" Then
 		        DrawBar(p, (100 - perc) * p.Width / 100, 1)
@@ -322,7 +322,7 @@ Protected Module Globals
 		        DrawBar(p, (100 - perc) * p.Width / 100)
 		      End If
 		      //p.Graphics.FillRect(0, 0, ((100 - perc) * p.Width / 100), p.Height)
-		      p.Graphics.ForeColor = &c0000FF00//&cFF0000
+		      p.Graphics.ForeColor = RGB(0, 0, &hFF, Globals.Transparency)
 		      p.Graphics.TextFont = gTextFont
 		      p.Graphics.TextSize = 10
 		      Dim nm As String = Volume(i).AbsolutePath
@@ -338,7 +338,7 @@ Protected Module Globals
 		      strHeight = p.Graphics.StringHeight(nm, p.Width)
 		      p.Graphics.DrawString(nm, 10, ((p.Height/2) + (strHeight/4)))
 		      
-		      p.Graphics.ForeColor = &cFFFFFF
+		      p.Graphics.ForeColor = RGB(&hFF, &hFF, &hFF, Globals.Transparency)
 		      p.Graphics.DrawRect(1, 1, p.Width - 1, p.Height - 1)
 		      drvs.Append(p)
 		      f.PercentFull = perc
@@ -351,13 +351,13 @@ Protected Module Globals
 		    End Try
 		  Next
 		  
-		  diskBuffer = New Picture(requiredWidth, requiredHeight, 24)
+		  diskBuffer = New Picture(requiredWidth, requiredHeight)', 24)
 		  Dim x, y As Integer
 		  For i As Integer = 0 To UBound(drvs)
 		    diskBuffer.Graphics.DrawPicture(drvs(i), x, y)
 		    y = y + drvs(i).Height
 		  Next
-		  diskBuffer.Graphics.ForeColor = &cFFFFFF
+		  diskBuffer.Graphics.ForeColor = RGB(&hFF, &hFF, &hFF, Globals.Transparency)
 		  diskBuffer.Graphics.DrawRect(0, 0, diskBuffer.Width - 1, diskBuffer.Height - 1)
 		  'Dim percent As Integer = free * 100 / total
 		  'diskBuffer = New Picture(250, 150, 24)
@@ -679,7 +679,7 @@ Protected Module Globals
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		Transparency As Integer = 190
+		Transparency As Integer = 70
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
