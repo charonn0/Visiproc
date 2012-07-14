@@ -86,7 +86,7 @@ Begin Window Window1
       TextSize        =   0
       TextUnit        =   0
       Top             =   589
-      Transparent     =   False
+      Transparent     =   True
       Underline       =   ""
       Visible         =   True
       Width           =   507
@@ -120,7 +120,7 @@ Begin Window Window1
       TextSize        =   0
       TextUnit        =   0
       Top             =   589
-      Transparent     =   False
+      Transparent     =   True
       Underline       =   ""
       Visible         =   True
       Width           =   507
@@ -128,13 +128,13 @@ Begin Window Window1
    Begin Timer Timer1
       Height          =   32
       Index           =   -2147483648
-      Left            =   1121
+      Left            =   1054
       LockedInPosition=   False
       Mode            =   2
       Period          =   1
       Scope           =   0
       TabPanelIndex   =   0
-      Top             =   -8
+      Top             =   -14
       Width           =   32
    End
    Begin Timer WildTimer
@@ -174,9 +174,9 @@ End
 	#tag Event
 		Sub Open()
 		  Me.Maximize
-		  Dim mi As New ThrottleMenu("Throttle Drawing")
-		  mi.Checked = True
-		  Me.MenuBar.Item(0).Append(mi)
+		  'Dim mi As New ThrottleMenu("Throttle Drawing")
+		  'mi.Checked = True
+		  'Me.MenuBar.Item(0).Append(mi)
 		  
 		  Dim perc As New MenuItem("Resize Tiles")
 		  perc.Append(New PercentMenu("10%"))
@@ -336,6 +336,7 @@ End
 		  Window1.Status.Text = "Showing: " + Str((UBound(activeProcesses) + 1) - (Window1.dragContainer1.HiddenProcCount)) + " of " + Str(UBound(activeProcesses) + 1) + " running processes."
 		  Init = False
 		  Me.Period = 250
+		  If CPUThread.State = Thread.NotRunning Then CPUThread.Run
 		End Sub
 	#tag EndEvent
 #tag EndEvents

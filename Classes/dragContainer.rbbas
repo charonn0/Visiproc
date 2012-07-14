@@ -300,7 +300,6 @@ Inherits Canvas
 
 	#tag Event
 		Sub Paint(g As Graphics)
-		  
 		  If Globals.Init Then
 		    g.DrawPicture(InitImg, 0, 0)
 		    buffer = New Picture(Me.Width, Me.Height, 24)
@@ -310,8 +309,7 @@ Inherits Canvas
 		  //First make sure we haven't been resized. If we have then we need to resize the buffer, too.
 		  Static lastWidth, lastHeight As Integer
 		  If lastWidth <> Me.Width Or lastHeight <> Me.Height Then
-		    'buffer = New Picture(Me.Width, Me.Height, 24)
-		    
+		    buffer = New Picture(Me.Width, Me.Height)
 		    lastWidth = Me.Width
 		    lastHeight = Me.Height
 		  End If
@@ -569,18 +567,18 @@ Inherits Canvas
 		  'Dim percStr As String
 		  '
 		  'Buffer.Graphics.Bold = True
-		  'percStr = 
+		  'percStr =
 		  'Buffer.Graphics.TextSize = 20.5
-		  'Buffer.Graphics.TextFont = 
+		  'Buffer.Graphics.TextFont =
 		  'Dim strWidth, strHeight As Integer
 		  'strWidth = Buffer.Graphics.StringWidth(percStr)
 		  'strHeight = Buffer.Graphics.StringHeight(percStr, Buffer.Width)
 		  'buffer.Graphics.TextSize = 20.5
-		  'buffer.Graphics.ForeColor = 
+		  'buffer.Graphics.ForeColor =
 		  'Buffer.Graphics.DrawString(percStr, (Buffer.Width) - (strWidth) - 10 + 1, strHeight + 10 + 1)
 		  '
 		  'Buffer.Graphics.TextSize = 20
-		  'Buffer.Graphics.ForeColor = 
+		  'Buffer.Graphics.ForeColor =
 		  'Buffer.Graphics.DrawString(percStr, (Buffer.Width) - (strWidth) - 10, strHeight + 10)
 		  '
 		  '
@@ -588,7 +586,7 @@ Inherits Canvas
 		  '
 		  'Dim lahe As Integer = strHeight
 		  'Buffer.Graphics.TextSize = 10
-		  'percStr = 
+		  'percStr =
 		  'strWidth = Buffer.Graphics.StringWidth(percStr)
 		  'strHeight = Buffer.Graphics.StringHeight(percStr, Buffer.Width)
 		  'Buffer.Graphics.DrawString(percStr, Buffer.Width - (strWidth) - 10, strHeight + 10 + lahe)
