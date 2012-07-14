@@ -928,6 +928,12 @@ Protected Module Globals
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
+			Name="Transparency"
+			Group="Behavior"
+			InitialValue="190"
+			Type="Integer"
+		#tag EndViewProperty
+		#tag ViewProperty
 			Name="Version"
 			Group="Behavior"
 			InitialValue="0.02"

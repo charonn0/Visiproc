@@ -274,7 +274,9 @@ Protected Class dragObject
 			    Case 5
 			      If DropTarget = Nil Then DropTarget = target1751
 			      If Working Then
-			        Dim p As New Picture(DropTarget.Width, DropTarget.Height, DropTarget.Depth)
+			        Dim p As New Picture(DropTarget.Width, DropTarget.Height)', DropTarget.Depth)
+			        'p.Graphics.ForeColor = &cFFFFFF99
+			        'p.Graphics.FillRect(0, 0, p.Width, p.Height)
 			        p.Graphics.DrawPicture(DropTarget, 0, 0)
 			        p.Graphics.ForeColor = &cFF0000//&cFF0000
 			        p.Graphics.TextFont = gTextFont
