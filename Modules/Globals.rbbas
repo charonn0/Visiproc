@@ -239,16 +239,6 @@ Protected Module Globals
 		      CPUBuffer.Graphics.DrawLine(0, 100 - history3(i), 10, 100 - history3(i))
 		    End Try
 		  Next
-		  
-		  
-		  
-		  
-		  
-		  
-		  
-		  
-		  
-		  
 		End Sub
 	#tag EndMethod
 
