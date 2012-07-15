@@ -254,7 +254,8 @@ Protected Module Globals
 		  End If
 		  For i As Integer = startat To DebugLog.Ubound
 		    Try
-		      Dim p As Picture = TextToPicture(Str(i) + ": " + DebugLog(i), gTextFont, gTextSize, False, False, False, RGB(0, 0, &hFF, Globals.Transparency), RGB(&hcc, &hcc, &hcc, Globals.Transparency))
+		      Dim p As Picture = TextToPicture(Str(i) + ": " + DebugLog(i), RGB(0, 0, &hFF, _
+		      Globals.Transparency), RGB(&hcc, &hcc, &hcc, Globals.Transparency), gTextFont, gTextSize)
 		      drvs.Append(p)
 		      requiredHeight = requiredHeight + p.Height
 		      If p.Width > requiredWidth Then requiredWidth = p.Width
@@ -362,7 +363,7 @@ Protected Module Globals
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function TextToPicture(Text As String, Font As String = "System", FontSize As Integer = 11, Bold As Boolean = False, Underline As Boolean = False, Italic As Boolean = False, forecolor As Color = &c000000, BackColor As Color = &cFFFFFF) As Picture
+		Function TextToPicture(Text As String, forecolor As Color = &c000000, BackColor As Color = &cFFFFFF, Font As String = "System", FontSize As Double = 11.5, Bold As Boolean = False, Underline As Boolean = False, Italic As Boolean = False) As Picture
 		  //Given any String, returns a picture of that string. Line breaks are honored.
 		  //The optional parameters ought to be self-explanitory.
 		  
@@ -540,7 +541,7 @@ Protected Module Globals
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		gTextSize As Integer = 10
+		gTextSize As Double = 11.5
 	#tag EndProperty
 
 	#tag Property, Flags = &h0

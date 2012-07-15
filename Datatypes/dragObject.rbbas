@@ -44,7 +44,7 @@ Protected Class dragObject
 	#tag Method, Flags = &h21
 		Private Sub drawText(ByRef buffer As Picture, newproc As Boolean = False)
 		  #pragma BreakOnExceptions Off
-		  Dim nm As Picture = TextToPicture(Process.Name, gTextFont,gTextSize, False, False, False, StringColor)
+		  Dim nm As Picture = TextToPicture(Process.Name, StringColor)
 		  buffer = New Picture(nm.Width + 64, 32)', 32)
 		  'buffer.HasAlphaChannel = True
 		  Try
@@ -92,7 +92,7 @@ Protected Class dragObject
 		    'buffer.Graphics.ForeColor = NormalProcColor
 		  End Try
 		  buffer.Graphics.FillRect(0, 0, buffer.Width, buffer.Height)
-		  nm = TextToPicture(Process.Name, gTextFont,gTextSize, False, False, False, StringColor, buffer.Graphics.ForeColor)
+		  nm = TextToPicture(Process.Name, StringColor, buffer.Graphics.ForeColor, gTextFont, gTextSize)
 		  buffer.Graphics.DrawPicture(nm, 32, 0)
 		  'buffer.Graphics.DrawString(nm, buffer.Width - strWidth - 10, ((buffer.Height/2) + (strHeight/3)))
 		End Sub
@@ -272,7 +272,7 @@ Protected Class dragObject
 			      ret = Photo
 			      
 			    Case 5  //File tool target
-			      If DropTarget = Nil Then 
+			      If DropTarget = Nil Then
 			        DropTarget = New Picture(target1751.Width, target1751.Height)
 			        DropTarget.Graphics.ForeColor = &cFFFFFF99
 			        DropTarget.Graphics.FillRect(0, 0, DropTarget.Width, DropTarget.Height)

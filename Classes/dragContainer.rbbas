@@ -561,8 +561,8 @@ Inherits Canvas
 
 	#tag Method, Flags = &h21
 		Private Sub DrawFPS()
-		  Dim tmp1 As Picture = TextToPicture(Str(lastFPS) + " FPS", gTextFont, 20, True, False, False, &c000000, &cCCCCCC)
-		  Dim tmp2 As Picture = TextToPicture(Format(FrameCount, "###,###,###,###,###,###,##0")+ " Frames So Far", gTextFont, 10, True, False, False, &c000000, &cCCCCCC)
+		  Dim tmp1 As Picture = TextToPicture(Str(lastFPS) + " FPS", &c000000, &cCCCCCC, gTextFont, 20)
+		  Dim tmp2 As Picture = TextToPicture(Format(FrameCount, "###,###,###,###,###,###,##0")+ " Frames So Far", &c000000, &cCCCCCC, gTextFont, 10)
 		  
 		  'Dim percStr As String
 		  '
@@ -642,7 +642,7 @@ Inherits Canvas
 		    End If
 		    
 		    
-		    helptext = TextToPicture(s.Trim, gTextFont, gTextSize, False, False, False, StringColor, RGB(HelpColor.Red, HelpColor.Green, HelpColor.Blue, Globals.Transparency))
+		    helptext = TextToPicture(s.Trim, StringColor, RGB(HelpColor.Red, HelpColor.Green, HelpColor.Blue, Globals.Transparency), gTextFont, gTextSize)
 		    helptext.RGBSurface.FloodFill(helptext.Width - 1, helptext.Height - 1, RGB(HelpColor.Red, HelpColor.Green, HelpColor.Blue, Globals.Transparency))
 		    Refresh(False)
 		    Return
@@ -730,40 +730,27 @@ Inherits Canvas
 		  Dim p As Picture
 		  Dim pid As String
 		  If Objects(Index).Process <> Nil Then
-		    pid = "PID: " + Str(Objects(Index).Process.ProcessID)
+		    pid = "Process ID: " + Str(Objects(Index).Process.ProcessID)
 		  Else
 		    Select Case objects(Index).DynType
 		    Case 0
 		      pid = "Resource Monitor"
 		    Case 1
-		      pid = "Drive Space"
+		      pid = "Disk Drive Monitor"
 		    Case 2
-		      pid = "Debug Messages"
+		      pid = "Debug Message Monitor"
 		    Case 4
 		      pid = objects(Index).Name
 		    Case 5
 		      pid = "File Multi-Tool"
 		    Case 6
-		      pid = Clock.BackingDate.LongDate + " " + Clock.BackingDate.LongTime
+		      'pid = Clock.BackingDate.SQLDateTime
 		    End Select
 		  End If
-		  buffer.Graphics.TextFont = gTextFont
-		  buffer.Graphics.TextSize = gTextSize
-		  Dim strWidth, strHeight As Integer
-		  strWidth = buffer.Graphics.StringWidth(pid)
-		  strHeight = buffer.Graphics.StringHeight(pid, strWidth)
-		  
-		  p = New Picture(Objects(Index).Image.Width, Objects(Index).Image.Height + strHeight)
-		  p.Graphics.TextFont = gTextFont
-		  p.Graphics.ForeColor = &cCCCCCC
-		  p.Graphics.FillRect(0, 0, p.Width, p.Height)
-		  p.Graphics.ForeColor = &c000000
+		  Dim t As Picture = TextToPicture(pid, &c000000, &cCCCCCC, gTextFont, gTextSize)
+		  p = New Picture(Objects(Index).Image.Width, Objects(Index).Image.Height + t.Height)
 		  p.Graphics.DrawPicture(Objects(Index).Image, 0, p.Height - Objects(Index).Image.Height)
-		  p.Graphics.DrawString(pid, 5, strHeight - 3)
-		  If Objects(Index).ResizeTo <> 100 Then
-		    strWidth = buffer.Graphics.StringWidth(Str(Objects(Index).ResizeTo) + "%")
-		    p.Graphics.DrawString(Str(Objects(Index).ResizeTo) + "%", p.Width - strWidth - 2, strHeight - 3)
-		  End If
+		  p.Graphics.DrawPicture(t, 0, 2)
 		  
 		  Return p
 		End Function

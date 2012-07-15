@@ -90,6 +90,7 @@ Protected Module Clock
 		  p.Graphics.TextFont = TitleFont
 		  p.Graphics.ForeColor = &c000000
 		  p.Graphics.DrawString(Title, 0, ((p.Height/2) + (strHeight/4)))
+		  p = TextToPicture(Title, &c000000, &cFFFFFE, TitleFont, 5 * Scale)
 		  Return p
 		  
 		Exception err As OutOfBoundsException
