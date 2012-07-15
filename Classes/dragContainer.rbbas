@@ -175,7 +175,7 @@ Inherits Canvas
 		    End If
 		  End If
 		  If action = DragItem.DragActionCopy Then
-		    Globals.BackPic = Nil 
+		    Globals.BackPic = Nil
 		    ScaledBackdrop = Nil
 		    Me.Refresh(False)
 		    Dim f As FolderItem = Obj.FolderItem
@@ -709,8 +709,12 @@ Inherits Canvas
 		    buffer.Graphics.DrawPicture(p, theObject.x, theObject.y - (p.Height - theObject.image.Height))
 		  End If
 		  
-		  buffer.Graphics.ForeColor = &c000000
-		  
+		  If theObject.DynType <> 6 Then
+		    buffer.Graphics.ForeColor = &c00000088
+		    buffer.Graphics.FillRect(theObject.X + theObject.width, theObject.Y + 2, 2, theObject.height)
+		    buffer.Graphics.FillRect(theObject.X, theObject.height + theObject.Y, theObject.width, 2)
+		  End If
+		  buffer.Graphics.ForeColor = &c00000000
 		  If theObject.Dynamic Then
 		    If theObject.image <> Nil And theObject.DynType <> 4  And theObject.DynType <> 6 Then
 		      buffer.Graphics.DrawRect(theObject.x - 1, theObject.y - 1, theObject.image.width + 1, theObject.image.height + 1)
@@ -720,6 +724,7 @@ Inherits Canvas
 		  End If
 		  buffer.Graphics.ForeColor = &c808080
 		  If theObject.image <> Nil Then buffer.Graphics.DrawPicture(theObject.image, theObject.x, theObject.y)
+		  
 		End Sub
 	#tag EndMethod
 
@@ -1321,6 +1326,11 @@ Inherits Canvas
 			Group="ID"
 			Type="String"
 			InheritedFrom="Canvas"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="ScaledBackdrop"
+			Group="Behavior"
+			Type="Picture"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="SelectionColor"
