@@ -46,11 +46,9 @@ Protected Class dragObject
 		  #pragma BreakOnExceptions Off
 		  Dim nm As Picture = TextToPicture(Process.Name, StringColor)
 		  buffer = New Picture(nm.Width + 64, 32)', 32)
-		  'buffer.HasAlphaChannel = True
 		  Try
 		    If newproc And HilightOn And Not Dynamic Then
 		      buffer.Graphics.ForeColor = RGB(NewProcColor.Red, NewProcColor.Green, NewProcColor.Blue, Globals.Transparency)
-		      'buffer.Graphics.ForeColor = NewProcColor
 		    ElseIf Process.isCritical And HilightOn Then
 		      If Process.path <> Nil Then
 		        Dim d As FolderItem = Process.path.Parent
@@ -59,15 +57,12 @@ Protected Class dragObject
 		            Dim e As FolderItem = SpecialFolder.Windows.Parent
 		            If d.Parent.Name = e.Name Then
 		              buffer.Graphics.ForeColor = RGB(SystemProcColor.Red, SystemProcColor.Green, SystemProcColor.Blue, Globals.Transparency)
-		              'buffer.Graphics.ForeColor = SystemProcColor
 		              Exit For i
 		            ElseIf Process.path.SystemFile Then
 		              buffer.Graphics.ForeColor = RGB(SystemProcColor.Red, SystemProcColor.Green, SystemProcColor.Blue, Globals.Transparency)
-		              'buffer.Graphics.ForeColor= StringColor
 		              Exit For i
 		            Else
 		              buffer.Graphics.ForeColor = RGB(InvalidSystemProcColor.Red, InvalidSystemProcColor.Green, InvalidSystemProcColor.Blue, Globals.Transparency)
-		              'InvalidSystemProcColor
 		              Exit For i
 		            End If
 		          End If
@@ -76,25 +71,22 @@ Protected Class dragObject
 		      Else
 		        If Process.ProcessID = 0 Or Process.ProcessID = 4 Then
 		          buffer.Graphics.ForeColor = RGB(SystemProcColor.Red, SystemProcColor.Green, SystemProcColor.Blue, Globals.Transparency)
-		          'buffer.Graphics.ForeColor = SystemProcColor
-		        Else
+		        Else //?? not sure why I put this here...
 		          buffer.Graphics.ForeColor = RGB(SystemProcColor.Red, SystemProcColor.Green, SystemProcColor.Blue, Globals.Transparency)
-		          'buffer.Graphics.ForeColor = NormalProcColor
 		        End If
 		      End If
 		      
 		    Else
 		      buffer.Graphics.ForeColor = RGB(NormalProcColor.Red, NormalProcColor.Green, NormalProcColor.Blue, Globals.Transparency)
-		      'buffer.Graphics.ForeColor = NormalProcColor
 		    End If
 		  Catch NilObjectException
 		    buffer.Graphics.ForeColor = RGB(NormalProcColor.Red, NormalProcColor.Green, NormalProcColor.Blue, Globals.Transparency)
-		    'buffer.Graphics.ForeColor = NormalProcColor
 		  End Try
-		  buffer.Graphics.FillRect(0, 0, buffer.Width, buffer.Height)
+		  'buffer.Graphics.FillRect(0, 0, buffer.Width, buffer.Height)
 		  nm = TextToPicture(Process.Name, StringColor, buffer.Graphics.ForeColor, gTextFont, gTextSize)
 		  buffer.Graphics.DrawPicture(nm, 32, 0)
-		  'buffer.Graphics.DrawString(nm, buffer.Width - strWidth - 10, ((buffer.Height/2) + (strHeight/3)))
+		  buffer.RGBSurface.FloodFill(buffer.Width - 1, buffer.Height - 1, buffer.Graphics.ForeColor)
+		  
 		End Sub
 	#tag EndMethod
 
