@@ -15,7 +15,7 @@ Inherits Thread
 		      Wend
 		      bs.Close
 		      s = StringToHex(m5.Value)
-		      hashwin.Title = "MD5 - " + prettifyPath(Target.AbsolutePath)
+		      hashwin.Title = "MD5 - " + Shorten(Target.AbsolutePath)
 		      hashwin.Label1.Text = s
 		      hashwin.Show
 		    Else

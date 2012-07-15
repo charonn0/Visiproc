@@ -110,10 +110,10 @@ End
 #tag WindowCode
 	#tag Method, Flags = &h0
 		Sub showMeFile(f As FolderItem)
-		  Me.Title = "File Detail: " + prettifyPath(f.AbsolutePath)
+		  Me.Title = "File Detail: " + Shorten(f.AbsolutePath)
 		  Listbox1.DeleteAllRows
 		  Listbox1.AddRow("Path", f.AbsolutePath)
-		  Listbox1.AddRow("Size", prettifyBytes(f.Length))
+		  Listbox1.AddRow("Size", FormatBytes(f.Length))
 		  
 		  Dim verinfo As Dictionary = f.VersionInfo
 		  If verinfo <> Nil Then

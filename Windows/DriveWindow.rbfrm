@@ -113,7 +113,7 @@ End
 		  For i As Integer = 0 To VolumeCount - 1
 		    Dim free, total As UInt64
 		    Dim dr As New VolumeInformation(Volume(i).AbsolutePath)
-		    Listbox1.AddRow(dr.Path, dr.Name, dr.Filesystem, prettifyBytes(dr.Totalbytes), prettifyBytes(dr.FreeBytes))
+		    Listbox1.AddRow(dr.Path, dr.Name, dr.Filesystem, FormatBytes(dr.Totalbytes), FormatBytes(dr.FreeBytes))
 		    Listbox1.CellTag(Listbox1.LastIndex, 3) = dr.Totalbytes
 		    Listbox1.CellTag(Listbox1.LastIndex, 4) = dr.FreeBytes
 		    

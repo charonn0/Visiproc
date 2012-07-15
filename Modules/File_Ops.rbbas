@@ -696,7 +696,7 @@ Protected Module File_Ops
 		    s = tis.ReadAll
 		    tis.Close
 		    s = StringToHex(MD5(s))
-		    hashwin.Title = "MD5 - " + prettifyPath(Target.AbsolutePath)
+		    hashwin.Title = "MD5 - " + Shorten(Target.AbsolutePath)
 		    hashwin.Label1.Text = s
 		    hashwin.Show
 		  Else

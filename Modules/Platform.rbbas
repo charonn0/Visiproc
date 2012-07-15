@@ -1211,9 +1211,9 @@ Protected Module Platform
 		    ret.Value("Sparse Files Supported") = BitwiseAnd(flags, &h00000040) = &h00000040
 		    ret.Value("Has USN Journal") = BitwiseAnd(flags, &h2000000) = &h2000000
 		    ret.Value("Quotas Supported") = BitwiseAnd(flags, &h00000020) = &h00000020
-		    ret.Value("Total Bytes") = Format(theVol.Totalbytes, "###,###,###,###,###") + " (" + prettifyBytes(theVol.Totalbytes) + ")"
-		    ret.Value("Used Bytes") = Format(theVol.Totalbytes - theVol.FreeBytes, "###,###,###,###,###") + " (" + prettifyBytes(theVol.Totalbytes - theVol.FreeBytes) + ")"
-		    ret.Value("Free Bytes") = Format(theVol.FreeBytes, "###,###,###,###,###") + " (" + prettifyBytes(theVol.FreeBytes) + ")"
+		    ret.Value("Total Bytes") = Format(theVol.Totalbytes, "###,###,###,###,###") + " (" + FormatBytes(theVol.Totalbytes) + ")"
+		    ret.Value("Used Bytes") = Format(theVol.Totalbytes - theVol.FreeBytes, "###,###,###,###,###") + " (" + FormatBytes(theVol.Totalbytes - theVol.FreeBytes) + ")"
+		    ret.Value("Free Bytes") = Format(theVol.FreeBytes, "###,###,###,###,###") + " (" + FormatBytes(theVol.FreeBytes) + ")"
 		    Return ret
 		  Else
 		    Return Nil

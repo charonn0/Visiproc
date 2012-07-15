@@ -125,7 +125,7 @@ Protected Module Globals
 		  
 		  If X < (w / 2) And Y < (h / 2) Then
 		    If f <> Nil Then
-		      Call MsgBox(Trid(f), 64, prettifyPath(f.AbsolutePath))
+		      Call MsgBox(Trid(f), 64, Shorten(f.AbsolutePath))
 		    End If
 		    Return True
 		    //Upper left

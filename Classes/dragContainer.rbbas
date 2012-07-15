@@ -260,6 +260,8 @@ Inherits Canvas
 
 	#tag Event
 		Sub MouseUp(X As Integer, Y As Integer)
+		  #pragma Unused X
+		  #pragma Unused Y
 		  NextX = -1
 		  NextY = -1
 		End Sub

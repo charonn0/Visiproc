@@ -371,13 +371,13 @@ End
 		Sub Open()
 		  Me.AddRow(Platform.VersionString)
 		  Me.AddRow(Platform.ProcessorName + " (x" + Str(Platform.NumberOfProcessors) + ")")
-		  Me.AddRow(prettifyBytes(Platform.TotalPhysicalRAM) + " of Physical Memory")
+		  Me.AddRow(FormatBytes(Platform.TotalPhysicalRAM) + " of Physical Memory")
 		  Dim mb As String = Platform.MotherboardManufacturer + " " + Platform.MotherboardModel + " " + Platform.MotherboardModelRevision
 		  Me.AddRow("Motherboard: " + mb)
 		  Me.AddRow("BIOS: " + Platform.BIOSVendor + " " + Platform.BIOSVersion + " (" + Platform.BIOSDate + ")")
-		  Me.AddRow("Total Pagefile: " + prettifyBytes(Platform.TotalPageFile) + "; Available Pagefile: "+ prettifyBytes(Platform.AvailablePageFile))
-		  Me.AddRow("Total Address Space For This Program: " + prettifyBytes(Platform.TotalProcessAddressSpace))
-		  Me.AddRow("Available Address Space For This Program: " + prettifyBytes(Platform.AvailableProcessAddressSpace))
+		  Me.AddRow("Total Pagefile: " + FormatBytes(Platform.TotalPageFile) + "; Available Pagefile: "+ FormatBytes(Platform.AvailablePageFile))
+		  Me.AddRow("Total Address Space For This Program: " + FormatBytes(Platform.TotalProcessAddressSpace))
+		  Me.AddRow("Available Address Space For This Program: " + FormatBytes(Platform.AvailableProcessAddressSpace))
 		  Me.AddRow("Public IP Address:" + Platform.PublicIP)
 		  'Me.AddRow(Platform.OEM)
 		End Sub
