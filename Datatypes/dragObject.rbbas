@@ -20,12 +20,8 @@ Protected Class dragObject
 		  y = Rand.InRange(0, Window1.dragContainer1.Height)
 		  
 		  flashTimer = New Timer
-		  If Not first Then
-		    flashTimer.Period = 10
-		    first = True
-		  Else
-		    flashTimer.Period = 1700
-		  End If
+		  flashTimer.Period = 1000
+		  
 		  AddHandler flashTimer.Action, AddressOf TimerHandler
 		  flashTimer.Mode = Timer.ModeSingle
 		End Sub
@@ -48,7 +44,7 @@ Protected Class dragObject
 		  buffer = New Picture(nm.Width + 64, 32)', 32)
 		  Try
 		    If newproc And HilightOn And Not Dynamic Then
-		      buffer.Graphics.ForeColor = RGB(NewProcColor.Red, NewProcColor.Green, NewProcColor.Blue, Globals.Transparency)
+		      buffer.Graphics.ForeColor = RGB(NewProcColor.Red, NewProcColor.Green, NewProcColor.Blue, 0)
 		    ElseIf Process.isCritical And HilightOn Then
 		      If Process.path <> Nil Then
 		        Dim d As FolderItem = Process.path.Parent
@@ -185,10 +181,6 @@ Protected Class dragObject
 
 	#tag Property, Flags = &h0
 		DynType As Integer
-	#tag EndProperty
-
-	#tag Property, Flags = &h21
-		Private first As Boolean
 	#tag EndProperty
 
 	#tag Property, Flags = &h21

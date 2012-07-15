@@ -163,8 +163,6 @@ Inherits Canvas
 
 	#tag Event
 		Sub DropObject(obj As DragItem, action As Integer)
-		  
-		  
 		  DropIndex = hitpointToObject(Me.MouseX, Me.MouseY)
 		  If DropIndex > -1 Then
 		    If Objects(DropIndex).DynType = 4 Or Objects(DropIndex).DynType = 5 Then
@@ -177,6 +175,9 @@ Inherits Canvas
 		    End If
 		  End If
 		  If action = DragItem.DragActionCopy Then
+		    Globals.BackPic = Nil 
+		    ScaledBackdrop = Nil
+		    Me.Refresh(False)
 		    Dim f As FolderItem = Obj.FolderItem
 		    Dim p As Picture = Picture.Open(f)
 		    If p <> Nil Then
@@ -270,20 +271,16 @@ Inherits Canvas
 	#tag Event
 		Function MouseWheel(X As Integer, Y As Integer, deltaX as Integer, deltaY as Integer) As Boolean
 		  #pragma Unused deltaX
-		  Static doit As Integer
-		  If doit = 2 Or Not Throttle Then  //Performance kludge. Only update every fifth time we're called
-		    doit = 0
-		    ShowText = False
-		    Dim obj As Integer = hitpointToObject(X, Y)
-		    If obj > -1 Then
-		      If Objects(obj).ResizeTo + deltaY > 5 And Objects(obj).ResizeTo + deltaY < 150 Then
-		        Objects(obj).ResizeTo = Objects(obj).ResizeTo + deltaY
-		        Refresh(False)
-		      End If
+		  ShowText = False
+		  Dim obj As Integer = hitpointToObject(X, Y)
+		  If obj > -1 Then
+		    If Objects(obj).ResizeTo + deltaY > 25 And Objects(obj).ResizeTo + deltaY < 250 Then
+		      Objects(obj).ResizeTo = Objects(obj).ResizeTo + deltaY
+		      Refresh(False)
 		    End If
-		    ShowText = True
 		  End If
-		  doit = doit + 1
+		  ShowText = True
+		  
 		  Return True
 		  
 		End Function
@@ -318,12 +315,11 @@ Inherits Canvas
 		  If buffer = Nil Then Return
 		  //Then, clean up any prior states
 		  If Globals.BackPic <> Nil Then
-		    Static scaled As Picture
-		    If scaled = Nil Or Scaled.Width <> Me.Width Or Scaled.Height <> Me.Height Then
-		      scaled = New Picture(Me.Width, Me.Height, Globals.BackPic.Depth)
-		      scaled.Graphics.DrawPicture(Globals.BackPic, 0, 0, scaled.Width, scaled.Height, 0, 0, Globals.BackPic.Width, Globals.BackPic.Height)
+		    If scaledBackdrop = Nil Or scaledBackdrop.Width <> Me.Width Or scaledBackdrop.Height <> Me.Height Then
+		      scaledBackdrop = New Picture(Me.Width, Me.Height, Globals.BackPic.Depth)
+		      scaledBackdrop.Graphics.DrawPicture(Globals.BackPic, 0, 0, scaledBackdrop.Width, scaledBackdrop.Height, 0, 0, Globals.BackPic.Width, Globals.BackPic.Height)
 		    End If
-		    buffer.Graphics.DrawPicture(scaled, 0, 0)
+		    buffer.Graphics.DrawPicture(scaledBackdrop, 0, 0)
 		  Else
 		    buffer.Graphics.ForeColor = BackColor
 		    buffer.Graphics.FillRect(0, 0, buffer.Width, buffer.Height)
@@ -558,6 +554,7 @@ Inherits Canvas
 		  For Each Item As dragObject In Objects
 		    Item.Selected = False
 		  Next
+		  currentObject = -1
 		End Sub
 	#tag EndMethod
 
@@ -808,7 +805,7 @@ Inherits Canvas
 
 	#tag Method, Flags = &h0
 		Sub Empty()
-		  
+		  ScaledBackdrop = Nil
 		  ReDim objects(-1)
 		  ReDim activeProcesses(-1)
 		  ReDim activeProcessesOld(-1)
@@ -1148,6 +1145,10 @@ Inherits Canvas
 			The heart of this whole operation: an array of dragObjects. Each dragObject corresponds to a "window" drawn on the Parent dragContainer
 		#tag EndNote
 		objects() As dragObject
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		ScaledBackdrop As Picture
 	#tag EndProperty
 
 	#tag Property, Flags = &h0

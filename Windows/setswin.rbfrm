@@ -475,7 +475,7 @@ Begin Window setswin
       Index           =   -2147483648
       InitialParent   =   ""
       Italic          =   ""
-      Left            =   188
+      Left            =   102
       LockBottom      =   ""
       LockedInPosition=   False
       LockLeft        =   True
@@ -488,7 +488,7 @@ Begin Window setswin
       TextFont        =   "System"
       TextSize        =   0
       TextUnit        =   0
-      Top             =   178
+      Top             =   180
       Underline       =   ""
       Visible         =   True
       Width           =   164
@@ -612,37 +612,6 @@ Begin Window setswin
       Visible         =   True
       Width           =   80
    End
-   Begin PushButton PushButton5
-      AutoDeactivate  =   True
-      Bold            =   ""
-      ButtonStyle     =   0
-      Cancel          =   ""
-      Caption         =   "Set Backdrop Image"
-      Default         =   ""
-      Enabled         =   True
-      Height          =   22
-      HelpTag         =   ""
-      Index           =   -2147483648
-      InitialParent   =   ""
-      Italic          =   ""
-      Left            =   12
-      LockBottom      =   ""
-      LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   ""
-      LockTop         =   True
-      Scope           =   0
-      TabIndex        =   22
-      TabPanelIndex   =   0
-      TabStop         =   True
-      TextFont        =   "System"
-      TextSize        =   0
-      TextUnit        =   0
-      Top             =   178
-      Underline       =   ""
-      Visible         =   True
-      Width           =   164
-   End
    Begin PushButton PushButton3
       AutoDeactivate  =   True
       Bold            =   ""
@@ -752,7 +721,6 @@ End
 #tag WindowCode
 	#tag Event
 		Sub Open()
-		  newBackdrop = Globals.BackDrop
 		  newproc.FillColor = NewProcColor
 		  proc.FillColor = NormalProcColor
 		  sysproc.FillColor = SystemProcColor
@@ -761,11 +729,6 @@ End
 		  help.FillColor = HelpColor
 		End Sub
 	#tag EndEvent
-
-
-	#tag Property, Flags = &h0
-		newBackdrop As FolderItem
-	#tag EndProperty
 
 
 #tag EndWindowCode
@@ -833,7 +796,8 @@ End
 		  Globals.gTextSize = Val(textSize.Text)
 		  Globals.Transparency = SliderCanvas1.Value
 		  HelpColor = help.FillColor
-		  If newBackdrop <> Nil Then Globals.BackDrop = newBackdrop
+		  
+		  
 		  Window1.dragContainer1.Empty
 		  Window1.dragContainer1.Update
 		  App.WriteConf()
@@ -848,19 +812,10 @@ End
 		End Sub
 	#tag EndEvent
 #tag EndEvents
-#tag Events PushButton5
-	#tag Event
-		Sub Action()
-		  Dim f As FolderItem = GetOpenFolderItem(FileTypes1.ImageFile)
-		  If f <> Nil Then NewBackDrop = f
-		End Sub
-	#tag EndEvent
-#tag EndEvents
 #tag Events PushButton3
 	#tag Event
 		Sub Action()
 		  App.LoadConf()
-		  newBackdrop = Globals.BackDrop
 		  newproc.FillColor = NewProcColor
 		  proc.FillColor = NormalProcColor
 		  sysproc.FillColor = SystemProcColor
