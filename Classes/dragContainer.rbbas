@@ -562,33 +562,6 @@ Inherits Canvas
 		Private Sub DrawFPS()
 		  Dim tmp1 As Picture = TextToPicture(Str(lastFPS) + " FPS", &c000000, &cCCCCCC, gTextFont, 20)
 		  Dim tmp2 As Picture = TextToPicture(Format(FrameCount, "###,###,###,###,###,###,##0")+ " Frames So Far", &c000000, &cCCCCCC, gTextFont, 10)
-		  
-		  'Dim percStr As String
-		  '
-		  'Buffer.Graphics.Bold = True
-		  'percStr =
-		  'Buffer.Graphics.TextSize = 20.5
-		  'Buffer.Graphics.TextFont =
-		  'Dim strWidth, strHeight As Integer
-		  'strWidth = Buffer.Graphics.StringWidth(percStr)
-		  'strHeight = Buffer.Graphics.StringHeight(percStr, Buffer.Width)
-		  'buffer.Graphics.TextSize = 20.5
-		  'buffer.Graphics.ForeColor =
-		  'Buffer.Graphics.DrawString(percStr, (Buffer.Width) - (strWidth) - 10 + 1, strHeight + 10 + 1)
-		  '
-		  'Buffer.Graphics.TextSize = 20
-		  'Buffer.Graphics.ForeColor =
-		  'Buffer.Graphics.DrawString(percStr, (Buffer.Width) - (strWidth) - 10, strHeight + 10)
-		  '
-		  '
-		  '
-		  '
-		  'Dim lahe As Integer = strHeight
-		  'Buffer.Graphics.TextSize = 10
-		  'percStr =
-		  'strWidth = Buffer.Graphics.StringWidth(percStr)
-		  'strHeight = Buffer.Graphics.StringHeight(percStr, Buffer.Width)
-		  'Buffer.Graphics.DrawString(percStr, Buffer.Width - (strWidth) - 10, strHeight + 10 + lahe)
 		  buffer.Graphics.DrawPicture(tmp1, buffer.Width - tmp1.Width, 0)
 		  buffer.Graphics.DrawPicture(tmp2, buffer.Width - tmp2.Width, tmp1.Height)
 		  
@@ -607,7 +580,6 @@ Inherits Canvas
 		      Case 0
 		        Dim d() As Double = lastCPU
 		        s = "u: " + Format(d(0), "##0.00\%") + ";   k:" + Format(d(1), "##0.00\%") + EndOfLine + "RAM: " + Format(LastMem, "##0.00\%") + EndOfLine + "Page File: " + Format(LastPF, "##0.00\%")
-		        'If s.InStr("J") > 0 Then Break
 		      Case 1
 		        For Each pp As VolumeInformation In Drives
 		          If Not pp.Mounted Then
@@ -632,9 +604,6 @@ Inherits Canvas
 		      Try
 		        s = Objects(i).Process.CommandLine
 		        If s = "" Then s = objects(i).Process.Name
-		        'If Objects(i).Process.Suspended Then
-		        's = s + " (Suspended)"
-		        'End If
 		      Catch
 		        s = "Image Not Resolved."
 		      End Try
@@ -645,47 +614,6 @@ Inherits Canvas
 		    helptext.RGBSurface.FloodFill(helptext.Width - 1, helptext.Height - 1, RGB(HelpColor.Red, HelpColor.Green, HelpColor.Blue, Globals.Transparency))
 		    Refresh(False)
 		    Return
-		    '
-		    'helptext = New Picture(100, 100, 32)
-		    'helptext.Graphics.TextFont = gTextFont
-		    'helptext.Graphics.TextSize = gTextSize
-		    'Dim strWidth, strHeight As Integer
-		    'If Instr(s, EndOfLine) > 0 Then
-		    'Dim drvs() As String = s.Split(EndOfLine)
-		    'Dim requiredHeight, requiredWidth As Integer
-		    'For z As Integer = 0 To UBound(drvs)
-		    'Dim drv As String = drvs(z).Trim
-		    'If drv = "" Then Continue
-		    'Dim a, b As Integer
-		    'a = helptext.Graphics.StringWidth(drv)
-		    'b = helptext.Graphics.StringHeight(drv, a)
-		    'If requiredWidth < a Then requiredWidth = a
-		    'requiredHeight = requiredHeight + b
-		    'Next
-		    'strWidth = requiredWidth
-		    'strHeight = requiredHeight
-		    'helptext = New Picture(strWidth + 8, strHeight + 8)
-		    'helptext.Graphics.TextFont = gTextFont
-		    'helptext.Graphics.TextSize = gTextSize
-		    'helptext.Graphics.ForeColor = HelpColor
-		    'helptext.Graphics.FillRect(0, 0, helptext.Width, helptext.Height)
-		    'helptext.Graphics.ForeColor = StringColor
-		    'helptext.Graphics.DrawString(s, 2, 15)
-		    '
-		    'Else
-		    'helptext.Graphics.TextFont = gTextFont
-		    'helptext.Graphics.TextSize = gTextSize
-		    'strWidth = helptext.Graphics.StringWidth(s)
-		    'strHeight = helptext.Graphics.StringHeight(s, strWidth + 5)
-		    'helptext = New Picture(strWidth + 4, strHeight + 4)
-		    'helptext.Graphics.ForeColor = HelpColor
-		    'helptext.Graphics.FillRect(0, 0, helptext.Width, helptext.Height)
-		    'helptext.Graphics.ForeColor = StringColor
-		    'helptext.Graphics.DrawString(s, 2, ((helptext.Height/2) + (strHeight/4)))
-		    'End If
-		    'helptext.Graphics.ForeColor = &c363636
-		    'helptext.Graphics.DrawRect(0, 0, helptext.Width, helptext.Height)
-		    'Refresh(False)
 		  Else
 		    If helptext <> Nil Then
 		      helptext = Nil
@@ -697,9 +625,7 @@ Inherits Canvas
 
 	#tag Method, Flags = &h21
 		Private Sub drawObject(index As Integer)
-		  
-		  //Draws the object onto to buffer
-		  //theObject.Update(False)
+		  //Draws the object onto the buffer
 		  Dim theObject As dragObject = Objects(index)
 		  If index > Objects.Ubound Or index < 0 Then Return
 		  If (theObject.Dynamic And hideDynamics) Then Return
@@ -823,7 +749,6 @@ Inherits Canvas
 		Private Sub helpfaderhandler(Sender As Timer)
 		  #pragma Unused Sender
 		  drawHelp(Me.MouseX, Me.MouseY)
-		  'Refresh(False)
 		End Sub
 	#tag EndMethod
 

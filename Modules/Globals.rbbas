@@ -375,8 +375,8 @@ Protected Module Globals
 		  Dim tlines() As String = Split(Text, EndOfLine)
 		  
 		  For i As Integer = 0 To UBound(tlines)
-		    If tlines(i) = "" Then tlines(i) = " "
-		    Dim p As New Picture(250, 250)', 32)
+		    If tlines(i) = "" Then Continue
+		    Dim p As New Picture(250, 250)
 		    p.Graphics.TextFont = Font
 		    p.Graphics.TextSize = FontSize
 		    p.Graphics.Bold = Bold
@@ -783,7 +783,7 @@ Protected Module Globals
 			Name="gTextSize"
 			Group="Behavior"
 			InitialValue="12"
-			Type="Integer"
+			Type="Double"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="HelpColor"

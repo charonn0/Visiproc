@@ -15,6 +15,10 @@ Inherits Application
 
 	#tag Event
 		Sub Open()
+		  #If RBVersion < 2011.043 Then
+		    #pragma Error "This project requires REALStudio 2011r4.3 or newer"
+		  #endif
+		  
 		  LoadConf()
 		  Dim args() As String = System.CommandLine.Split(" ")
 		  For Each arg As String In args
