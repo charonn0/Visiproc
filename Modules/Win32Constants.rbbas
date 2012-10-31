@@ -1,5 +1,30 @@
 #tag Module
 Protected Module Win32Constants
+	#tag ExternalMethod, Flags = &h0
+		Soft Declare Function GetVersionEx Lib "Kernel32" Alias "GetVersionExW" (ByRef info As OSVERSIONINFOEX) As Boolean
+	#tag EndExternalMethod
+
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  #If TargetWin32 Then
+			    Dim info As OSVERSIONINFOEX
+			    info.StructSize = Info.Size
+			    
+			    Call GetVersionEx(info)
+			    If info.MajorVersion >= 6 Then
+			      Return &h1000  //PROCESS_QUERY_LIMITED_INFORMATION
+			    Else
+			      Return &h400  //PROCESS_QUERY_INFORMATION
+			    End If
+			  #endif
+			End Get
+		#tag EndGetter
+		PROCESS_QUERY_INFORMATION As Integer
+	#tag EndComputedProperty
+
+
 	#tag Constant, Name = BLACKNESS, Type = Double, Dynamic = False, Default = \"&h00000042", Scope = Public
 	#tag EndConstant
 
@@ -198,9 +223,6 @@ Protected Module Win32Constants
 	#tag Constant, Name = PATPAINT, Type = Double, Dynamic = False, Default = \"&h00FB0A09", Scope = Public
 	#tag EndConstant
 
-	#tag Constant, Name = PROCESS_QUERY_INFORMATION, Type = Double, Dynamic = False, Default = \"&h400", Scope = Public
-	#tag EndConstant
-
 	#tag Constant, Name = SE_ASSIGNPRIMARYTOKEN_NAME, Type = String, Dynamic = False, Default = \"SeAssignPrimaryTokenPrivilege", Scope = Public
 	#tag EndConstant
 
@@ -328,6 +350,21 @@ Protected Module Win32Constants
 	#tag EndConstant
 
 
+	#tag Structure, Name = OSVERSIONINFOEX, Flags = &h0
+		StructSize As UInt32
+		  MajorVersion As Integer
+		  MinorVersion As Integer
+		  BuildNumber As Integer
+		  PlatformID As Integer
+		  ServicePackName As String*128
+		  ServicePackMajor As UInt16
+		  ServicePackMinor As UInt16
+		  SuiteMask As UInt16
+		  ProductType As Byte
+		Reserved As Byte
+	#tag EndStructure
+
+
 	#tag Enum, Name = TOKEN_INFORMATION_CLASS, Type = Integer, Flags = &h0
 		TokenUser
 		  TokenGroups
@@ -393,6 +430,11 @@ Protected Module Win32Constants
 			Visible=true
 			Group="ID"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="PROCESS_QUERY_INFORMATION"
+			Group="Behavior"
+			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"

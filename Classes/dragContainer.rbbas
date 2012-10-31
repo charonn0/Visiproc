@@ -674,7 +674,7 @@ Inherits Canvas
 		    Case 5
 		      pid = "File Multi-Tool"
 		    Case 6
-		      'pid = Clock.BackingDate.SQLDateTime
+		      pid = Clock.BackingDate.SQLDateTime
 		    End Select
 		  End If
 		  Dim t As Picture = TextToPicture(pid, &c000000, &cCCCCCC, gTextFont, gTextSize)
@@ -965,7 +965,8 @@ Inherits Canvas
 		    Arrange(lastSort)
 		  End If
 		  
-		Exception
+		Exception err
+		  Break
 		  Return
 		End Sub
 	#tag EndMethod

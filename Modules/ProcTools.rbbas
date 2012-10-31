@@ -505,9 +505,6 @@ Protected Module ProcTools
 	#tag Constant, Name = PROCESS_ALL_ACCESS, Type = Double, Dynamic = False, Default = \"&h1F0FFF", Scope = Public
 	#tag EndConstant
 
-	#tag Constant, Name = PROCESS_QUERY_INFORMATION, Type = Double, Dynamic = False, Default = \"&h400", Scope = Public
-	#tag EndConstant
-
 	#tag Constant, Name = PROCESS_SET_INFORMATION, Type = Double, Dynamic = False, Default = \"&h200", Scope = Public
 	#tag EndConstant
 

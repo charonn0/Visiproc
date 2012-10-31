@@ -140,13 +140,13 @@ Begin Window Window1
    Begin Timer WildTimer
       Height          =   32
       Index           =   -2147483648
-      Left            =   1106
+      Left            =   1054
       LockedInPosition=   False
       Mode            =   0
       Period          =   100
       Scope           =   0
       TabPanelIndex   =   0
-      Top             =   254
+      Top             =   30
       Width           =   32
    End
 End
@@ -324,7 +324,6 @@ End
 #tag Events Timer1
 	#tag Event
 		Sub Action()
-		  
 		  If Window1.count Mod 25 = 0 Then PollDisks()
 		  If DebugMode Then PollDebug()
 		  Window1.dragContainer1.Update()
@@ -335,7 +334,7 @@ End
 		  Window1.Status1.Text = d.LongDate + " " + d.LongTime + "   "
 		  Window1.Status.Text = "Showing: " + Str((UBound(activeProcesses) + 1) - (Window1.dragContainer1.HiddenProcCount)) + " of " + Str(UBound(activeProcesses) + 1) + " running processes."
 		  Init = False
-		  Me.Period = 250
+		  Me.Period = 500
 		  If CPUThread.State = Thread.NotRunning Then CPUThread.Run
 		End Sub
 	#tag EndEvent

@@ -376,7 +376,7 @@ Protected Module Globals
 		  
 		  For i As Integer = 0 To UBound(tlines)
 		    If tlines(i) = "" Then Continue
-		    Dim p As New Picture(250, 250)
+		    Dim p As New Picture(250, 250, 32)
 		    p.Graphics.TextFont = Font
 		    p.Graphics.TextSize = FontSize
 		    p.Graphics.Bold = Bold
@@ -386,7 +386,7 @@ Protected Module Globals
 		    Dim strWidth, strHeight As Integer
 		    strWidth = p.Graphics.StringWidth(nm) + 5
 		    strHeight = p.Graphics.StringHeight(nm, strWidth)
-		    p = New Picture(strWidth, strHeight)
+		    p = New Picture(strWidth, strHeight, 32)
 		    p.Graphics.ForeColor = BackColor
 		    p.Graphics.FillRect(0, 0, p.Width, p.Height)
 		    p.Graphics.AntiAlias = True
@@ -664,7 +664,7 @@ Protected Module Globals
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		Version As Double = 0.08
+		Version As Double = 0.09
 	#tag EndProperty
 
 	#tag ComputedProperty, Flags = &h0

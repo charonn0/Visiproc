@@ -34,6 +34,9 @@ Protected Class dragObject
 		  drawText(ico, NewProc)
 		  ico.Graphics.DrawPicture(Process.largeIcon, 0, 0)
 		  mimage = ico
+		  
+		Exception OutOfBoundsException
+		  mimage = noicon_32
 		End Sub
 	#tag EndMethod
 

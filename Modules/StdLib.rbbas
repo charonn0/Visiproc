@@ -40,7 +40,7 @@ Protected Module StdLib
 		  Declare Function OpenProcess Lib "Kernel32.dll" (ByVal dwDesiredAccessAs As Integer, ByVal bInheritHandle As Integer, ByVal dwProcId As Integer) As Integer
 		  Declare Function CloseHandle Lib "Kernel32.dll" (ByVal Handle As Integer) As Integer
 		  
-		  Const PROCESS_QUERY_INFORMATION = &h400
+		  
 		  Const PROCESS_VM_READ = &h10
 		  Dim Modules As New MemoryBlock(255)  // 255 = SIZE_MINIMUM * sizeof(HMODULE)
 		  Dim ModuleName As New MemoryBlock(255)
@@ -238,11 +238,6 @@ Protected Module StdLib
 			Visible=true
 			Group="ID"
 			InheritedFrom="Object"
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="SoundVolume"
-			Group="Behavior"
-			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"

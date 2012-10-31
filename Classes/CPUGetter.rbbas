@@ -4,7 +4,6 @@ Inherits Thread
 	#tag Event
 		Sub Run()
 		  PollCPU()
-		  Me.Sleep(750)
 		End Sub
 	#tag EndEvent
 
