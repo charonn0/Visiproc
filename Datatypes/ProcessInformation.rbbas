@@ -252,26 +252,38 @@ Protected Class ProcessInformation
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  If mCommandLine = "" Then
-			    Debug("Get Command Line For ProcID: " + Str(ProcessID))
-			    If WMIobj = Nil Then WMIobj = New WindowsWMIMBS
-			    if WMIobj.ConnectServer("root\cimv2") then
-			      if WMIobj.query("WQL","select CommandLine from Win32_Process where ProcessId='" + Str(ProcessID) + "'") then
-			        if WMIobj.NextItem then
-			          mCommandLine = WMIobj.GetPropertyString("CommandLine") // string
-			          If mCommandLine = "" Then mCommandLine = Name
+			  #If MBSAvailable Then
+			    Dim WMIobj As WindowsWMIMBS
+			    If mCommandLine = "" Then
+			      Debug("Get Command Line For ProcID: " + Str(ProcessID))
+			      If WMIobj = Nil Then WMIobj = New WindowsWMIMBS
+			      if WMIobj.ConnectServer("root\cimv2") then
+			        if WMIobj.query("WQL","select CommandLine from Win32_Process where ProcessId='" + Str(ProcessID) + "'") then
+			          if WMIobj.NextItem then
+			            mCommandLine = WMIobj.GetPropertyString("CommandLine") // string
+			            If mCommandLine = "" Then mCommandLine = Name
+			          else
+			            mCommandLine =  ""
+			          end if
 			        else
 			          mCommandLine =  ""
 			        end if
 			      else
 			        mCommandLine =  ""
 			      end if
-			    else
-			      mCommandLine =  ""
-			    end if
-			  Else
-			    'Debug("Use Cached Command Line For ProcID: " + Str(ProcessID))
-			  End If
+			    Else
+			      'Debug("Use Cached Command Line For ProcID: " + Str(ProcessID))
+			    End If
+			    
+			  #Else
+			    #pragma Warning "This code expects the MBS Win IDE plugin to be installed and Globals.MBSAvailable to be True."
+			    #If DebugBuild Then
+			      mCommandLine = "MBS Win plugin required to access WMI/Command lines."
+			    #Else
+			      mCommandLine = Me.path.AbsolutePath
+			    #endif
+			    
+			  #endif
 			  Return mCommandLine
 			End Get
 		#tag EndGetter

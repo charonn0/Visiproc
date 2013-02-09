@@ -722,12 +722,24 @@ Protected Module Globals
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		WMIobj As WindowsWMIMBS
-	#tag EndProperty
-
-	#tag Property, Flags = &h0
 		Working As Boolean
 	#tag EndProperty
+
+
+	#tag Constant, Name = MBSAvailable, Type = Boolean, Dynamic = False, Default = \"False", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = MBSExpires, Type = Double, Dynamic = False, Default = \"201105", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = MBSPluginName, Type = String, Dynamic = False, Default = \"MBS Win", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = MBSRegistrationNumber, Type = Double, Dynamic = False, Default = \"0000000000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = MBSUserName, Type = String, Dynamic = False, Default = \"YourUserName", Scope = Public
+	#tag EndConstant
 
 
 	#tag ViewBehavior

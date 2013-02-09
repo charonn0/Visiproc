@@ -28,6 +28,11 @@ Inherits Application
 		    End If
 		  Next
 		  //Requires the Monkeybread Win plugin for WMI
+		  #If MBSAvailable Then
+		    Call RegisterMBSPlugin(MBSUserName, MBSPluginName, MBSExpires, MBSRegistrationNumber)
+		  #Else
+		    #pragma Warning "This project expects the MBS Win IDE plugin to be installed and Globals.MBSAvailable to be True."
+		  #endif
 		  
 		  If Not Platform.IsAdmin Then
 		    MsgBox("This application works best with Administrator rights.")
