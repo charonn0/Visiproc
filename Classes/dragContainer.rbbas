@@ -177,7 +177,7 @@ Inherits Canvas
 		  If action = DragItem.DragActionCopy Then
 		    Globals.BackPic = Nil
 		    ScaledBackdrop = Nil
-		    Me.Refresh(False)
+		    Me.Invalidate(False)
 		    Dim f As FolderItem = Obj.FolderItem
 		    Dim p As Picture = Picture.Open(f)
 		    If p <> Nil Then
@@ -199,7 +199,18 @@ Inherits Canvas
 
 	#tag Event
 		Function MouseDown(X As Integer, Y As Integer) As Boolean
-		  'If Not IsContextualClick Then ClearSelection()
+		  If Not IsContextualClick Then 
+		    Dim multi As Integer
+		    For i As Integer = 0 To UBound(Objects)
+		      If Objects(i).Selected Then
+		        multi = multi + 1
+		      End If
+		    Next
+		    If multi <= 1 Then 
+		      ClearSelection
+		    End If
+		  End If
+		  
 		  Dim refreshn As Integer = currentObject
 		  currentObject = hitpointToObject(x, y)
 		  If currentObject > -1 Then
@@ -210,10 +221,10 @@ Inherits Canvas
 		        menuUp = True
 		      End If
 		    End If
-		    Refresh(False)
+		    Invalidate(False)
 		  ElseIf refreshn > -1 Then
 		    drawObject(refreshn)
-		    Refresh(False)
+		    Invalidate(False)
 		  End If
 		  
 		  lastX = X
@@ -248,7 +259,7 @@ Inherits Canvas
 		    NextY = Y
 		  End If
 		  
-		  Refresh(False)
+		  Invalidate(False)
 		End Sub
 	#tag EndEvent
 
@@ -276,7 +287,7 @@ Inherits Canvas
 		  If obj > -1 Then
 		    If Objects(obj).ResizeTo + deltaY > 25 And Objects(obj).ResizeTo + deltaY < 250 Then
 		      Objects(obj).ResizeTo = Objects(obj).ResizeTo + deltaY
-		      Refresh(False)
+		      Invalidate(False)
 		    End If
 		  End If
 		  ShowText = True
@@ -612,12 +623,12 @@ Inherits Canvas
 		    
 		    helptext = TextToPicture(s.Trim, StringColor, RGB(HelpColor.Red, HelpColor.Green, HelpColor.Blue, Globals.Transparency), gTextFont, gTextSize)
 		    helptext.RGBSurface.FloodFill(helptext.Width - 1, helptext.Height - 1, RGB(HelpColor.Red, HelpColor.Green, HelpColor.Blue, Globals.Transparency))
-		    Refresh(False)
+		    Invalidate(False)
 		    Return
 		  Else
 		    If helptext <> Nil Then
 		      helptext = Nil
-		      Refresh(False)
+		      Invalidate(False)
 		    End If
 		  End If
 		End Sub
@@ -849,7 +860,7 @@ Inherits Canvas
 		    addObject(debugWin)
 		    DebugMode = True
 		  End If
-		  Refresh(False)
+		  Invalidate(False)
 		End Sub
 	#tag EndMethod
 
@@ -863,7 +874,7 @@ Inherits Canvas
 		  HiddenProcCount = 0
 		  Update()
 		  Arrange(lastSort)
-		  Refresh(False)
+		  Invalidate(False)
 		End Sub
 	#tag EndMethod
 
@@ -876,7 +887,7 @@ Inherits Canvas
 		      Objects(i).Paint
 		    End If
 		  Next
-		  Refresh(False)
+		  Invalidate(False)
 		End Sub
 	#tag EndMethod
 
@@ -912,7 +923,7 @@ Inherits Canvas
 		  Update()
 		  'End If
 		  Arrange(lastSort)
-		  Refresh(False)
+		  Invalidate(False)
 		End Sub
 	#tag EndMethod
 
