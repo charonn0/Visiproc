@@ -30,10 +30,10 @@ Begin Window Window1
       AutoDeactivate  =   True
       BackColor       =   8421504
       Backdrop        =   ""
-      DoubleBuffer    =   False
+      DoubleBuffer    =   True
       DropIndex       =   -1
       Enabled         =   True
-      EraseBackground =   True
+      EraseBackground =   False
       FPS             =   0
       Height          =   589
       HelpTag         =   ""
